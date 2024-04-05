@@ -156,6 +156,16 @@ files = [
 ]
 
 [[package]]
+name = "website"
+version = "1.1"
+description = "HTML to HTML transformer"
+optional = false
+python-versions = "*"
+files = [
+    {file = "website-1.1.tar.gz", hash = "sha256:567a72bd78cd954a99a0afa8d4fddf5360025e3e9527f236e2993f421d747f2e"},
+]
+
+[[package]]
 name = "werkzeug"
 version = "3.0.2"
 description = "The comprehensive WSGI web application library."
@@ -175,4 +185,4 @@ watchdog = ["watchdog (>=2.3)"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10.0,<3.12"
-content-hash = "07ee9d73ebf0f10356f9a0a48b2870992a446a5aa7ceeb18d7a4a4b9e703b35f"
+content-hash = "7f65f3493ad6a2f18b6f89f05d788e3bcfdf6cdbc571d41f5a032f3547440802"
