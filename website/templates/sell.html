@@ -37,10 +37,26 @@
         </div>
       </div>
     </div>
-    <div
-      class="card-footer d-flex justify-content-between align-items-center text-muted"
-    >
+    <div class="card-footer d-flex justify-content-between align-items-center">
       <a href="">{{listing.user.first_name}} {{listing.user.last_name}}</a>
+      <div>
+        <span id="shortlists-count-{{listing.id}}">
+          {{listing.shortlists|length}}
+        </span>
+        {% if user.id in listing.shortlists|map(attribute="user_id")|list %}
+        <i
+          class="fa fa-heart-o"
+          id="shortlist-button-{{listing.id}}"
+          onclick="shortlist({{listing.id}})"
+        ></i>
+        {% else %}
+        <i
+          class="fa fa-heart-o"
+          id="shortlist-button-{{listing.id}}"
+          onclick="shortlist({{listing.id}})"
+        ></i>
+        {% endif %}
+      </div>
     </div>
   </div>
   <br />

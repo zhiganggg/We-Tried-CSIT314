@@ -65,3 +65,21 @@ def delete_listing(id):
     flash('Listing deleted.', category='success')
 
   return redirect(url_for('views.sell'))
+
+@views.route('/shortlist-listing/<listing_id>', methods=['POST'])
+@login_required
+def shortlist(listing_id):
+  listing = Listing.query.filter_by(id=listing_id).first()
+  shortlist = Shortlist.query.filter_by(user_id=current_user.id, listing_id=listing_id).first()
+
+  if not listing:
+    return jsonify({'error': 'Listing does not exist.'}, 400)
+  elif shortlist:
+    db.session.delete(shortlist)
+    db.session.commit()
+  else:
+    shortlist = Shortlist(user_id=current_user.id, listing_id=listing_id)
+    db.session.add(shortlist)
+    db.session.commit()
+  
+  return jsonify({"shortlists": len(listing.shortlists), "shortlisted": current_user.id in map(lambda x: x.user_id, listing.shortlists)})
