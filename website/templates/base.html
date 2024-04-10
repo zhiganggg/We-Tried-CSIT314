@@ -30,7 +30,15 @@
       <div class="collapse navbar-collapse" id="navbar">
         <div class="navbar-nav">
           {% if user.is_authenticated %}
-          <a class="nav-item nav-link" id="home" href="/home">Home</a>
+          <a class="nav-item nav-link" id="home" href="/">Home</a>
+          <a class="nav-item nav-link" id="logout" href="/buy">Buy</a>
+          <a class="nav-item nav-link" id="logout" href="/sell">Sell</a>
+          <a class="nav-item nav-link" id="logout" href="/mortgages"
+            >Mortgages</a
+          >
+          <a class="nav-item nav-link" id="logout" href="/find-agent"
+            >Find Agent</a
+          >
           <a class="nav-item nav-link" id="logout" href="/logout">Logout</a>
           {% else %}
           <a class="nav-item nav-link" id="login" href="/login">Login</a>

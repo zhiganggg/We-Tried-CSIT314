@@ -1,0 +1,42 @@
+{% extends "base.html" %} {% block title %}Sell{% endblock %} {% block content
+%}
+<h1 align="center">Add Listing</h1>
+
+<form method="POST">
+  <div>
+    <label for="title">Title:</label><br />
+    <input type="text" id="title" name="title" /><br />
+  </div>
+  <div>
+    <label for="description">Description:</label><br />
+    <textarea id="description" name="description" rows="4" cols="50"></textarea
+    ><br />
+  </div>
+  <div>
+    <label for="price">Price ($):</label><br />
+    <input type="number" id="price" name="price" min="0" /><br />
+  </div>
+  <div>
+    <label for="bedrooms">Bedrooms:</label><br />
+    <input type="number" id="bedrooms" name="bedrooms" min="1" /><br />
+  </div>
+  <div>
+    <label for="bathrooms">Bathrooms:</label><br />
+    <input type="number" id="bathrooms" name="bathrooms" min="1" /><br />
+  </div>
+  <div>
+    <label for="size_sqft">Size (sqft):</label><br />
+    <input type="number" id="size_sqft" name="size_sqft" min="1" /><br />
+  </div>
+  <div>
+    <label for="location">Location:</label><br />
+    <input type="text" id="location" name="location" /><br />
+  </div>
+  <br />
+  <div align="center">
+    <a href="/sell">
+      <button type="submit" class="btn btn-primary">Submit</button>
+    </a>
+  </div>
+</form>
+{% endblock %}

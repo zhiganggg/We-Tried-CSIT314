@@ -1,0 +1,33 @@
+{% extends "base.html" %} {% block title %}Sell{% endblock %} {% block content
+%}
+<h1 align="center">{% block header %}Listings{% endblock %}</h1>
+
+<div id="listings">
+  {% for listing in listings %}
+  <div class="card border-dark">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <a href="">{{listing.user.first_name}}</a>
+    </div>
+    <div class="card-body">
+      <div class="card-text">
+        <div class="listing-title">{{listing.title}}</div>
+        <div class="listing-address">{{listing.address}}</div>
+        <div class="listing-price]">S$ {{listing.price}}</div>
+        <div class="listing-details">
+          {{listing.bedrooms}} Bedrooms &middot {{listing.bathrooms}} Bathrooms
+          &middot {{listing.size_sqft}} sqft &middot S$ {{"%.2f" %
+          (listing.price/listing.size_sqft)}} psf
+        </div>
+      </div>
+    </div>
+  </div>
+  <br />
+  {% endfor %}
+</div>
+<br />
+<div align="center">
+  <a href="create-listing">
+    <button type="submit" class="btn btn-primary">Create a Listing</button>
+  </a>
+</div>
+{% endblock %}
