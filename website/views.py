@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for, jsonify, current_app
 from flask_login import login_required, current_user
-from .models import Note, User, Listing
+from .models import User, Listing, Shortlist
 from . import db
 import json
 
@@ -9,31 +9,8 @@ views = Blueprint('views', __name__)
 @views.route('/', methods=['GET', 'POST'])
 @login_required
 def home():
-  if request.method =='POST':
-    note = request.form.get('note')
-
-    if len(note) < 1:
-      flash('Note is too short!', category='error')
-    else:
-      new_note = Note(data=note, user_id=current_user.id)
-      db.session.add(new_note)
-      db.session.commit()
-      flash('Note added!', category='success')
 
   return render_template("home.html", user=current_user)
-  
-@views.route('/delete-note', methods=['POST'])
-def delete_note():
-  note = json.loads(request.data)
-  noteId = note['noteId']
-  note = Note.query.get(noteId)
-  if note:
-    if note.user_id == current_user.id:
-      db.session.delete(note)
-      db.session.commit()
-      flash('Note deleted!', category='error')
-      
-  return jsonify({})
 
 @views.route('/buy', methods=['GET', 'POST'])
 @login_required
@@ -72,3 +49,19 @@ def create_listing():
       return redirect(url_for('views.sell'))
 
   return render_template("create_listing.html", user=current_user)
+
+@views.route("/delete-listing/<id>")
+@login_required
+def delete_listing(id):
+  listing = Listing.query.filter_by(id=id).first()
+
+  if not listing:
+    flash('Listing does not exist.', category='error')
+  elif current_user.id != listing.id:
+    flash('You do not have permission to delete this listing.', category='error')
+  else:
+    db.session.delete(listing)
+    db.session.commit()
+    flash('Listing deleted.', category='success')
+
+  return redirect(url_for('views.sell'))
