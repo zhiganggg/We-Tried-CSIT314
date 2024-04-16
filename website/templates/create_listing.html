@@ -2,7 +2,7 @@
 %}
 <h1 align="center">Add Listing</h1>
 
-<form method="POST">
+<form method="POST" enctype="multipart/form-data">
   <div>
     <label for="title">Title:</label><br />
     <input type="text" id="title" name="title" /><br />
@@ -10,6 +10,16 @@
   <div>
     <label for="description">Description:</label><br />
     <textarea id="description" name="description" rows="4" cols="50"></textarea
+    ><br />
+  </div>
+  <div>
+    <label for="type">Type:</label><br />
+    <select id="type" name="type">
+      <option value="HDB">HDB</option>
+      <option value="Condominium">Condominium</option>
+      <option value="Landed House">Landed House</option>
+      <option value="Executive Condominium">Executive Condominium</option>
+      <option value="Apartment">Apartment</option></select
     ><br />
   </div>
   <div>
@@ -31,6 +41,10 @@
   <div>
     <label for="location">Location:</label><br />
     <input type="text" id="location" name="location" /><br />
+  </div>
+  <div>
+    <label for="photo">Photo:</label><br />
+    <input type="file" id="photo" name="photo" /><br />
   </div>
   <br />
   <div align="center">

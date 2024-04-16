@@ -1,8 +1,8 @@
-from flask import Blueprint, render_template, request, flash, redirect, url_for, jsonify, current_app
+from flask import Blueprint, render_template, request, flash, redirect, url_for, send_from_directory, jsonify
 from flask_login import login_required, current_user
-from .models import User, Listing, Shortlist
+from werkzeug.utils import secure_filename
+from .models import Listing, Shortlist
 from . import db
-import json
 
 views = Blueprint('views', __name__)
 
@@ -11,6 +11,10 @@ views = Blueprint('views', __name__)
 def home():
 
   return render_template("home.html", user=current_user)
+
+@views.route('/media/<path:filename>')
+def get_image(filename):
+  return send_from_directory('../media', filename)
 
 @views.route('/buy', methods=['GET', 'POST'])
 @login_required
@@ -30,6 +34,7 @@ def create_listing():
   if request.method == "POST":
     title = request.form.get('title')
     description = request.form.get('description')
+    type = request.form.get('type')
     price = request.form.get('price')
     bedrooms = request.form.get('bedrooms')
     bathrooms = request.form.get('bathrooms')
@@ -39,14 +44,21 @@ def create_listing():
     if not title or not description or not price or not bedrooms or not bathrooms or not size_sqft or not location:
       flash('All fields are required.', category='error')
     else:
-      new_listing = Listing(title=title, description=description, price=price, 
-                        bedrooms=bedrooms, bathrooms=bathrooms, size_sqft=size_sqft, 
-                        location=location, user_id=current_user.id)
-      db.session.add(new_listing)
-      db.session.commit()
-      current_app.logger.debug(f'New listing added: (new_listing)')
-      flash('Listing created!', category='success')
-      return redirect(url_for('views.sell'))
+      photo = request.files.get('photo')
+      if not photo:
+        flash('Please insert a photo.', category='error')
+      else:
+        file_name = secure_filename(photo.filename)
+        file_path = f'./media/{file_name}'
+
+        new_listing = Listing(title=title, description=description, type=type, price=price, 
+                          bedrooms=bedrooms, bathrooms=bathrooms, size_sqft=size_sqft, 
+                          location=location, photo=file_path, user_id=current_user.id)
+        db.session.add(new_listing)
+        db.session.commit()
+        photo.save(file_path)
+        flash('Listing created!', category='success')
+        return redirect(url_for('views.sell'))
 
   return render_template("create_listing.html", user=current_user)
 
@@ -83,3 +95,10 @@ def shortlist(listing_id):
     db.session.commit()
   
   return jsonify({"shortlists": len(listing.shortlists), "shortlisted": current_user.id in map(lambda x: x.user_id, listing.shortlists)})
+
+@views.route('/listing/<title>', methods=['GET', 'POST'])
+@login_required
+def listing(title):
+  listing = Listing.query.filter_by(title=title).first()
+
+  return render_template('listing.html', user=current_user, title=title)
