@@ -17,9 +17,18 @@
                 style="width: 100%; display: block"
               />
               <div class="card-body">
-                <div class="listing-title">
+                <div
+                  class="listing-title d-flex justify-content-between align-items-center"
+                >
                   <h5>{{listing.title}}</h5>
-                  <div class="hidden-like-buttons"></div>
+                  <div class="btn-grp btn-group-sm">
+                    <button type="button" class="btn btn-outline-secondary">
+                      <i class="bi bi-eye-slash-fill"></i>
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary">
+                      <i class="bi bi-heart"></i>
+                    </button>
+                  </div>
                 </div>
                 <div class="listing-details">
                   <div class="listing-location">{{listing.location}}</div>
