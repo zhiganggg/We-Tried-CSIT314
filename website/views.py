@@ -19,8 +19,8 @@ def get_image(filename):
 @views.route('/buy', methods=['GET', 'POST'])
 @login_required
 def buy():
-  # listings = Listing.query.all()
-  return render_template("buy.html", user=current_user)
+  listings = Listing.query.all()
+  return render_template("buy.html", user=current_user, listings=listings)
 
 @views.route('/sell', methods=['GET', 'POST'])
 @login_required
