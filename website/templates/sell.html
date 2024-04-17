@@ -1,85 +1,71 @@
-{% extends "base.html" %} {% block title %}Sell{% endblock %} {% block content
-%}
-<h1 align="center">{% block header %}Listings{% endblock %}</h1>
+{% extends "base.html" %} {% block title %}Buy{% endblock %} {% block content %}
 
-<div id="listings">
-  {% for listing in listings %}
-  <div class="card border-dark" style="width: 681.33px; margin-left: 200px">
-    <div
-      class="card-header d-flex justify-content-between align-items-center text-muted"
-    >
-      <a href="/listing/{{listing.title.replace(' ', '-')|lower}}"
-        >{{listing.title}}</a
-      >
-      {% if user.id == listing.user_id %}
-      <div class="btn-group">
-        <button
-          type="button"
-          class="btn btn-sm btn-primary dropdown-toggle"
-          data-bs-toggle="dropdown"
-        ></button>
-        <ul class="dropdown-menu">
-          <li>
-            <a href="/delete-listing/{{listing.id}}" class="dropdown-item"
-              >Delete</a
+<section class="jumbotron text-center">
+  <div class="container">
+    <h1 class="jumbotron-heading">Listing example</h1>
+    <p class="lead text-muted">
+      Sum up the apartment's key features briefly: bedrooms, bathrooms,
+      amenities, and location. Make it short and enticing to grab attention
+      without overwhelming potential renters.
+    </p>
+    <p>
+      <a href="" class="btn btn-primary my-2">Create a Listing</a>
+    </p>
+  </div>
+</section>
+
+<div class="album py-5 bg-light">
+  <div class="container">
+    <div class="col">
+      <div id="listings">
+        {% for listing in listings %}
+        <div class="card mb-4 box-shadow">
+          <div class="card-body">
+            <div
+              class="listing-title d-flex justify-content-between align-items-center"
             >
-          </li>
-        </ul>
-      </div>
-      {% endif %}
-    </div>
-    <img src="{{listing.photo}}" width="100%" , height="450" />
-    <div class="card-body" style="display: flex; margin-bottom: 10px">
-      <div class="card-text">
-        <div class="listing-address" style="font-size: 24px">
-          {{listing.location}}
+              <h5>{{listing.title}}</h5>
+              <div class="btn-group">
+                <button
+                  type="button"
+                  class="btn btn-sm btn-secondary dropdown-toggle"
+                  data-bs-toggle="dropdown"
+                ></button>
+                <ul class="dropdown-menu">
+                  <li>
+                    <a href="" class="dropdown-item">Edit</a>
+                  </li>
+                  <li>
+                    <a
+                      href="/delete-listing/{{listing.id}}"
+                      class="dropdown-item"
+                      >Delete</a
+                    >
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <hr />
+            <div class="listing-details">
+              <div class="listing-location">{{listing.location}}</div>
+              <div class="listing-price">S${{listing.price}}</div>
+              <div class="listing-features">
+                {{listing.bedrooms}} Bedrooms &middot {{listing.bathrooms}}
+                Bathrooms &middot {{listing.size_sqft}} sqft &middot S$ {{"%.2f"
+                % (listing.price/listing.size_sqft)}} psf
+              </div>
+              <div class="listing-type">
+                <span
+                  class="badge bg-success-subtle border border-light-subtle text-light-emphasis"
+                  >{{listing.type}}</span
+                >
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="listing-price]" style="font-size: 20px">
-          S$ {{listing.price}}
-        </div>
-        <div class="listing-details" style="font-size: 16px">
-          {{listing.bedrooms}} Bedrooms &middot {{listing.bathrooms}} Bathrooms
-          &middot {{listing.size_sqft}} sqft &middot S$ {{"%.2f" %
-          (listing.price/listing.size_sqft)}} psf
-        </div>
-        <div class="listing-type">
-          <span
-            class="badge bg-secondary-subtle border border-light-subtle text-light-emphasis"
-            style="font-size: 14px; font-weight: 500"
-            >{{listing.type}}</span
-          >
-        </div>
-      </div>
-    </div>
-    <div class="card-footer d-flex justify-content-between align-items-center">
-      Listed by {{listing.user.first_name}} {{listing.user.last_name}}
-      <div>
-        <span id="shortlists-count-{{listing.id}}">
-          {{listing.shortlists|length}}
-        </span>
-        {% if user.id in listing.shortlists|map(attribute="user_id")|list %}
-        <i
-          class="fa fa-heart"
-          id="shortlist-button-{{listing.id}}"
-          onclick="shortlist({{listing.id}})"
-        ></i>
-        {% else %}
-        <i
-          class="fa fa-heart-o"
-          id="shortlist-button-{{listing.id}}"
-          onclick="shortlist({{listing.id}})"
-        ></i>
-        {% endif %}
+        {% endfor %}
       </div>
     </div>
   </div>
-  <br />
-  {% endfor %}
-</div>
-<br />
-<div align="center">
-  <a href="/create-listing">
-    <button type="submit" class="btn btn-primary">Create a Listing</button>
-  </a>
 </div>
 {% endblock %}
