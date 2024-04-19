@@ -94,16 +94,18 @@
             enim tortor, accumsan eu ullamcorper quis, auctor a turpis. Sed
             tincidunt malesuada libero, lobortis accumsan ante dignissim sed.
             Suspendisse viverra efficitur massa eu sollicitudin. Sed quis urna
-            lorem. Integer ultrices diam in dapibus hendrerit. Donec lacinia,
-            libero sed ultrices ornare, lacus turpis blandit sapien, id
-            convallis risus leo et ligula. Nullam eget diam massa. Pellentesque
-            nibh lectus, auctor eget enim ac, consequat viverra urna. Phasellus
-            luctus sed nisi ut lacinia. Etiam eget leo non velit ornare
-            sollicitudin et non risus. Phasellus cursus pharetra semper.
-            Praesent et ligula sed ipsum rhoncus varius non eget purus. Fusce
-            molestie diam felis, et blandit velit scelerisque at. Nunc sit amet
-            nunc in elit dapibus ullamcorper. Donec luctus et augue ac
-            fringilla. Sed ut lectus libero. Nullam sit amet aliquam nulla.
+            lorem.
+            <br /><br />
+            Integer ultrices diam in dapibus hendrerit. Donec lacinia, libero
+            sed ultrices ornare, lacus turpis blandit sapien, id convallis risus
+            leo et ligula. Nullam eget diam massa. Pellentesque nibh lectus,
+            auctor eget enim ac, consequat viverra urna. Phasellus luctus sed
+            nisi ut lacinia. Etiam eget leo non velit ornare sollicitudin et non
+            risus. Phasellus cursus pharetra semper. Praesent et ligula sed
+            ipsum rhoncus varius non eget purus. Fusce molestie diam felis, et
+            blandit velit scelerisque at. Nunc sit amet nunc in elit dapibus
+            ullamcorper. Donec luctus et augue ac fringilla. Sed ut lectus
+            libero. Nullam sit amet aliquam nulla.
           </div>
         </section>
         <hr />
@@ -143,19 +145,177 @@
           </table>
         </section>
         <section class="mortgage-calculator">
-          <div class="mortgage-calculator-title">
+          <div class="mortgage-calculator-title mb-4">
             <h2>Estimated Mortgage</h2>
           </div>
-          <div class="row">
+          <div class="row align-items-center">
             <div class="col-md-6">
-              <div class="mortgage-calculator">
-                <div class="graph-item"></div>
+              <div class="p-4 card mb-4 mortgage-calculator">
+                <div class="graph-item">
+                  <h6>Mortgage Breakdown</h6>
+                  <div
+                    class="mb-2 graph-info d-flex justify-content-between align-items-center"
+                  >
+                    <span style="font-size: 12px">Est. Monthly Repayment</span>
+                    <span
+                      id="monthly-payment"
+                      style="font-size: 16px; font-weight: 500"
+                      >S$ 0 / mo</span
+                    >
+                  </div>
+                  <div
+                    class="mb-2 progress-bar flex-row gap-1 justify-content-between align-items-center"
+                  >
+                    <div
+                      id="principal-bar"
+                      aria-valuemin="0"
+                      aria-valuemax="100"
+                      aria-valuenow="50"
+                      style="
+                        background-color: #004141;
+                        color: white;
+                        font-size: 12px;
+                        border-radius: 10px 0 0 10px;
+                        width: 50%;
+                      "
+                    >
+                      50%
+                    </div>
+                    <div
+                      id="interest-bar"
+                      aria-valuemin="0"
+                      aria-valuemax="100"
+                      aria-valuenow="50"
+                      style="
+                        background-color: #009194;
+                        color: white;
+                        font-size: 12px;
+                        border-radius: 0 10px 10px 0;
+                        width: 50%;
+                      "
+                    >
+                      50%
+                    </div>
+                  </div>
+                  <div class="legend-bar d-flex">
+                    <div
+                      class="col-md-6 principal-lbar d-flex align-items-center"
+                    >
+                      <div
+                        style="
+                          width: 8px;
+                          height: 8px;
+                          border-radius: 50%;
+                          background-color: #004141;
+                          margin-right: 4px;
+                        "
+                      ></div>
+                      <div id="monthly-principal" style="font-size: 12px">
+                        S$ Principal
+                      </div>
+                    </div>
+                    <div
+                      class="col-md-6 interest-lbar d-flex align-items-center"
+                    >
+                      <div
+                        style="
+                          width: 8px;
+                          height: 8px;
+                          border-radius: 50%;
+                          background-color: #009194;
+                          margin-right: 4px;
+                        "
+                      ></div>
+                      <div id="monthly-interest" style="font-size: 12px">
+                        S$ Interest
+                      </div>
+                    </div>
+                  </div>
+                </div>
                 <hr />
-                <div class="graph-item"></div>
+                <div class="graph-item">
+                  <h6>Upfront Costs</h6>
+                  <div
+                    class="mb-2 graph-info d-flex justify-content-between align-items-center"
+                  >
+                    <span style="font-size: 12px">Total Downpayment</span>
+                    <span
+                      id="downpayment-amt"
+                      style="font-size: 16px; font-weight: 500"
+                      >S$ 0</span
+                    >
+                  </div>
+                  <div
+                    class="mb-2 progress-bar flex-row gap-1 justify-content-between align-items-center"
+                  >
+                    <div
+                      id="downpayment-bar"
+                      aria-valuemin="0"
+                      aria-valuemax="100"
+                      aria-valuenow="50"
+                      style="
+                        background-color: #004141;
+                        color: white;
+                        font-size: 12px;
+                        border-radius: 10px 0 0 10px;
+                        width: 50%;
+                      "
+                    >
+                      50%
+                    </div>
+                    <div
+                      id="loan-bar"
+                      aria-valuemin="0"
+                      aria-valuemax="100"
+                      aria-valuenow="50"
+                      style="
+                        background-color: #009194;
+                        color: white;
+                        font-size: 12px;
+                        border-radius: 0 10px 10px 0;
+                        width: 50%;
+                      "
+                    >
+                      50%
+                    </div>
+                  </div>
+                  <div class="legend-bar d-flex">
+                    <div
+                      class="col-md-6 downpayment-lbar d-flex align-items-center"
+                    >
+                      <div
+                        style="
+                          width: 8px;
+                          height: 8px;
+                          border-radius: 50%;
+                          background-color: #004141;
+                          margin-right: 4px;
+                        "
+                      ></div>
+                      <div id="" style="font-size: 12px">Downpayment</div>
+                    </div>
+                    <div class="col-md-6 loan-lbar d-flex align-items-center">
+                      <div
+                        style="
+                          width: 8px;
+                          height: 8px;
+                          border-radius: 50%;
+                          background-color: #009194;
+                          margin-right: 4px;
+                        "
+                      ></div>
+                      <div id="loan-amt" style="font-size: 12px">S$ Loan</div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
             <div class="col-md-6">
-              <div class="mortgage-calculator-form">
+              <form
+                class="mortgage-calculator-form"
+                action="/calculate"
+                method="POST"
+              >
                 <div class="mb-3">
                   <label class="property-price">Property Price</label>
                   <div class="input-group">
@@ -165,7 +325,9 @@
                     <input
                       type="text"
                       class="form-control"
+                      name="property-price"
                       id="property-price"
+                      value="{{'%.2f' % (listing.price)}}"
                       required
                     />
                   </div>
@@ -179,7 +341,9 @@
                     <input
                       type="text"
                       class="form-control"
+                      name="loan-amount"
                       id="loan-amount"
+                      value="{{'%.2f' % (listing.price * 0.75)}}"
                       required
                     />
                   </div>
@@ -195,7 +359,9 @@
                         <input
                           type="text"
                           class="form-control"
+                          name="interest-rate"
                           id="interest-rate"
+                          value="3"
                           required
                         />
                       </div>
@@ -209,7 +375,9 @@
                         <input
                           type="text"
                           class="form-control"
+                          name="loan-tenure"
                           id="loan-tenure"
+                          value="30"
                           required
                         />
                       </div>
@@ -217,11 +385,15 @@
                   </div>
                 </div>
                 <div class="mb-3">
-                  <button class="btn btn-primary btn-block">
+                  <button
+                    type="button"
+                    class="btn btn-primary btn-block"
+                    onclick="calculateMortgage()"
+                  >
                     Calculate Again
                   </button>
                 </div>
-              </div>
+              </form>
             </div>
           </div>
         </section>

@@ -103,3 +103,4 @@ def listing(title, id):
   listing = Listing.query.filter_by(id=id).first()
 
   return render_template('listing.html', user=current_user, listing=listing, id=id)
+
