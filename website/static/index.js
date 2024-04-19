@@ -11,9 +11,9 @@ function shortlist(listingId) {
     .then((data) => {
       shortlistCount.innerHTML = data["shortlists"];
       if (data["shortlisted"] === true) {
-        shortlistButton.className = "fa fa-heart";
+        shortlistButton.className = "btn btn-outline-secondary active";
       } else {
-        shortlistButton.className = "fa fa-heart-o";
+        shortlistButton.className = "btn btn-outline-secondary";
       }
     })
     .catch((e) => alert("Could not like post."));

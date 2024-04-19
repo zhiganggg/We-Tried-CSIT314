@@ -1,8 +1,8 @@
 {% extends "base.html" %} {% block title %}Buy{% endblock %} {% block content %}
 
-<div class="container">
-  <h1 align="center">Buy</h1>
-</div>
+<section class="jumbotron text-center">
+  <div class="container"></div>
+</section>
 <div class="album py-5 bg-light">
   <div class="container">
     <div class="row">
@@ -24,9 +24,29 @@
                   <button type="button" class="btn btn-outline-secondary">
                     <i class="bi bi-eye-slash-fill"></i>
                   </button>
-                  <button type="button" class="btn btn-outline-secondary">
+                  {% if user.id in
+                  listing.shortlists|map(attribute="user_id")|list %}
+                  <button
+                    type="button"
+                    class="btn btn-outline-secondary active"
+                    id="shortlist-button-{{listing.id}}"
+                    onclick="shortlist({{listing.id}})"
+                  >
                     <i class="bi bi-heart"></i>
                   </button>
+                  {% else %}
+                  <button
+                    type="button"
+                    class="btn btn-outline-secondary"
+                    id="shortlist-button-{{listing.id}}"
+                    onclick="shortlist({{listing.id}})"
+                  >
+                    <i class="bi bi-heart"></i>
+                  </button>
+                  {% endif %}
+                  <span id="shortlists-count-{{listing.id}}">
+                    {{listing.shortlists|length}}
+                  </span>
                 </div>
               </div>
               <div class="listing-details">
@@ -51,7 +71,9 @@
                     <img src="agent-photo" />
                     <div class="agent-name">
                       Listed by
-                      <span style="font-weight: 500">{{user.first_name}}</span>
+                      <span style="font-weight: 500"
+                        >{{listing.user.first_name}}</span
+                      >
                     </div>
                   </div>
                   <button

@@ -1,4 +1,5 @@
-{% extends "base.html" %} {% block title %}Buy{% endblock %} {% block content %}
+{% extends "base.html" %} {% block title %}Sell{% endblock %} {% block content
+%}
 
 <section class="jumbotron text-center">
   <div class="container">
@@ -9,7 +10,9 @@
       without overwhelming potential renters.
     </p>
     <p>
-      <a href="" class="btn btn-primary my-2">Create a Listing</a>
+      <a href="/create-listing" class="btn btn-primary my-2"
+        >Create a Listing</a
+      >
     </p>
   </div>
 </section>
@@ -18,7 +21,7 @@
   <div class="container">
     <div class="col">
       <div id="listings">
-        {% for listing in listings %}
+        {% for listing in listings %} {% if user.id == listing.user_id %}
         <div class="card mb-4 box-shadow">
           <div class="card-body">
             <div
@@ -63,7 +66,7 @@
             </div>
           </div>
         </div>
-        {% endfor %}
+        {% endif %} {% endfor %}
       </div>
     </div>
   </div>

@@ -96,6 +96,27 @@ def shortlist(listing_id):
   
   return jsonify({"shortlists": len(listing.shortlists), "shortlisted": current_user.id in map(lambda x: x.user_id, listing.shortlists)})
 
+@views.route('/add-shortlist/<int:listing_id>', methods=['POST'])
+def add_shortlist(listing_id):
+  shortlist = Shortlist.query.filter_by(listing_id=listing_id).first()
+  if not shortlist:
+    new_shortlist = Shortlist(user_id=current_user.id, listing_id=listing_id)
+    db.session.add(new_shortlist)
+    db.session.commit()
+    return jsonify({'success': True})
+  
+  return jsonify({'success': False})
+
+@views.route('/remove-shortlist/<int:listing_id>', methods=['POST'])
+def remove_shortlist(listing_id):
+  shortlist = Shortlist.query.filter_by(listing_id=listing_id).first()
+  if shortlist:
+    db.session.delete(shortlist)
+    db.session.commit()
+    return jsonify({'success': True})
+  
+  return jsonify({'success': False})
+
 @views.route('/listing/<title>', methods=['GET', 'POST'])
 @login_required
 def listing(title):
