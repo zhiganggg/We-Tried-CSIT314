@@ -10,11 +10,17 @@
         <div id="listings">
           {% for listing in listings %}
           <div class="card mb-4 box-shadow">
-            <img
-              class="card-img-top"
-              src="{{listing.photo}}"
-              style="width: 100%; display: block"
-            />
+            {% set encoded_title = listing.title|replace(' ', '-')|urlencode %}
+            <a
+              title="{{listing.title}}"
+              href="/listing/{{listing.title.replace(' ', '-')|lower}}  -{{listing.id}}"
+              class="nav-link"
+            >
+              <img
+                class="card-img-top"
+                src="{{listing.photo}}"
+                style="width: 100%; display: block"
+            /></a>
             <div class="card-body">
               <div
                 class="listing-title d-flex justify-content-between align-items-center"

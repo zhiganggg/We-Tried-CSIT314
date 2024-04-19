@@ -18,3 +18,11 @@ function shortlist(listingId) {
     })
     .catch((e) => alert("Could not like post."));
 }
+
+// function modifyUrlDisplay() {
+//   var currentUrl = window.location.href;
+//   var modifiedUrl = currentUrl.replace(/%20/g, "-").toLowerCase();
+//   window.history.replaceState({}, document.title, modifiedUrl);
+// }
+
+// window.onload = modifyUrlDisplay;

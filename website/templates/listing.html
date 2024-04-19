@@ -1,4 +1,233 @@
 {% extends "base.html" %} {% block title %}Sell{% endblock %} {% block content
 %}
-<h1 align="center">{% block header %}Listings{% endblock %}</h1>
+<div class="mb-3"></div>
+
+<main class="container">
+  <img
+    class="mb-4 rounded card-img-top"
+    src="../{{listing.photo}}"
+    style="width: 100%; display: block"
+  />
+  <div class="row g-5">
+    <div class="col-md-8">
+      <article class="listing">
+        <h2 class="display-5 link-body-emphasis mb-1">{{listing.title}}</h2>
+        <p class="listing-meta">
+          {{listing.date_created.strftime('%B %d, %Y')}}
+        </p>
+        <p>{{listing.location}}</p>
+        <span
+          class="badge bg-success-subtle border border-light-subtle text-light-emphasis"
+          >{{listing.type}}</span
+        >
+        <hr />
+        <div
+          class="listing-details d-flex justify-content-around align-items-center"
+        >
+          <div class="listing-price flex-row">
+            <div class="price d-flex align-items-center">
+              <h2 class="amount" style="margin-right: 16px">
+                S$ {{listing.price}}
+              </h2>
+              <span
+                class="badge bg-secondary-subtle border border-light-subtle text-light-emphasis"
+                style="
+                  align-items: center;
+                  padding: 6px 8px;
+                  margin-bottom: 4px;
+                "
+                >Negotiable</span
+              >
+            </div>
+            <div class="estimated-repayment">
+              <p class="repayment-amount">Est. Repayment S$ / mo</p>
+            </div>
+          </div>
+          <div
+            class="vr"
+            style="
+              border-left: 1px solid black;
+              height: 100px;
+              width: 0.67px;
+              margin: 0 0px;
+            "
+          ></div>
+          <div class="listing-features d-flex">
+            <div class="listing-bedrooms" style="text-align: center">
+              <h6>{{listing.bedrooms}}</h6>
+              <h6>bed</h6>
+            </div>
+            <div
+              class="listing-bathrooms"
+              style="text-align: center; margin-left: 32px"
+            >
+              <h6>{{listing.bathrooms}}</h6>
+              <h6>bath</h6>
+            </div>
+            <div
+              class="listing-size_sqft"
+              style="text-align: center; margin-left: 32px"
+            >
+              <h6>{{listing.size_sqft}}</h6>
+              <h6>sqft</h6>
+            </div>
+            <div
+              class="listing-size_psft"
+              style="text-align: center; margin-left: 32px"
+            >
+              <h6>S$ {{"%.2f" % (listing.price/listing.size_sqft)}}</h6>
+              <h6>psft</h6>
+            </div>
+          </div>
+        </div>
+        <hr />
+        <section class="about-section">
+          <h2>About this property</h2>
+          <div class="description">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas ac
+            lobortis sem. Nam ornare felis eget iaculis scelerisque. Fusce
+            ultrices tellus vel urna sodales dictum. Morbi ultricies ac velit
+            bibendum molestie. Nunc mi nisl, finibus quis augue vitae, malesuada
+            posuere mi. Nam arcu leo, pretium feugiat scelerisque aliquam,
+            lobortis vitae enim. Integer suscipit pretium dapibus. Aenean
+            interdum libero erat, non sodales mauris lacinia suscipit. Maecenas
+            enim tortor, accumsan eu ullamcorper quis, auctor a turpis. Sed
+            tincidunt malesuada libero, lobortis accumsan ante dignissim sed.
+            Suspendisse viverra efficitur massa eu sollicitudin. Sed quis urna
+            lorem. Integer ultrices diam in dapibus hendrerit. Donec lacinia,
+            libero sed ultrices ornare, lacus turpis blandit sapien, id
+            convallis risus leo et ligula. Nullam eget diam massa. Pellentesque
+            nibh lectus, auctor eget enim ac, consequat viverra urna. Phasellus
+            luctus sed nisi ut lacinia. Etiam eget leo non velit ornare
+            sollicitudin et non risus. Phasellus cursus pharetra semper.
+            Praesent et ligula sed ipsum rhoncus varius non eget purus. Fusce
+            molestie diam felis, et blandit velit scelerisque at. Nunc sit amet
+            nunc in elit dapibus ullamcorper. Donec luctus et augue ac
+            fringilla. Sed ut lectus libero. Nullam sit amet aliquam nulla.
+          </div>
+        </section>
+        <hr />
+        <section class="details-section">
+          <h2>More details</h2>
+          <table class="table">
+            <thead>
+              <tr>
+                <td>Property Type:</td>
+                <th style="text-align: right">{{listing.type}}</th>
+              </tr>
+              <tr>
+                <td>Floor Size:</td>
+                <th style="text-align: right">{{listing.size_sqft}}</th>
+              </tr>
+              <tr>
+                <td>PSF:</td>
+                <th style="text-align: right">
+                  S$ {{"%.2f" % (listing.price/listing.size_sqft)}}
+                </th>
+              </tr>
+              <tr>
+                <td>Location:</td>
+                <th style="text-align: right">{{listing.location}}</th>
+              </tr>
+              <tr>
+                <td>Listed on:</td>
+                <th style="text-align: right">
+                  {{listing.date_created.strftime('%B %d, %Y')}}
+                </th>
+              </tr>
+              <tr>
+                <td>Listing ID:</td>
+                <th style="text-align: right">{{listing.id}}</th>
+              </tr>
+            </thead>
+          </table>
+        </section>
+        <section class="mortgage-calculator">
+          <div class="mortgage-calculator-title">
+            <h2>Estimated Mortgage</h2>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <div class="mortgage-calculator">
+                <div class="graph-item"></div>
+                <hr />
+                <div class="graph-item"></div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="mortgage-calculator-form">
+                <div class="mb-3">
+                  <label class="property-price">Property Price</label>
+                  <div class="input-group">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text">S$</span>
+                    </div>
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="property-price"
+                      required
+                    />
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <label class="loan-amount">Loan Amount</label>
+                  <div class="input-group">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text">S$</span>
+                    </div>
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="loan-amount"
+                      required
+                    />
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <div class="row">
+                    <div class="col">
+                      <label class="interest-rate">Interest Rate</label>
+                      <div class="input-group">
+                        <div class="input-group-prepend">
+                          <span class="input-group-text">%</span>
+                        </div>
+                        <input
+                          type="text"
+                          class="form-control"
+                          id="interest-rate"
+                          required
+                        />
+                      </div>
+                    </div>
+                    <div class="col">
+                      <label class="loan-tenure">Loan Tenure</label>
+                      <div class="input-group">
+                        <div class="input-group-prepend">
+                          <span class="input-group-text">Yrs</span>
+                        </div>
+                        <input
+                          type="text"
+                          class="form-control"
+                          id="loan-tenure"
+                          required
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <button class="btn btn-primary btn-block">
+                    Calculate Again
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </article>
+    </div>
+  </div>
+</main>
+
 {% endblock %}
