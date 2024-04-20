@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for, send_from_directory, jsonify
 from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
-from .models import Listing, Shortlist
+from .models import Listing, Shortlist, Review
 from . import db
 from datetime import datetime
 
@@ -103,4 +103,3 @@ def listing(title, id):
   listing = Listing.query.filter_by(id=id).first()
 
   return render_template('listing.html', user=current_user, listing=listing, id=id)
-

@@ -1,57 +1,84 @@
 {% extends "base.html" %} {% block title %}Sign Up{% endblock %} {% block
 content %}
-<form method="POST">
-  <h3 align="center">Sign Up</h3>
-  <div class="form-group">
-    <label for="email">Email Address</label>
+<div class="container">
+  <div class="py-5 text-center">
+    <h2>Sign Up</h2>
+  </div>
+  <form method="POST">
+    <label for="email">Email Address:</label><br />
     <input
       type="email"
       class="form-control"
       id="email"
       name="email"
       placeholder="Enter email"
-    />
-  </div>
-  <div class="form-group">
-    <label for="firstName">First Name</label>
-    <input
-      type="firstName"
-      class="form-control"
-      id="firstName"
-      name="firstName"
-      placeholder="Enter first name"
-    />
-  <div class="form-group">
-    <label for="lastName">Last Name</label>
-    <input
-      type="lastName"
-      class="form-control"
-      id="lsatName"
-      name="lastName"
-      placeholder="Enter first name"
-    />
-  </div>
-  <div class="form-group">
-    <label for="password1">Password</label>
+    /><br />
+    <div class="row">
+      <div class="col-md-6">
+        <label for="first-name">First Name:</label><br />
+        <input
+          type="text"
+          class="form-control"
+          id="first-name"
+          name="first-name"
+          placeholder="Enter first name"
+        /><br />
+      </div>
+      <div class="col-md-6">
+        <label for="last-name">Last Name:</label><br />
+        <input
+          type="text"
+          class="form-control"
+          id="last-name"
+          name="last-name"
+          placeholder="Enter last name"
+        /><br />
+      </div>
+    </div>
+    <label for="password1">Password:</label><br />
     <input
       type="password"
       class="form-control"
       id="password1"
       name="password1"
       placeholder="Enter password"
-    />
-  </div>
-  <div class="form-group">
-    <label for="password2">Password (Confirm)</label>
+    /><br />
+    <label for="password2">Password (Confirm):</label><br />
     <input
       type="password"
       class="form-control"
       id="password2"
       name="password2"
       placeholder="Confirm password"
-    />
-  </div>
-  <br />
-  <button type="submit" class="btn btn-primary">Submit</button>
-  {% endblock %}
-</form>
+    /><br />
+    <label for="role">Role:</label><br />
+    <select class="form-control" id="role" name="role" required>
+      <option value="user">Buyer/Seller</option>
+      <option value="agent">Agent</option>
+      <option value="admin">Admin</option>
+    </select>
+    <br />
+    <div id="agent-fields" style="display: none">
+      <label for="cea-registration-no">CEA Registration No:</label><br />
+      <input
+        type="text"
+        class="form-control"
+        id="cea-registration-no"
+        name="cea-registration-no"
+        placeholder="Enter CEA registration no."
+      /><br />
+      <label for="agency-license-no">Agency License No:</label><br />
+      <input
+        type="text"
+        class="form-control"
+        id="agency-license-no"
+        name="agency-license-no"
+        placeholder="Enter Agency license no."
+      /><br />
+    </div>
+    <button type="submit" class="btn btn-primary form-control" type="submit">
+      Sign Up</button
+    ><br /><br />
+  </form>
+</div>
+{% endblock %}

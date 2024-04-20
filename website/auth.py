@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for
-from .models import User
+from .models import User, Agent
 from werkzeug.security import generate_password_hash, check_password_hash
 from . import db
 from flask_login import login_user, login_required, logout_user, current_user
@@ -35,10 +35,14 @@ def logout():
 def sign_up():
     if request.method == "POST":
         email = request.form.get('email')
-        first_name = request.form.get('firstName')
-        last_name = request.form.get('lastName')
+        first_name = request.form.get('first-name')
+        last_name = request.form.get('last-name')
         password1 = request.form.get('password1')
         password2 = request.form.get('password2')
+        role = request.form.get('role')
+
+        cea_registration_no = request.form.get('cea-registration-no', '')
+        agency_license_no = request.form.get('agency-license-no', '')
 
         user = User.query.filter_by(email=email).first()
         if user:
@@ -52,9 +56,19 @@ def sign_up():
         elif len(password1) < 7:
             flash('Passwords must be at least 7 characters.', category='error')
         else:
-            new_user = User(email=email, first_name=first_name, last_name=last_name, password=generate_password_hash(password1, method='pbkdf2:sha256'))
+            new_user = User(email=email, first_name=first_name, last_name=last_name, password=generate_password_hash(password1, method='pbkdf2:sha256'), role=role)
             db.session.add(new_user)
             db.session.commit()
+
+            if role == 'agent':
+                agent = Agent.query.filter_by(cea_registration_no=cea_registration_no).first()
+                if agent:
+                    flash('Agent with CEA registration number {} already exists.'.format(cea_registration_no))
+                else:
+                    new_agent = Agent(user_id=new_user.id, cea_registration_no=cea_registration_no, agency_license_no=agency_license_no)
+                    db.session.add(new_agent)
+                    db.session.commit()
+
             login_user(new_user, remember=True)
             flash('Account created!', category='success')
             return redirect(url_for('views.home'))

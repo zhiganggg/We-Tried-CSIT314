@@ -1,3 +1,12 @@
+document.getElementById("role").addEventListener("change", function () {
+  var agentFields = document.getElementById("agent-fields");
+  if (this.value === "agent") {
+    agentFields.style.display = "block";
+  } else {
+    agentFields.style.display = "none";
+  }
+});
+
 function shortlist(listingId) {
   const shortlistCount = document.getElementById(
     `shortlists-count-${listingId}`
@@ -66,7 +75,7 @@ function calculateMortgage() {
   document.getElementById("loan-amt").innerText =
     "S$ " +
     loanAmount.toLocaleString(undefined, { maximumFractionDigits: 0 }) +
-    " Loan Amount";
+    " Loan";
   document.getElementById("interest-bar").innerText =
     interestPercentage.toLocaleString(undefined, { maximumFractionDigits: 0 }) +
     "%";
