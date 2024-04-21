@@ -27,7 +27,7 @@
           <div class="listing-price flex-row">
             <div class="price d-flex align-items-center">
               <h2 class="amount" style="margin-right: 16px">
-                S$ {{listing.price}}
+                S$ {{'{:,.0f}'.format(listing.price|int)}}
               </h2>
               <span
                 class="badge bg-secondary-subtle border border-light-subtle text-light-emphasis"
@@ -41,8 +41,9 @@
             </div>
             <div class="estimated-repayment">
               <p class="repayment-amount">
-                Est. Repayment S$ {{((listing.price * 0.75 * (0.03/12) * ((1 +
-                0.03/12)**360))/(((1 + 0.03/12)**360) - 1))|int}} / mo
+                Est. Repayment S$ {{'{:,.0f}'.format(((listing.price * 0.75 *
+                (0.03/12) * ((1 + 0.03/12)**360))/(((1 + 0.03/12)**360) -
+                1))|int)}} / mo
               </p>
             </div>
           </div>
@@ -71,14 +72,16 @@
               class="listing-size_sqft"
               style="text-align: center; margin-left: 32px"
             >
-              <h6>{{listing.size_sqft}}</h6>
+              <h6>{{'{:,.0f}'.format(listing.size_sqft)}}</h6>
               <h6>sqft</h6>
             </div>
             <div
               class="listing-size_psft"
               style="text-align: center; margin-left: 32px"
             >
-              <h6>S$ {{"%.2f" % (listing.price/listing.size_sqft)}}</h6>
+              <h6>
+                S$ {{'{:,.0f}'.format((listing.price/listing.size_sqft)|int)}}
+              </h6>
               <h6>psft</h6>
             </div>
           </div>
@@ -87,28 +90,9 @@
         <section class="about-section">
           <h2>About this property</h2>
           <div class="description">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas ac
-            lobortis sem. Nam ornare felis eget iaculis scelerisque. Fusce
-            ultrices tellus vel urna sodales dictum. Morbi ultricies ac velit
-            bibendum molestie. Nunc mi nisl, finibus quis augue vitae, malesuada
-            posuere mi. Nam arcu leo, pretium feugiat scelerisque aliquam,
-            lobortis vitae enim. Integer suscipit pretium dapibus. Aenean
-            interdum libero erat, non sodales mauris lacinia suscipit. Maecenas
-            enim tortor, accumsan eu ullamcorper quis, auctor a turpis. Sed
-            tincidunt malesuada libero, lobortis accumsan ante dignissim sed.
-            Suspendisse viverra efficitur massa eu sollicitudin. Sed quis urna
-            lorem.
-            <br /><br />
-            Integer ultrices diam in dapibus hendrerit. Donec lacinia, libero
-            sed ultrices ornare, lacus turpis blandit sapien, id convallis risus
-            leo et ligula. Nullam eget diam massa. Pellentesque nibh lectus,
-            auctor eget enim ac, consequat viverra urna. Phasellus luctus sed
-            nisi ut lacinia. Etiam eget leo non velit ornare sollicitudin et non
-            risus. Phasellus cursus pharetra semper. Praesent et ligula sed
-            ipsum rhoncus varius non eget purus. Fusce molestie diam felis, et
-            blandit velit scelerisque at. Nunc sit amet nunc in elit dapibus
-            ullamcorper. Donec luctus et augue ac fringilla. Sed ut lectus
-            libero. Nullam sit amet aliquam nulla.
+            {% for paragraph in listing.description.split('\n') %}
+            <p>{{paragraph}}</p>
+            {% endfor %}
           </div>
         </section>
         <hr />
@@ -122,12 +106,14 @@
               </tr>
               <tr>
                 <td>Floor Size:</td>
-                <th style="text-align: right">{{listing.size_sqft}}</th>
+                <th style="text-align: right">
+                  {{'{:,.0f}'.format(listing.size_sqft)}}
+                </th>
               </tr>
               <tr>
                 <td>PSF:</td>
                 <th style="text-align: right">
-                  S$ {{"%.2f" % (listing.price/listing.size_sqft)}}
+                  S$ {{'{:,.0f}'.format((listing.price/listing.size_sqft)|int)}}
                 </th>
               </tr>
               <tr>
@@ -324,7 +310,7 @@
                       class="form-control"
                       name="property-price"
                       id="property-price"
-                      value="{{'%.2f' % (listing.price)}}"
+                      value="{{'{:,.0f}'.format(listing.price|int)}}"
                       required
                     />
                   </div>
@@ -340,7 +326,7 @@
                       class="form-control"
                       name="loan-amount"
                       id="loan-amount"
-                      value="{{'%.2f' % (listing.price * 0.75)}}"
+                      value="{{'{:,.0f}'.format((listing.price * 0.75)|int)}}"
                       required
                     />
                   </div>
@@ -396,7 +382,83 @@
         </section>
       </article>
     </div>
+    <div class="col-md-4">
+      <div class="position-sticky" style="top: 2rem">
+        <div class="card mb-4 box-shadow">
+          <div class="listing-agent">
+            <div class="p-4 agent-info d-flex">
+              <div
+                class="agent-photo"
+                style="
+                  width: 60px;
+                  height: 60px;
+                  border-radius: 50%;
+                  overflow: hidden;
+                  border: 0.67px solid #212529;
+                  opacity: 0.25;
+                  margin-right: 16px;
+                "
+              >
+                <img src="" />
+              </div>
+              <div
+                class="agent-details"
+                style="flex-direction: column; flex-grow: 1; justify-content-center"
+              >
+                <div class="mb-1" style="font-size: 14px; font-weight: 500">
+                  {{listing.user.first_name}} {{listing.user.last_name}}
+                </div>
+                <div class="mb-2" style="font-size: 12px">
+                  CEA {{agent.cea_registration_no}} /
+                  {{agent.agency_license_no}}
+                </div>
+                <div>
+                  <button
+                    class="btn btn-outline-secondary rounded-pill px-3 form-control"
+                  >
+                    <i class="bi bi-star-fill"></i>
+                    Reviews
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="card-body" style="padding: 0">
+              <div class="list-group">
+                <a
+                  href=""
+                  class="list-group-item list-group-item-action d-flex"
+                  style="border-radius: 0; font-size: 16px"
+                  >Whatsapp Mobile</a
+                >
+                <a
+                  href=""
+                  class="list-group-item list-group-item-action d-flex"
+                  style="border-radius: 0; font-size: 16px"
+                  >Whatsapp Web</a
+                >
+                <a
+                  href=""
+                  class="list-group-item list-group-item-action d-flex"
+                  style="border-radius: 0; font-size: 16px"
+                  >Other ways to enquire</a
+                >
+              </div>
+              <div class="p-4" style="font-size: 12px">
+                I confirm that I have read the
+                <span style="color: red">privacy policy</span> and allow my
+                information to be shared with this agent who may contact me
+                later.
+              </div>
+              <hr style="margin: 0" />
+              <div class="p-4" style="font-size: 12px">
+                Get in touch with the agent to arrange.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </main>
 
-{% endblock %}
+{% endblock %} ,67

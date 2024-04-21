@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for, send_from_directory, jsonify
 from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
-from .models import Listing, Shortlist, Review
+from .models import *
 from . import db
 from datetime import datetime
 
@@ -21,6 +21,7 @@ def get_image(filename):
 @login_required
 def buy():
   listings = Listing.query.all()
+
   return render_template("buy.html", user=current_user, listings=listings)
 
 @views.route('/sell', methods=['GET', 'POST'])
@@ -54,7 +55,7 @@ def create_listing():
 
         new_listing = Listing(title=title, description=description, type=type, price=price, 
                           bedrooms=bedrooms, bathrooms=bathrooms, size_sqft=size_sqft, 
-                          location=location, photo=file_path, user_id=current_user.id)
+                          location=location, availability=Availability.AVAILABLE, photo=file_path, user_id=current_user.id)
         db.session.add(new_listing)
         db.session.commit()
         photo.save(file_path)
@@ -101,5 +102,25 @@ def shortlist(listing_id):
 @login_required
 def listing(title, id):
   listing = Listing.query.filter_by(id=id).first()
+  user_id = listing.user_id
+  agent = Agent.query.get(user_id)
 
-  return render_template('listing.html', user=current_user, listing=listing, id=id)
+  return render_template('listing.html', user=current_user, listing=listing, id=id, agent=agent)
+
+@views.route('/find-agent', methods=['GET', 'POST'])
+@login_required
+def find_agent():
+  query_result = db.session.query(User, Listing, Agent).\
+    join(Listing, Listing.user_id == User.id).\
+    join(Agent, Agent.user_id == User.id).all()
+  
+  def get_types(query_result):
+    types = set()
+    for _, listing, _ in query_result:
+      types.add(listing.type)
+    
+    return types
+  
+  types = get_types(query_result)
+
+  return render_template('find_agent.html', user=current_user, query_result=query_result, types=types)

@@ -1,6 +1,15 @@
 from . import db
 from flask_login import UserMixin
 from sqlalchemy.sql import func
+from enum import Enum
+
+class UserStatus(Enum):
+    ENABLED = 'enabled'
+    DISABLED = 'disabled'
+
+class Availability(Enum):
+    AVAILABLE = 'available'
+    UNAVAILABLE = 'unavailable'
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
@@ -10,6 +19,7 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String(100))
     date_created = db.Column(db.DateTime(timezone=True), default=func.now())
     role = db.Column(db.String(20))
+    status = db.Column(db.Enum(UserStatus), default=UserStatus.ENABLED)
     listings = db.relationship('Listing', backref='user', passive_deletes=True)
     shortlists = db.relationship('Shortlist', backref='user', passive_deletes=True)
 
@@ -30,6 +40,7 @@ class Listing(db.Model):
     bathrooms = db.Column(db.Integer, nullable=False)
     size_sqft = db.Column(db.Integer, nullable=False)
     location = db.Column(db.String(150), nullable=False)
+    availability = db.Column(db.Enum(Availability), default=Availability.AVAILABLE)
     date_created = db.Column(db.DateTime(timezone=True), default=func.now())
     photo = db.Column(db.String(255), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete="CASCADE"), nullable=False)

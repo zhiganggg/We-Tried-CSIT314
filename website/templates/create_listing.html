@@ -1,56 +1,94 @@
 {% extends "base.html" %} {% block title %}Sell{% endblock %} {% block content
 %}
-<h1 align="center">Add Listing</h1>
-
-<form method="POST" enctype="multipart/form-data">
-  <div>
+<div class="container">
+  <div class="py-5 text-center">
+    <h2>Add Listing</h2>
+  </div>
+  <form method="POST" enctype="multipart/form-data">
     <label for="title">Title:</label><br />
-    <input type="text" id="title" name="title" /><br />
-  </div>
-  <div>
+    <input
+      type="test"
+      class="form-control"
+      id="title"
+      name="title"
+      placeholder="Enter title"
+    /><br />
     <label for="description">Description:</label><br />
-    <textarea id="description" name="description" rows="4" cols="50"></textarea
+    <textarea
+      class="form-control"
+      id="description"
+      name="description"
+      placeholder="Enter description"
+    ></textarea
     ><br />
-  </div>
-  <div>
     <label for="type">Type:</label><br />
-    <select id="type" name="type">
+    <select class="form-control" id="type" name="type">
       <option value="HDB">HDB</option>
       <option value="Condominium">Condominium</option>
       <option value="Landed House">Landed House</option>
       <option value="Executive Condominium">Executive Condominium</option>
-      <option value="Apartment">Apartment</option></select
-    ><br />
-  </div>
-  <div>
-    <label for="price">Price ($):</label><br />
-    <input type="number" id="price" name="price" min="0" /><br />
-  </div>
-  <div>
-    <label for="bedrooms">Bedrooms:</label><br />
-    <input type="number" id="bedrooms" name="bedrooms" min="1" /><br />
-  </div>
-  <div>
-    <label for="bathrooms">Bathrooms:</label><br />
-    <input type="number" id="bathrooms" name="bathrooms" min="1" /><br />
-  </div>
-  <div>
-    <label for="size_sqft">Size (sqft):</label><br />
-    <input type="number" id="size_sqft" name="size_sqft" min="1" /><br />
-  </div>
-  <div>
-    <label for="location">Location:</label><br />
-    <input type="text" id="location" name="location" /><br />
-  </div>
-  <div>
+      <option value="Apartment">Apartment</option>
+    </select>
+    <br />
+    <label for="price">Price (S$):</label><br />
+    <input
+      type="number"
+      class="form-control"
+      id="price"
+      name="price"
+      placeholder="Enter price"
+    /><br />
+    <div class="row">
+      <div class="col md-6">
+        <label for="bedrooms">Bedrooms:</label><br />
+        <input
+          type="number"
+          class="form-control"
+          id="bedrooms"
+          name="bedrooms"
+          placeholder="Enter bedrooms"
+        /><br />
+      </div>
+      <div class="col md-6">
+        <label for="bathrooms">Bathrooms:</label><br />
+        <input
+          type="number"
+          class="form-control"
+          id="bathrooms"
+          name="bathrooms"
+          placeholder="Enter bathrooms"
+        /><br />
+      </div>
+    </div>
+    <div class="row">
+      <div class="col md-6">
+        <label for="size_sqft">Size (sqft):</label><br />
+        <input
+          type="number"
+          class="form-control"
+          id="size_sqft"
+          name="size_sqft"
+          placeholder="Enter size sqft"
+        /><br />
+      </div>
+      <div class="col md-6">
+        <label for="location">Location:</label><br />
+        <input
+          type="text"
+          class="form-control"
+          id="location"
+          name="location"
+          placeholder="Enter location"
+        /><br />
+      </div>
+    </div>
     <label for="photo">Photo:</label><br />
-    <input type="file" id="photo" name="photo" /><br />
-  </div>
-  <br />
-  <div align="center">
+    <input type="file" id="photo" name="photo" /><br /><br />
     <a href="/sell">
-      <button type="submit" class="btn btn-primary">Submit</button>
-    </a>
-  </div>
-</form>
+      <button type="submit" class="btn btn-primary form-control" type="submit">
+        Submit
+      </button> </a
+    ><br /><br />
+  </form>
+</div>
 {% endblock %}

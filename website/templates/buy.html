@@ -13,7 +13,7 @@
             {% set encoded_title = listing.title|replace(' ', '-')|urlencode %}
             <a
               title="{{listing.title}}"
-              href="/listing/{{listing.title.replace(' ', '-')|lower}}  -{{listing.id}}"
+              href="/listing/{{listing.title.replace(' ', '-')|lower}}-{{listing.id}}"
               class="nav-link"
               onclick="calculateMortgage()"
             >
