@@ -28,6 +28,7 @@ def buy():
 @login_required
 def sell():
   listings = Listing.query.all()
+  print(f'login_required [listings] : {listings}')
   return render_template('sell.html', user=current_user, listings=listings)
 
 @views.route('/create-listing', methods=['GET', 'POST'])
