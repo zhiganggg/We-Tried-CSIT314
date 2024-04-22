@@ -4,6 +4,7 @@ from werkzeug.utils import secure_filename
 from .models import *
 from . import db
 from datetime import datetime
+from sqlalchemy import desc
 
 views = Blueprint('views', __name__)
 
@@ -125,3 +126,13 @@ def find_agent():
   types = get_types(query_result)
 
   return render_template('find_agent.html', user=current_user, query_result=query_result, types=types)
+
+@views.route('/favourite', methods=['GET', 'POST'])
+@login_required
+def favourite_properties():
+  query_result = db.session.query(Listing, Shortlist).\
+    join(Shortlist, Shortlist.listing_id == Listing.id).\
+    filter(Shortlist.user_id == current_user.id).\
+    order_by(desc(Shortlist.date_created)).all()
+
+  return render_template('shortlist.html', user=current_user, query_result=query_result)
