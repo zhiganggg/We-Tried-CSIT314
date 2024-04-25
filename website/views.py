@@ -136,3 +136,18 @@ def favourite_properties():
     order_by(desc(Shortlist.date_created)).all()
 
   return render_template('shortlist.html', user=current_user, query_result=query_result)
+
+@views.route('/profile/@<first_name>-<last_name>', methods=['GET', 'POST'])
+@login_required
+def user_profile(first_name,last_name):
+  if (current_user.role).lower() == 'agent':
+    agent_query_result = db.session.query(Agent). \
+    filter(Agent.user_id == current_user.id).first()
+
+  if request.method == "POST":
+    currentPassword = request.form.get('currentPassword')
+    newPassword = request.form.get('newPassword')
+    confirmPassword = request.form.get('confirmPassword')
+
+    print(currentPassword, newPassword ,)
+  return render_template('profile.html', user=current_user, agent=agent_query_result)
