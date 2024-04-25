@@ -58,7 +58,7 @@
                 </div>
               </div>
               <div class="listing-details">
-                <div class="listing-location"><a class="location-link" href="https://www.google.com/maps/search/?api=1&query={{ listing.location | replace(' ', '+') }}+Singapore" style="text-decoration: none; color: black;" target="_blank">{{listing.location}} <i class="bi bi-geo-alt"></i></a></div>
+                <div class="listing-location">{{listing.location}} <a class="location-link ms-3" href="https://www.google.com/maps/search/?api=1&query={{ listing.location | replace(' ', '+') }}+Singapore" target="_blank">View map <i class="bi bi-geo-alt"></i></a></div>
                 <div class="listing-price">S${{listing.price}}</div>
                 <div class="listing-features">
                   {{listing.bedrooms}} Bedrooms &middot {{listing.bathrooms}}
@@ -105,10 +105,4 @@
     </div>
   </div>
 </div>
-
-<style>
-.listing-location a:hover .bi-geo-alt {
-  color: blue;
-}
-</style>
 {% endblock %}
