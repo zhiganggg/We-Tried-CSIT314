@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for, send_from_directory, jsonify
 from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
+from werkzeug.security import generate_password_hash, check_password_hash
 from .models import *
 from . import db
 from datetime import datetime
@@ -140,14 +141,26 @@ def favourite_properties():
 @views.route('/profile/@<first_name>-<last_name>', methods=['GET', 'POST'])
 @login_required
 def user_profile(first_name,last_name):
-  if (current_user.role).lower() == 'agent':
-    agent_query_result = db.session.query(Agent). \
-    filter(Agent.user_id == current_user.id).first()
-
   if request.method == "POST":
     currentPassword = request.form.get('currentPassword')
     newPassword = request.form.get('newPassword')
     confirmPassword = request.form.get('confirmPassword')
+    
+    if not check_password_hash(current_user.password, currentPassword):
+      flash('Try again! Entered wrong current password.', category='error')
+    elif newPassword != confirmPassword:
+      flash('Passwords don\'t match.', category='error')
+    elif len(newPassword) < 7:
+      flash('Passwords must be at least 7 characters.', category='error')
+    else:
+      current_user.password = generate_password_hash(newPassword, method='pbkdf2:sha256')
+      db.session.commit()
+      flash('Password changed successfully!', category='success')
 
-    print(currentPassword, newPassword ,)
-  return render_template('profile.html', user=current_user, agent=agent_query_result)
+  if (current_user.role).lower() == 'agent':
+    agent_query_result = db.session.query(Agent). \
+    filter(Agent.user_id == current_user.id).first()
+
+    return render_template('profile.html', user=current_user, agent=agent_query_result)
+  
+  return render_template('profile.html', user=current_user)
