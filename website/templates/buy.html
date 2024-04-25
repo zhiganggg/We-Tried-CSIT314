@@ -31,6 +31,7 @@
                   <button type="button" class="btn btn-outline-secondary">
                     <i class="bi bi-eye-slash-fill"></i>
                   </button>
+                  <span class="me-2">{{ listing.Num_of_Views }}</span>
                   {% if user.id in
                   listing.shortlists|map(attribute="user_id")|list %}
                   <button

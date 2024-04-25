@@ -45,6 +45,7 @@ class Listing(db.Model):
     photo = db.Column(db.String(255), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete="CASCADE"), nullable=False)
     shortlists = db.relationship('Shortlist', backref='post', passive_deletes=True)
+    Num_of_Views = db.Column(db.Integer, nullable=False)
 
 class Shortlist(db.Model):
     id = db.Column(db.Integer, primary_key=True)

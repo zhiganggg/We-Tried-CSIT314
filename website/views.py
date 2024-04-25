@@ -22,14 +22,12 @@ def get_image(filename):
 @login_required
 def buy():
   listings = Listing.query.all()
-
   return render_template("buy.html", user=current_user, listings=listings)
 
 @views.route('/sell', methods=['GET', 'POST'])
 @login_required
 def sell():
   listings = Listing.query.all()
-  print(f'login_required [listings] : {listings}')
   return render_template('sell.html', user=current_user, listings=listings)
 
 @views.route('/create-listing', methods=['GET', 'POST'])
@@ -104,6 +102,8 @@ def shortlist(listing_id):
 @login_required
 def listing(title, id):
   listing = Listing.query.filter_by(id=id).first()
+  listing.Num_of_Views += 1
+  db.session.commit()
   user_id = listing.user_id
   agent = Agent.query.get(user_id)
 
