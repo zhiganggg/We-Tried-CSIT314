@@ -44,6 +44,7 @@ class Listing(db.Model):
     availability = db.Column(db.Enum(Availability), default=Availability.AVAILABLE)
     date_created = db.Column(db.DateTime(timezone=True), default=func.now())
     photo = db.Column(db.String(255), nullable=False)
+    view_count = db.Column(db.Integer, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete="CASCADE"), nullable=False)
     shortlists = db.relationship('Shortlist', backref='post', passive_deletes=True)
 

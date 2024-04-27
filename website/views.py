@@ -55,7 +55,7 @@ def create_listing():
 
         new_listing = Listing(title=title, description=description, type=type, price=price, 
                           bedrooms=bedrooms, bathrooms=bathrooms, size_sqft=size_sqft, 
-                          location=location, availability=Availability.AVAILABLE, photo=file_path, user_id=current_user.id)
+                          location=location, availability=Availability.AVAILABLE, photo=file_path, view_count=0, user_id=current_user.id)
         db.session.add(new_listing)
         db.session.commit()
         photo.save(file_path)
@@ -150,7 +150,10 @@ def listing(title, id):
   tag_user = User.query.get(listing.user_id)
   agent = Agent.query.filter_by(user_id=tag_user.id).first()
 
-  print(agent)
+  listing.view_count += 1
+  db.session.commit()
+
+  print(listing.view_count)
 
   return render_template('listing.html', user=current_user, listing=listing, id=id, agent=agent)
 

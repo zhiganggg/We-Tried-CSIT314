@@ -61,11 +61,24 @@
                 Bathrooms &middot {{listing.size_sqft}} sqft &middot S$ {{"%.2f"
                 % (listing.price/listing.size_sqft)}} psf
               </div>
-              <div class="listing-type">
-                <span
-                  class="badge bg-success-subtle border border-light-subtle text-light-emphasis"
-                  >{{listing.type}}</span
-                >
+              <div class="listing-footer d-flex justify-content-between">
+                <div class="listing-type">
+                  <span
+                    class="badge bg-success-subtle border border-light-subtle text-light-emphasis"
+                    >{{listing.type}}</span
+                  >
+                </div>
+                <div class="listing-meta">
+                  <span
+                    class="badge bg-secondary-subtle border border-light-subtle text-light-emphasis"
+                    >{{listing.view_count}} views</span
+                  >
+                  <span
+                    class="badge bg-info-subtle border border-light-subtle text-light-emphasis"
+                    >{{listing.shortlists|length if listing.shortlists else 0}}
+                    shortlists</span
+                  >
+                </div>
               </div>
             </div>
           </div>
