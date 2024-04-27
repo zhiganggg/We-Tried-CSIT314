@@ -1,0 +1,194 @@
+{% extends "base.html" %} {% block title %}Agent{% endblock %} {% block content
+%}
+<div class="container">
+  {% for user, listing, agent in query_result %}
+  <div class="album py-5 bg-white">
+    <div
+      class="p-4 p-md-5 mb-4 rounded text-body-emphasis d-flex justify-content-start"
+    >
+      <div class="" style="margin-right: 24px">
+        <div
+          class="agent-photo"
+          style="
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 0.67px solid #212529;
+            opacity: 0.25;
+            margin-right: 16px;
+          "
+        ></div>
+      </div>
+      <div class="col">
+        <div
+          class="agent-profile-name d-flex justify-content-between align-items-center"
+        >
+          <h1>{{user.first_name}} {{user.last_name}}</h1>
+          <div class="btn-grp">
+            <button type="button" class="btn btn-outline-secondary">
+              Rate Agent
+            </button>
+            <button type="button" class="btn btn-danger">Contact Agent</button>
+          </div>
+        </div>
+        <div class="agent-profile-details">
+          CEA Registration No. {{agent.cea_registration_no}} &middot Agency
+          License No. {{agent.agency_license_no}}
+        </div>
+      </div>
+    </div>
+    <hr />
+    <div class="p-4 p-md-5 mb-4 rounded text-body-emphasis">
+      <h1>Customer Reviews</h1>
+      {% for review in reviews %}
+      <div class="p-4 mb-4 card text-center bg-light">
+        <div
+          class="mb-2 user-info d-flex justify-content-start align-items-top"
+        >
+          <div
+            class="user-photo d-flex justify-content-center align-items-center"
+            style="
+              width: 48px;
+              height: 48px;
+              border-radius: 50%;
+              overflow: hidden;
+              margin-right: 16px;
+              background-color: #e9ecef;
+            "
+          >
+            {% set initials = review.user.first_name[0] ~
+            review.user.last_name[0] %}<span
+              style="color: black; font-size: 18px; font-weight: 500"
+              >{{initials.upper()}}</span
+            >
+          </div>
+          <div class="user-name">
+            <h6 style="text-align: left; margin-left: 3px">
+              {{review.user.first_name}} {{review.user.last_name}}
+            </h6>
+            <div class="d-flex justify-content-start align-items-center gap-2">
+              {% for rating in review.ratings %}
+              <input
+                class="rating bg-light"
+                max="5"
+                step="0.5"
+                style="--value: {{rating.rating}}; --starsize: 15px; margin-left: 0"
+                type="range"
+              />{% endfor %}
+              <span style="color: #999999; font-size: 12px"
+                >{{review.date_created.strftime('%d %B %Y')}}</span
+              >
+            </div>
+            <br />
+            {% for comment in review.comments %}
+            <div style="font-size: 14px; text-align: left; margin-left: 3px">
+              {{comment.comment}}
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+      <div class="p-4 card text-center bg-light">
+        <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button
+              class="nav-link active"
+              id="pills-rating-tab"
+              data-bs-toggle="pill"
+              data-bs-target="#pills-rating"
+              type="button"
+              role="tab"
+              aria-controls="pills-rating"
+              aria-selected="true"
+            >
+              Rating
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button
+              class="nav-link"
+              id="pills-review-tab"
+              data-bs-toggle="pill"
+              data-bs-target="#pills-review"
+              type="button"
+              role="tab"
+              aria-controls="pills-review"
+              aria-selected="false"
+            >
+              Review
+            </button>
+          </li>
+        </ul>
+        <div class="tab-content" id="pills-tabContent">
+          <div
+            class="tab-pane fade show active"
+            id="pills-rating"
+            role="tabpanel"
+            aria-labelledby="pills-rating-tab"
+            tabindex="0"
+          >
+            <form
+              id="ratingForm"
+              method="POST"
+              action="/create-comment/{{agent.id}}"
+            >
+              <input
+                type="text"
+                class="form-control mb-3"
+                value="{{current_user.first_name}} {{current_user.last_name}}"
+                readonly
+              />
+              <input
+                id="rating"
+                name="rating"
+                class="rating bg-light"
+                max="5"
+                oninput="this.style.setProperty('--value', `${this.valueAsNumber}`)"
+                step="0.5"
+                style="--value: 2.5"
+                type="range"
+                value="2.5"
+              />
+              <button type="submit" class="btn btn-primary mt-3">
+                Submit Rating
+              </button>
+            </form>
+          </div>
+          <div
+            class="tab-pane fade"
+            id="pills-review"
+            role="tabpanel"
+            aria-labelledby="pills-review-tab"
+            tabindex="0"
+          >
+            <form
+              id="reviewForm"
+              method="POST"
+              action="/create-comment/{{agent.id}}"
+            >
+              <input
+                type="text"
+                class="form-control mb-3"
+                value="{{current_user.first_name}} {{current_user.last_name}}"
+                readonly
+              />
+              <textarea
+                id="comment"
+                name="comment"
+                class="form-control mb-3"
+                placeholder="Comment something!"
+              ></textarea>
+              <button type="submit" class="btn btn-primary">
+                Submit Review
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endblock %}
+</div>

@@ -22,6 +22,7 @@ class User(db.Model, UserMixin):
     status = db.Column(db.Enum(UserStatus), default=UserStatus.ENABLED)
     listings = db.relationship('Listing', backref='user', passive_deletes=True)
     shortlists = db.relationship('Shortlist', backref='user', passive_deletes=True)
+    reviews = db.relationship('Review', backref='user', passive_deletes=True)
 
 class Agent(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -54,6 +55,18 @@ class Shortlist(db.Model):
 
 class Review(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    agent_id = db.Column(db.Integer, db.ForeignKey('agent.id'), nullable=False)
-    rating = db.Column(db.Integer, nullable=False)
+    ratings = db.relationship('Rating', backref='review', lazy=True)
+    comments = db.relationship('Comment', backref='review', lazy=True)
+    date_created = db.Column(db.DateTime(timezone=True), default=func.now())
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete="CASCADE"), nullable=False)
+    agent_id = db.Column(db.Integer, db.ForeignKey('agent.id', ondelete="CASCADE"), nullable=False)
+
+class Rating(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    rating = db.Column(db.Float, nullable=False)
+    review_id = db.Column(db.Integer, db.ForeignKey('review.id'), nullable=False)
+
+class Comment(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
     comment = db.Column(db.Text)
+    review_id = db.Column(db.Integer, db.ForeignKey('review.id'), nullable=False)

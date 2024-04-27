@@ -11,9 +11,9 @@ content %}
       {% for type in types %}
       <div class="col">
         <h5>Featured {{type}} Agents</h5>
-        <div class="card shadow-sm">
+        <div class="bg-light">
           {% for user, listing, agent in query_result if listing.type == type %}
-          <div class="p-4 list-group">
+          <div class="p-4 mb-2 list-group bg-white box-shadow">
             <div
               class="mb-2 agent-info d-flex justify-content-between align-items-center"
             >
@@ -31,11 +31,12 @@ content %}
               >
                 <img src="" />
               </div>
-              <button
+              <a
+                href="/find-agent/{{user.first_name.replace(' ', '-')|lower}}-{{user.last_name.replace(' ', '-')|lower}}-{{agent.id}}"
                 class="btn btn-outline-secondary d-inline-flex align-items-center"
               >
                 View Profile
-              </button>
+              </a>
             </div>
             <div class="agent-details">
               <div class="mb-1" style="font-size: 14px; font-weight: 500">

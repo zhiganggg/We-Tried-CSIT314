@@ -30,9 +30,11 @@ function shortlist(listingId) {
 
 function calculateMortgage() {
   var propertyPrice = parseFloat(
-    document.getElementById("property-price").value
+    document.getElementById("property-price").value.replace(/,/g, "")
   );
-  var loanAmount = parseFloat(document.getElementById("loan-amount").value);
+  var loanAmount = parseFloat(
+    document.getElementById("loan-amount").value.replace(/,/g, "")
+  );
   var interestRate =
     parseFloat(document.getElementById("interest-rate").value) / 100;
   var loanTenure = parseInt(document.getElementById("loan-tenure").value);
@@ -43,10 +45,12 @@ function calculateMortgage() {
 
   var monthlyInterestRate = interestRate / 12;
   var numPayments = loanTenure * 12;
+
+  //prettier-ignore
   var monthlyPayment =
     loanAmount *
-    ((monthlyInterestRate * (1 + monthlyInterestRate) ** numPayments) /
-      ((1 + monthlyInterestRate) ** numPayments - 1));
+    ((monthlyInterestRate * ((1 + monthlyInterestRate) ** numPayments)) /
+      (((1 + monthlyInterestRate) ** numPayments) - 1));
   var monthlyInterest = loanAmount * monthlyInterestRate;
   var monthlyPrincipal = monthlyPayment - monthlyInterest;
   var downpaymentAmount = propertyPrice - loanAmount;
@@ -105,3 +109,75 @@ function calculateMortgage() {
       maximumFractionDigits: 0,
     }) + "%";
 }
+
+$(document).ready(function () {
+  $("#bedroomFilterBtn").click(function (event) {
+    event.preventDefault();
+
+    var formData = $("form").serialize();
+
+    $.ajax({
+      type: "GET",
+      url: "/bedroom_filter",
+      data: formData,
+      success: function (response) {
+        $("#listings").html(response);
+      },
+      error: function (xhr, status, error) {
+        console.error("Error:", error);
+      },
+    });
+  });
+});
+
+$(document).ready(function () {
+  $("#priceFilterForm").submit(function (event) {
+    event.preventDefault();
+
+    var minPrice = $("#minPriceInput").val();
+    var maxPrice = $("#maxPriceInput").val();
+
+    $.ajax({
+      type: "GET",
+      url: "/price_filter",
+      data: { min_price: minPrice, max_price: maxPrice },
+      success: function (response) {
+        $("#listings").html(response);
+      },
+      error: function (xhr, status, error) {
+        console.error("Error:", error);
+      },
+    });
+  });
+});
+
+$(document).ready(function () {
+  $("#typeFilterBtn").click(function (event) {
+    event.preventDefault();
+
+    var formData = $("form").serialize();
+
+    $.ajax({
+      type: "GET",
+      url: "/type_filter",
+      data: formData,
+      success: function (response) {
+        $("#listings").html(response);
+      },
+      error: function (xhr, status, error) {
+        console.error("Error:", error);
+      },
+    });
+  });
+});
+
+$(document).ready(function () {
+  // Handle form submission on Enter key press
+  $("#search").keypress(function (event) {
+    if (event.keyCode === 13) {
+      // Enter key code
+      event.preventDefault();
+      $("#searchForm").submit(); // Submit the form
+    }
+  });
+});

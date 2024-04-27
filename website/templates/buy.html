@@ -1,8 +1,202 @@
 {% extends "base.html" %} {% block title %}Buy{% endblock %} {% block content %}
-
-<section class="jumbotron text-center">
-  <div class="container"></div>
-</section>
+<div class="container">
+  <div class="album py-5 bg-white">
+    <div class="d-flex justify-content-between gap-2 align-items-center">
+      <div class="col">
+        <form id="searchFilterForm" action="/search_filter" method="GET">
+          <div class="input-group">
+            <div class="input-group-prepend">
+              <span class="input-group-text"><i class="bi bi-search"></i></span>
+            </div>
+            <input
+              type="text"
+              class="form-control"
+              id="search"
+              name="search"
+              placeholder="Search Location"
+            />
+          </div>
+        </form>
+      </div>
+      <div class="col-auto">
+        <div class="btn-group ms-2">
+          <button
+            type="button"
+            class="btn btn-outline-secondary dropdown-toggle"
+            data-bs-toggle="dropdown"
+            aria-expanded="true"
+          >
+            Property Type
+          </button>
+          <ul class="p-3 dropdown-menu" style="width: 420px">
+            <li class="widget-header mb-3">
+              <h6>Property Type</h6>
+            </li>
+            <form id="typeFilterForm" action="/type_filter" method="GET">
+              <div class="widget-body">
+                <ul class="nav nav-pill mb-3">
+                  <li class="van-link active">
+                    <label>
+                      <input type="radio" name="type" value="All" />
+                      <span>All</span>
+                    </label>
+                  </li>
+                  <li class="van-link active">
+                    <label>
+                      <input type="radio" name="type" value="HDB" />
+                      <span>HDB</span>
+                    </label>
+                  </li>
+                  <li class="van-link active">
+                    <label>
+                      <input type="radio" name="type" value="Condominium" />
+                      <span>Condo</span>
+                    </label>
+                  </li>
+                  <li class="van-link active">
+                    <label>
+                      <input type="radio" name="type" value="Landed House" />
+                      <span>Landed</span>
+                    </label>
+                  </li>
+                  <li class="van-link active">
+                    <label>
+                      <input type="radio" name="type" value="Apartment" />
+                      <span>Apartment</span>
+                    </label>
+                  </li>
+                </ul>
+              </div>
+              <hr />
+              <li class="widget-footer d-flex justify-content-between">
+                <button class="btn" disabled>Clear</button>
+                <button type="submit" class="btn btn-danger" id="typeFilterBtn">
+                  Apply Filter
+                </button>
+              </li>
+            </form>
+          </ul>
+        </div>
+        <div class="btn-group ms-2">
+          <button
+            type="button"
+            class="btn btn-outline-secondary dropdown-toggle"
+            data-bs-toggle="dropdown"
+            aria-expanded="true"
+          >
+            Price
+          </button>
+          <ul class="p-3 dropdown-menu" style="width: 300px">
+            <li class="widget-header mb-3">
+              <h6>Price</h6>
+            </li>
+            <form id="priceFilterForm" action="/price_filter" method="GET">
+              <div class="widget-body d-flex gap-3">
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">S$</span>
+                  </div>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="minPriceInput"
+                    name="minPrice"
+                    placeholder="Min"
+                  />
+                </div>
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">S$</span>
+                  </div>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="maxPriceInput"
+                    name="maxPrice"
+                    placeholder="Max"
+                  />
+                </div>
+              </div>
+              <hr />
+              <li class="widget-footer d-flex justify-content-between">
+                <button class="btn" disabled>Clear</button>
+                <button
+                  type="submit"
+                  class="btn btn-danger"
+                  id="priceFilterBtn"
+                >
+                  Apply Filter
+                </button>
+              </li>
+            </form>
+          </ul>
+        </div>
+        <div class="btn-group ms-2">
+          <button
+            type="button"
+            class="btn btn-outline-secondary dropdown-toggle"
+            data-bs-toggle="dropdown"
+            aria-expanded="true"
+          >
+            Bedroom
+          </button>
+          <ul class="p-3 dropdown-menu" style="width: 300px">
+            <li class="widget-header mb-3">
+              <h6>Bedroom</h6>
+            </li>
+            <form id="bedroomFilterForm" action="/bedroom_filter" method="GET">
+              <div class="widget-body">
+                <ul class="nav nav-pill mb-3">
+                  <li class="van-link active">
+                    <label>
+                      <input type="radio" name="bedrooms" value="1" />
+                      <span>1</span>
+                    </label>
+                  </li>
+                  <li class="van-link active">
+                    <label>
+                      <input type="radio" name="bedrooms" value="2" />
+                      <span>2</span>
+                    </label>
+                  </li>
+                  <li class="van-link active">
+                    <label>
+                      <input type="radio" name="bedrooms" value="3" />
+                      <span>3</span>
+                    </label>
+                  </li>
+                  <li class="van-link active">
+                    <label>
+                      <input type="radio" name="bedrooms" value="4" />
+                      <span>4</span>
+                    </label>
+                  </li>
+                  <li class="van-link active">
+                    <label>
+                      <input type="radio" name="bedrooms" value="5" />
+                      <span>5+</span>
+                    </label>
+                  </li>
+                </ul>
+              </div>
+              <hr />
+              <li class="widget-footer d-flex justify-content-between">
+                <button class="btn" disabled>Clear</button>
+                <button
+                  type="submit"
+                  class="btn btn-danger"
+                  id="bedroomFilterBtn"
+                >
+                  Apply Filter
+                </button>
+              </li>
+            </form>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 <div class="album py-5 bg-light">
   <div class="container">
     <div class="row">
@@ -15,7 +209,6 @@
               title="{{listing.title}}"
               href="/listing/{{listing.title.replace(' ', '-')|lower}}-{{listing.id}}"
               class="nav-link"
-              onclick="calculateMortgage()"
             >
               <img
                 class="card-img-top"
@@ -104,4 +297,13 @@
     </div>
   </div>
 </div>
+<script>
+  const navLinks = document.querySelectorAll(".dropdown-menu .van-link");
+
+  navLinks.forEach((link) => {
+    link.addEventListener("click", function (event) {
+      event.stopPropagation();
+    });
+  });
+</script>
 {% endblock %}
