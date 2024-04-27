@@ -195,20 +195,51 @@
         >
           <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse" id="navbar">
+        <div
+          class="collapse navbar-collapse justify-content-between"
+          id="navbar"
+        >
           <div class="navbar-nav">
-            <a class="nav-item nav-link" href="/home">Home</a>
+            <a class="nav-item nav-link text-secondary" href="/home">Home</a>
             {% if user.is_authenticated %}
-            <a class="nav-item nav-link" href="/buy">Buy</a>
-            <a class="nav-item nav-link" href="/sell">Sell</a>
-            <a class="nav-item nav-link" href="/mortgages">Mortgages</a>
-            <a class="nav-item nav-link" href="/find-agent">Find Agent</a>
-            <a class="nav-item nav-link" href="/logout">Logout</a>
+            <a class="nav-item nav-link text-white" href="/buy">Buy</a>
+            <a class="nav-item nav-link text-white" href="/sell">Sell</a>
+            <a class="nav-item nav-link text-white" href="/find-agent"
+              >Find Agent</a
+            >
+            <a class="nav-item nav-link text-white" href="/logout">Logout</a>
             {% else %}
-            <a class="nav-item nav-link" href="/login">Login</a>
-            <a class="nav-item nav-link" href="/sign-up">Sign Up</a>
+            <a class="nav-item nav-link text-white" href="/login">Login</a>
+            <a class="nav-item nav-link text-white" href="/sign-up">Sign Up</a>
             {% endif %}
           </div>
+          {% if user.is_authenticated %}
+          <div class="text-end d-flex gap-2">
+            <button class="btn btn-outline-light">My Activities</button>
+            <div class="dropdown">
+              <button
+                class="btn btn-outline-light"
+                type="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                My Account
+              </button>
+              <ul class="dropdown-menu dropdown-menu-end">
+                <li>
+                  <a class="dropdown-item" href="/update-profile">Profile</a>
+                </li>
+                <li>
+                  <a class="dropdown-item" href="/change-password"
+                    >Change Password</a
+                  >
+                </li>
+                <hr />
+                <li><a class="dropdown-item" href="/logout">Logout</a></li>
+              </ul>
+            </div>
+          </div>
+          {% endif %}
         </div>
       </div>
     </nav>

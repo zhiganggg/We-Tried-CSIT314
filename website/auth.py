@@ -23,7 +23,7 @@ def login():
         else:
             flash('Email does not exist.', category='erorr')
 
-    return render_template("login.html", user=current_user)
+    return render_template('login.html', user=current_user)
 
 @auth.route('/logout')
 @login_required
@@ -73,4 +73,54 @@ def sign_up():
             flash('Account created!', category='success')
             return redirect(url_for('views.home'))
 
-    return render_template("sign_up.html", user=current_user)
+    return render_template('sign_up.html', user=current_user)
+
+@auth.route('/update-profile', methods=['GET', 'POST'])
+def update_profile():
+    if request.method == "POST":
+        first_name = request.form.get('first-name')
+        last_name = request.form.get('last-name')
+        email = request.form.get('email')
+        role = request.form.get('role')
+        cea_registration_no = request.form.get('cea-registration-no', '')
+        agency_license_no = request.form.get('agency-license-no', '')
+
+        current_user.first_name = first_name
+        current_user.last_name = last_name
+        current_user.email = email
+        current_user.role = role
+
+        if role == 'agent':
+            current_user.agent.cea_registration_no = cea_registration_no
+            current_user.agent.agency_license_no = agency_license_no
+
+        db.session.commit()
+
+        flash('Profile updated!', category='success')
+        return redirect(url_for('views.home'))
+    
+    return render_template('update_profile.html', user=current_user)
+
+@auth.route('/change-password', methods=['GET', 'POST'])
+@login_required
+def change_password():
+    if request.method == "POST":
+        current_password = request.form.get('current-password')
+        new_password = request.form.get('new-password')
+        confirm_password = request.form.get('confirm-password')
+
+        if not check_password_hash(current_user.password, current_password):
+            flash('Incorrect current password.', category='error')
+        elif new_password != confirm_password:
+            flash('New passwords do not match.', category='error')
+        elif len(new_password) < 7:
+            flash('New password must be at least 7 characters.', category='error')
+        else:
+            current_user.password = generate_password_hash(new_password, method='pbkdf2:sha256')
+
+            db.session.commit()
+
+            flash('Password changed successfully!', category='success')
+            return redirect(url_for('views.home'))
+
+    return render_template('change_password.html', user=current_user)

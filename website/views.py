@@ -147,8 +147,10 @@ def shortlist(listing_id):
 @login_required
 def listing(title, id):
   listing = Listing.query.filter_by(id=id).first()
-  user_id = listing.user_id
-  agent = Agent.query.get(user_id)
+  tag_user = User.query.get(listing.user_id)
+  agent = Agent.query.filter_by(user_id=tag_user.id).first()
+
+  print(agent)
 
   return render_template('listing.html', user=current_user, listing=listing, id=id, agent=agent)
 
