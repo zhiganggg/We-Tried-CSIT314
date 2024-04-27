@@ -24,12 +24,28 @@
     ></textarea
     ><br />
     <label for="type">Type:</label><br />
-    <select class="form-control" id="type" name="type" value="{{listing.type}}">
-      <option value="HDB">HDB</option>
-      <option value="Condominium">Condominium</option>
-      <option value="Landed House">Landed House</option>
-      <option value="Executive Condominium">Executive Condominium</option>
-      <option value="Apartment">Apartment</option>
+    <select class="form-control" id="type" name="type">
+      <option value="HDB" {% if listing.type="HDB" %}selected{% endif %}>
+        HDB
+      </option>
+      <option
+        value="Condominium"
+        {% if listing.type == "Condominium" %}selected{% endif %}
+      >
+        Condominium
+      </option>
+      <option
+        value="Landed House"
+        {% if listing.type="Landed House" %}selected{% endif %}
+      >
+        Landed House
+      </option>
+      <option
+        value="Apartment"
+        {% if listing.type="Apartment" %}selected{% endif %}
+      >
+        Apartment
+      </option>
     </select>
     <br />
     <label for="price">Price (S$):</label><br />

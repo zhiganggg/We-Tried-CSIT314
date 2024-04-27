@@ -39,20 +39,26 @@ content %}
       </div>
     </div>
     <label for="role">Role:</label><br />
-    <select
-      class="form-control"
-      id="role"
-      name="role"
-      value="{{user.role}}"
-      required
-      disabled
-    >
-      <option value="user">Buyer/Seller</option>
-      <option value="agent">Agent</option>
-      <option value="admin">Admin</option>
+    <select class="form-control" id="role" name="role" required disabled>
+      <option value="user" 
+      {% if user.role == "user" %}selected{% endif %}
+      >
+        Buyer/Seller
+      </option>
+      <option value="agent" 
+      {% if user.role == "agent" %}selected{% endif %}
+      >
+        Agent
+      </option>
+      <option value="admin" 
+      {% if user.role == "admin" %}selected{% endif %}
+      >
+        Admin
+      </option>
     </select>
     <br />
-    <div id="agent-fields" style="display: none">
+    {% if user.role == "agent" %}
+    <div id="agent-fields">
       <label for="cea-registration-no">CEA Registration No:</label><br />
       <input
         type="text"
@@ -60,6 +66,8 @@ content %}
         id="cea-registration-no"
         name="cea-registration-no"
         placeholder="Enter CEA registration no."
+        value="{{agent.cea_registration_no}}"
+        disabled
       /><br />
       <label for="agency-license-no">Agency License No:</label><br />
       <input
@@ -68,8 +76,11 @@ content %}
         id="agency-license-no"
         name="agency-license-no"
         placeholder="Enter Agency license no."
+        value="{{agent.agency_license_no}}"
+        disabled
       /><br />
     </div>
+    {% endif %}
     <button type="submit" class="btn btn-primary form-control" type="submit">
       Save Changes</button
     ><br /><br />

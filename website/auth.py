@@ -77,22 +77,19 @@ def sign_up():
 
 @auth.route('/update-profile', methods=['GET', 'POST'])
 def update_profile():
+    if current_user.role == "agent":
+        agent = Agent.query.filter_by(user_id=current_user.id).first()
+
+        return render_template('update_profile.html', user=current_user, agent=agent)
+    
     if request.method == "POST":
         first_name = request.form.get('first-name')
         last_name = request.form.get('last-name')
         email = request.form.get('email')
-        role = request.form.get('role')
-        cea_registration_no = request.form.get('cea-registration-no', '')
-        agency_license_no = request.form.get('agency-license-no', '')
 
         current_user.first_name = first_name
         current_user.last_name = last_name
         current_user.email = email
-        current_user.role = role
-
-        if role == 'agent':
-            current_user.agent.cea_registration_no = cea_registration_no
-            current_user.agent.agency_license_no = agency_license_no
 
         db.session.commit()
 
