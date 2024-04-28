@@ -4,10 +4,10 @@ content %}
   <div class="py-5 text-center">
     <h2>Sign Up</h2>
   </div>
-  <form method="POST">
+  <form action="/sign-up" method="POST">
     <label for="email">Email Address:</label><br />
     <input
-      type="email"
+      type="text"
       class="form-control"
       id="email"
       name="email"
@@ -53,9 +53,9 @@ content %}
     /><br />
     <label for="role">Role:</label><br />
     <select class="form-control" id="role" name="role" required>
-      <option value="user">Buyer/Seller</option>
-      <option value="agent">Agent</option>
-      <option value="admin">Admin</option>
+      {% for role in roles %}
+      <option value="{{role.id}}">{{role.name}}</option>
+      {% endfor %}
     </select>
     <br />
     <div id="agent-fields" style="display: none">

@@ -8,11 +8,11 @@ content %}
     <h2>Featured Property Agents</h2>
     <br />
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-2 g-3">
-      {% for type in types %}
+      {% for type, agents in types.items() %}
       <div class="col">
         <h5>Featured {{type}} Agents</h5>
         <div class="bg-light">
-          {% for user, listing, agent in query_result if listing.type == type %}
+          {% for agent in agents %}
           <div class="p-4 mb-2 list-group bg-white box-shadow">
             <div
               class="mb-2 agent-info d-flex justify-content-between align-items-center"
@@ -31,8 +31,9 @@ content %}
               >
                 <img src="" />
               </div>
+
               <a
-                href="/find-agent/{{user.first_name.replace(' ', '-')|lower}}-{{user.last_name.replace(' ', '-')|lower}}-{{agent.id}}"
+                href="/find-agent/{{agent.user.first_name.replace(' ', '-')|lower}}-{{agent.user.last_name.replace(' ', '-')|lower}}-{{agent.id}}"
                 class="btn btn-outline-secondary d-inline-flex align-items-center"
               >
                 View Profile
@@ -40,7 +41,7 @@ content %}
             </div>
             <div class="agent-details">
               <div class="mb-1" style="font-size: 14px; font-weight: 500">
-                {{user.first_name}} {{user.last_name}}
+                {{agent.user.first_name}} {{agent.user.last_name}}
               </div>
               <div class="mb-1" style="font-size: 12px">
                 CEA {{agent.cea_registration_no}} / {{agent.agency_license_no}}

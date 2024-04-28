@@ -204,6 +204,10 @@
             {% if user.is_authenticated %}
             <a class="nav-item nav-link text-white" href="/buy">Buy</a>
             <a class="nav-item nav-link text-white" href="/sell">Sell</a>
+            {% if user.role.name.lower() == 'admin' %}
+            <a class="nav-item nav-link text-white" href="/users">Users</a>
+            <a class="nav-item nav-link text-white" href="/roles">Roles</a>
+            {% endif %}
             <a class="nav-item nav-link text-white" href="/find-agent"
               >Find Agent</a
             >

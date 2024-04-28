@@ -25,7 +25,9 @@
     ><br />
     <label for="type">Type:</label><br />
     <select class="form-control" id="type" name="type">
-      <option value="HDB" {% if listing.type="HDB" %}selected{% endif %}>
+      <option 
+        value="HDB" 
+        {% if listing.type == "HDB" %}selected{% endif %}>
         HDB
       </option>
       <option
@@ -36,13 +38,13 @@
       </option>
       <option
         value="Landed House"
-        {% if listing.type="Landed House" %}selected{% endif %}
+        {% if listing.type == "Landed House" %}selected{% endif %}
       >
         Landed House
       </option>
       <option
         value="Apartment"
-        {% if listing.type="Apartment" %}selected{% endif %}
+        {% if listing.type == "Apartment" %}selected{% endif %}
       >
         Apartment
       </option>
@@ -105,13 +107,26 @@
         /><br />
       </div>
     </div>
-    <label for="photo">Photo:</label><br />
-    <input
-      type="file"
-      id="photo"
-      name="photo"
-      value="{{listing.photo}}"
-    /><br /><br />
+    <div class="row">
+      <div class="col md-6">
+        <label for="user_email">Seller's Email:</label><br />
+        <input
+          type="email"
+          class="form-control"
+          id="user_email"
+          name="user_email"
+          placeholder="Enter seller's email"
+          value="{{listing.user.email}}"
+          disabled
+        /><br />
+      </div>
+      <div class="col md-6">
+        <label for="photo">Photo:</label><br />
+        <input type="file" id="photo" name="photo" style="margin-top: 3px" />
+        <br />
+      </div>
+    </div>
+    <br /><br />
     <button type="submit" class="btn btn-primary form-control" type="submit">
       Submit
     </button>

@@ -405,11 +405,12 @@
                 style="flex-direction: column; flex-grow: 1; justify-content-center"
               >
                 <div class="mb-1" style="font-size: 14px; font-weight: 500">
-                  {{listing.user.first_name}} {{listing.user.last_name}}
+                  {{listing.agent.user.first_name}}
+                  {{listing.agent.user.last_name}}
                 </div>
                 <div class="mb-2" style="font-size: 12px">
-                  CEA {{agent.cea_registration_no}} /
-                  {{agent.agency_license_no}}
+                  CEA {{listing.agent.cea_registration_no}} /
+                  {{listing.agent.agency_license_no}}
                 </div>
                 <div>
                   <button

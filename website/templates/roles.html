@@ -1,0 +1,99 @@
+{% extends "base.html" %} {% block title %}Roles{% endblock %} {% block content
+%}
+<div class="container">
+  <div class="py-5 text-center">
+    <h2></h2>
+  </div>
+  <div class="d-flex justify-content-between align-items-center">
+    <h2>Roles</h2>
+    <button
+      class="btn btn-sm btn-outline-secondary"
+      data-bs-toggle="modal"
+      data-bs-target="#createRoleModal"
+    >
+      Create
+    </button>
+  </div>
+  <div
+    class="modal fade"
+    id="createRoleModal"
+    tabindex="-1"
+    aria-labelledby="createRoleModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="createRoleModalLabel">Create Role</h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div class="modal-body">
+          <form id="createRoleForm" action="/create-role" method="POST">
+            <div class="mb-3">
+              <label for="name" class="form-label">Role Name</label>
+              <input
+                type="text"
+                class="form-control"
+                id="name"
+                name="name"
+                required
+              />
+            </div>
+            <div class="mb-3">
+              <label for="description" class="form-label"
+                >Role Description</label
+              >
+              <textarea
+                class="form-control"
+                id="description"
+                name="description"
+                rows="3"
+              ></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Create</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="table-responsive small">
+    <table class="table table-striped table-sm">
+      <thead>
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">Name</th>
+          <th scope="col">Description</th>
+          <th scope="col">Date Created</th>
+          <th scope="col">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for role in roles %}
+        <tr style="vertical-align: middle">
+          <td>{{role.id}}</td>
+          <td>{{role.name}}</td>
+          <td>{{role.description}}</td>
+          <td>{{role.date_created}}</td>
+          <td>
+            <form
+              action="/delete-role/{{role.id}}"
+              method="post"
+              onsubmit="return confirm('Are you sure you want to delete this role?')"
+            >
+              <button type="submit" class="btn btn-danger btn-sm">
+                Delete
+              </button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

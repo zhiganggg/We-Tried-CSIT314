@@ -33,21 +33,26 @@ def logout():
 
 @auth.route('/sign-up', methods=['GET', 'POST'])
 def sign_up():
+    roles = Role.query.all()
+
     if request.method == "POST":
         email = request.form.get('email')
         first_name = request.form.get('first-name')
         last_name = request.form.get('last-name')
         password1 = request.form.get('password1')
         password2 = request.form.get('password2')
-        role = request.form.get('role')
+        role_id = request.form.get('role')
+
+        role = Role.query.get(role_id)
 
         cea_registration_no = request.form.get('cea-registration-no', '')
         agency_license_no = request.form.get('agency-license-no', '')
 
-        user = User.query.filter_by(email=email).first()
-        if user:
+        existing_user = User.query.filter_by(email=email).first()
+
+        if existing_user:
             flash('Email already exists', category='error')
-        if len(email) < 4:
+        elif len(email) < 4:
             flash('Email must be greater than 3 characters.', category='error')
         elif len(first_name) < 2:
             flash('First name must be greater than 1 characters.', category='error')
@@ -56,24 +61,24 @@ def sign_up():
         elif len(password1) < 7:
             flash('Passwords must be at least 7 characters.', category='error')
         else:
-            new_user = User(email=email, first_name=first_name, last_name=last_name, password=generate_password_hash(password1, method='pbkdf2:sha256'), role=role, status=UserStatus.ENABLED)
-            db.session.add(new_user)
-            db.session.commit()
+            agent = Agent.query.filter_by(cea_registration_no=cea_registration_no).first()
+            if agent:
+                flash('Agent with CEA registration number {} already exists.'.format(cea_registration_no))
+            else:
+                new_user = User(email=email, first_name=first_name, last_name=last_name, password=generate_password_hash(password1, method='pbkdf2:sha256'), role=role, status=UserStatus.ENABLED)
+                db.session.add(new_user)
+                db.session.commit()
 
-            if role == 'agent':
-                agent = Agent.query.filter_by(cea_registration_no=cea_registration_no).first()
-                if agent:
-                    flash('Agent with CEA registration number {} already exists.'.format(cea_registration_no))
-                else:
+                if role.name == 'Agent':
                     new_agent = Agent(user_id=new_user.id, cea_registration_no=cea_registration_no, agency_license_no=agency_license_no)
                     db.session.add(new_agent)
-                    db.session.commit()
+                    db.session.commit()              
 
-            login_user(new_user, remember=True)
-            flash('Account created!', category='success')
-            return redirect(url_for('views.home'))
+                login_user(new_user, remember=True)
+                flash('Account created!', category='success')
+                return redirect(url_for('views.home'))
 
-    return render_template('sign_up.html', user=current_user)
+    return render_template('sign_up.html', user=current_user, roles=roles)
 
 @auth.route('/update-profile', methods=['GET', 'POST'])
 def update_profile():
@@ -121,3 +126,83 @@ def change_password():
             return redirect(url_for('views.home'))
 
     return render_template('change_password.html', user=current_user)
+
+@auth.route('/users', methods=['GET', 'POST'])
+@login_required
+def users():
+    users = User.query.all()
+
+    return render_template('users.html', user=current_user, users=users, UserStatus=UserStatus)
+
+@auth.route('/disable-user/<int:user_id>', methods=['POST'])
+@login_required
+def disable_user(user_id):
+    user = User.query.get(user_id)
+    if user:
+        user.status = UserStatus.DISABLED
+        db.session.commit()
+        flash('User disabled successfully.', category='success')
+    else:
+        flash('User not found.', category='error')
+    return redirect(url_for('auth.users'))
+
+@auth.route('/enable-user/<int:user_id>', methods=['POST'])
+@login_required
+def enable_user(user_id):
+    user = User.query.get(user_id)
+    if user:
+        user.status = UserStatus.ENABLED
+        db.session.commit()
+        flash('User enabled successfully.', category='success')
+    else:
+        flash('User not found.', category='error')
+    return redirect(url_for('auth.users'))
+
+@auth.route('/roles', methods=['GET', 'POST'])
+@login_required
+def roles():
+    roles = Role.query.all()
+
+    return render_template('roles.html', user=current_user, roles=roles)
+
+@auth.route('/create-role', methods=['POST'])
+@login_required
+def create_role():
+    if request.method == 'POST':
+        name = request.form.get('name')
+        description = request.form.get('description')
+
+        existing_role = Role.query.filter_by(name=name).first()
+        if existing_role:
+            flash('Role name already exists.', category='error')
+        else:
+            new_role = Role(name=name, description=description)
+            db.session.add(new_role)
+            db.session.commit()
+            flash('Role created successfully.', category='success')
+
+    return redirect(url_for('auth.roles'))
+
+@auth.route('/delete-role/<int:role_id>', methods=['POST'])
+@login_required
+def delete_role(role_id):
+    role = Role.query.get_or_404(role_id)
+
+    try:
+        db.session.delete(role)
+        db.session.commit()
+        flash('Role deleted successfully', category='success')
+    except Exception as e:
+        flash('An error occurred while deleting the role', category='error')
+        print(e)
+
+    return redirect(url_for('auth.roles'))
+
+@auth.route('/create-admin', methods=['GET', 'POST'])
+def create_admin():
+    role = Role(name='Admin', description='Admin role')
+    db.session.add(role)
+    db.session.commit()
+    print('Admin role created successfully.')
+
+    return render_template('create_admin.html', user=current_user, role=role)

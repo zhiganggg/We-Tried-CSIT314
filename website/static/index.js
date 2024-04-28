@@ -1,6 +1,7 @@
 document.getElementById("role").addEventListener("change", function () {
   var agentFields = document.getElementById("agent-fields");
-  if (this.value === "agent") {
+  var selectedRoleName = this.options[this.selectedIndex].text;
+  if (selectedRoleName === "Agent") {
     agentFields.style.display = "block";
   } else {
     agentFields.style.display = "none";
@@ -180,4 +181,8 @@ $(document).ready(function () {
       $("#searchForm").submit(); // Submit the form
     }
   });
+});
+
+$(document).ready(function () {
+  $("#user_name").selectpicker();
 });

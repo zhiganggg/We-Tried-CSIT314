@@ -18,18 +18,27 @@ class User(db.Model, UserMixin):
     last_name =db.Column(db.String(50))
     password = db.Column(db.String(100))
     date_created = db.Column(db.DateTime(timezone=True), default=func.now())
-    role = db.Column(db.String(20))
     status = db.Column(db.Enum(UserStatus), default=UserStatus.ENABLED)
-    listings = db.relationship('Listing', backref='user', passive_deletes=True)
-    shortlists = db.relationship('Shortlist', backref='user', passive_deletes=True)
-    reviews = db.relationship('Review', backref='user', passive_deletes=True)
+    role = db.relationship('Role', backref='user_role', passive_deletes=True)
+    role_id = db.Column(db.Integer, db.ForeignKey('role.id'))
+    agent = db.relationship('Agent', back_populates='user', uselist=False)
+    listings = db.relationship('Listing', backref='user_listing', passive_deletes=True)
+    shortlists = db.relationship('Shortlist', backref='user_shortlist', passive_deletes=True)
+    reviews = db.relationship('Review', backref='user_review', passive_deletes=True)
+
+class Role(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), unique=True, nullable=False)
+    description = db.Column(db.Text, nullable=False)
+    date_created = db.Column(db.DateTime(timezone=True), default=func.now())
 
 class Agent(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    user = db.relationship('User', back_populates='agent', uselist=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete="CASCADE"), nullable=False)
     cea_registration_no = db.Column(db.String(50), unique=True, nullable=False)
     agency_license_no = db.Column(db.String(50), unique=True, nullable=False)
-    reviews = db.relationship('Review', backref='agent', lazy=True)
+    reviews = db.relationship('Review', backref='agent_review', lazy=True)
 
 class Listing(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -45,8 +54,11 @@ class Listing(db.Model):
     date_created = db.Column(db.DateTime(timezone=True), default=func.now())
     photo = db.Column(db.String(255), nullable=False)
     view_count = db.Column(db.Integer, nullable=False)
+    user = db.relationship('User', backref='listing_user', passive_deletes=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete="CASCADE"), nullable=False)
-    shortlists = db.relationship('Shortlist', backref='post', passive_deletes=True)
+    agent = db.relationship('Agent', backref='listing_agent', passive_deletes=True)
+    agent_id = db.Column(db.Integer, db.ForeignKey('agent.id', ondelete="CASCADE"), nullable=False)
+    shortlists = db.relationship('Shortlist', backref='listing_shortlist', passive_deletes=True)
 
 class Shortlist(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -56,9 +68,10 @@ class Shortlist(db.Model):
 
 class Review(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    ratings = db.relationship('Rating', backref='review', lazy=True)
-    comments = db.relationship('Comment', backref='review', lazy=True)
+    ratings = db.relationship('Rating', backref='review_rating', lazy=True)
+    comments = db.relationship('Comment', backref='review_comment', lazy=True)
     date_created = db.Column(db.DateTime(timezone=True), default=func.now())
+    user = db.relationship('User', backref='review_user', passive_deletes=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete="CASCADE"), nullable=False)
     agent_id = db.Column(db.Integer, db.ForeignKey('agent.id', ondelete="CASCADE"), nullable=False)
 

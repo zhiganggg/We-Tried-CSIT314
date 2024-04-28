@@ -1,7 +1,6 @@
 {% extends "base.html" %} {% block title %}Agent{% endblock %} {% block content
 %}
 <div class="container">
-  {% for user, listing, agent in query_result %}
   <div class="album py-5 bg-white">
     <div
       class="p-4 p-md-5 mb-4 rounded text-body-emphasis d-flex justify-content-start"
@@ -24,7 +23,7 @@
         <div
           class="agent-profile-name d-flex justify-content-between align-items-center"
         >
-          <h1>{{user.first_name}} {{user.last_name}}</h1>
+          <h1>{{agent.user.first_name}} {{agent.user.last_name}}</h1>
           <div class="btn-grp">
             <button type="button" class="btn btn-outline-secondary">
               Rate Agent
@@ -188,7 +187,6 @@
         </div>
       </div>
     </div>
-    {% endfor %}
   </div>
   {% endblock %}
 </div>

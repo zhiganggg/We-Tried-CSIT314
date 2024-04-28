@@ -40,21 +40,7 @@ content %}
     </div>
     <label for="role">Role:</label><br />
     <select class="form-control" id="role" name="role" required disabled>
-      <option value="user" 
-      {% if user.role == "user" %}selected{% endif %}
-      >
-        Buyer/Seller
-      </option>
-      <option value="agent" 
-      {% if user.role == "agent" %}selected{% endif %}
-      >
-        Agent
-      </option>
-      <option value="admin" 
-      {% if user.role == "admin" %}selected{% endif %}
-      >
-        Admin
-      </option>
+      <option>{{user.role.name}}</option>
     </select>
     <br />
     {% if user.role == "agent" %}

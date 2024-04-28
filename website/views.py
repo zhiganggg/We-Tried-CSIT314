@@ -4,6 +4,7 @@ from werkzeug.utils import secure_filename
 from .models import *
 from . import db
 from datetime import datetime
+from sqlalchemy.orm import joinedload
 
 views = Blueprint('views', __name__)
 
@@ -33,6 +34,8 @@ def sell():
 @views.route('/create-listing', methods=['GET', 'POST'])
 @login_required
 def create_listing():
+  users = User.query.all()
+
   if request.method == "POST":
     title = request.form.get('title')
     description = request.form.get('description')
@@ -42,6 +45,7 @@ def create_listing():
     bathrooms = request.form.get('bathrooms')
     size_sqft = request.form.get('size_sqft')
     location = request.form.get('location')
+    user_email = request.form.get('user_email')
 
     if not title or not description or not price or not bedrooms or not bathrooms or not size_sqft or not location:
       flash('All fields are required.', category='error')
@@ -53,16 +57,22 @@ def create_listing():
         file_name = secure_filename(photo.filename)
         file_path = f'./media/{file_name}'
 
-        new_listing = Listing(title=title, description=description, type=type, price=price, 
-                          bedrooms=bedrooms, bathrooms=bathrooms, size_sqft=size_sqft, 
-                          location=location, availability=Availability.AVAILABLE, photo=file_path, view_count=0, user_id=current_user.id)
-        db.session.add(new_listing)
-        db.session.commit()
-        photo.save(file_path)
-        flash('Listing created!', category='success')
-        return redirect(url_for('views.sell'))
+        user = User.query.filter_by(email=user_email).first()
+        if not user:
+          flash('User with provided email does not exist.', category='error')
+        else:
 
-  return render_template("create_listing.html", user=current_user)
+          new_listing = Listing(title=title, description=description, type=type, price=price, 
+                          bedrooms=bedrooms, bathrooms=bathrooms, size_sqft=size_sqft, 
+                          location=location, availability=Availability.AVAILABLE, photo=file_path, 
+                          view_count=0, user_id=user.id, agent_id=current_user.agent.id)
+          db.session.add(new_listing)
+          db.session.commit()
+          photo.save(file_path)
+          flash('Listing created!', category='success')
+          return redirect(url_for('views.sell'))
+
+  return render_template("create_listing.html", user=current_user, users=users)
 
 @views.route("/delete-listing/<id>")
 @login_required
@@ -147,47 +157,40 @@ def shortlist(listing_id):
 @login_required
 def listing(title, id):
   listing = Listing.query.filter_by(id=id).first()
-  tag_user = User.query.get(listing.user_id)
-  agent = Agent.query.filter_by(user_id=tag_user.id).first()
 
   listing.view_count += 1
   db.session.commit()
 
   print(listing.view_count)
 
-  return render_template('listing.html', user=current_user, listing=listing, id=id, agent=agent)
+  return render_template('listing.html', user=current_user, listing=listing)
 
 @views.route('/find-agent', methods=['GET', 'POST'])
 @login_required
 def find_agent():
-  query_result = db.session.query(User, Listing, Agent).\
-    join(Listing, Listing.user_id == User.id).\
-    join(Agent, Agent.user_id == User.id).all()
-  
-  def get_types(query_result):
-    types = set()
-    for _, listing, _ in query_result:
-      types.add(listing.type)
-    
-    return types
-  
-  types = get_types(query_result)
+    query_result = db.session.query(Listing, Agent).join(Listing, Listing.agent_id == Agent.id).all()
 
-  return render_template('find_agent.html', user=current_user, query_result=query_result, types=types)
+    def get_types(query_result):
+        types = {}
+        for listing, agent in query_result:
+            if listing.type not in types:
+                types[listing.type] = []
+            if agent not in types[listing.type]:
+                types[listing.type].append(agent)
+        return types
+
+    types = get_types(query_result)
+
+    return render_template('find_agent.html', user=current_user, types=types)
 
 @views.route('/find-agent/<first_name>-<last_name>-<agent_id>', methods=['GET', 'POST'])
 @login_required
 def agent(first_name, last_name, agent_id):
-  agent_id = agent_id
-  query_result = db.session.query(User, Listing, Agent).\
-    join(Listing, Listing.user_id == User.id).\
-    join(Agent, Agent.user_id == User.id).\
-    filter(Agent.id == agent_id).\
-    all()
+  agent = Agent.query.filter_by(id=agent_id).first()
   
   reviews = Review.query.filter_by(agent_id=agent_id).all()
 
-  return render_template('agent.html', user=current_user, query_result=query_result, reviews=reviews)
+  return render_template('agent.html', user=current_user, agent=agent, reviews=reviews)
 
 @views.route('/create-comment/<agent_id>', methods=['POST'])
 @login_required
