@@ -182,7 +182,3 @@ $(document).ready(function () {
     }
   });
 });
-
-$(document).ready(function () {
-  $("#user_name").selectpicker();
-});

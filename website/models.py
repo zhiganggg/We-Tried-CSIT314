@@ -53,18 +53,25 @@ class Listing(db.Model):
     availability = db.Column(db.Enum(Availability), default=Availability.AVAILABLE)
     date_created = db.Column(db.DateTime(timezone=True), default=func.now())
     photo = db.Column(db.String(255), nullable=False)
-    view_count = db.Column(db.Integer, nullable=False)
     user = db.relationship('User', backref='listing_user', passive_deletes=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete="CASCADE"), nullable=False)
     agent = db.relationship('Agent', backref='listing_agent', passive_deletes=True)
     agent_id = db.Column(db.Integer, db.ForeignKey('agent.id', ondelete="CASCADE"), nullable=False)
     shortlists = db.relationship('Shortlist', backref='listing_shortlist', passive_deletes=True)
+    views = db.relationship('View', backref='listing_view', passive_deletes=True)
 
 class Shortlist(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     date_created = db.Column(db.DateTime(timezone=True), default=func.now())
     user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete="CASCADE"), nullable=False)
+    listing = db.relationship('Listing', backref='shortlist_listing', passive_deletes=True)
     listing_id = db.Column(db.Integer, db.ForeignKey('listing.id', ondelete="CASCADE"), nullable=False)
+
+class View(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    date_created = db.Column(db.DateTime(timezone=True), default=func.now())
+    listing_id = db.Column(db.Integer, db.ForeignKey('listing.id', ondelete="CASCADE"), nullable=False)
+    listing = db.relationship('Listing', backref='view_listing', passive_deletes=True)
 
 class Review(db.Model):
     id = db.Column(db.Integer, primary_key=True)

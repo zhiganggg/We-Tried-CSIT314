@@ -1,57 +1,76 @@
-{% extends "base.html" %} {% block title %}Find Agent{% endblock %} {% block
+{% extends "base.html" %} {% block title %}My Activities{% endblock %} {% block
 content %}
 <section class="jumbotron text-center">
-  <div class="container"></div>
+  <div class="container">
+    <h1 class="jumbotron-heading">My Activities</h1>
+    <p class="lead text-muted">
+      Manage past enquiries, potential shortlisted property & more.
+    </p>
+  </div>
 </section>
 <div class="album py-5 bg-light">
   <div class="container">
-    <h2>Featured Property Agents</h2>
-    <br />
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-2 g-3">
-      {% for type in types %}
+    <ul class="nav nav-underline mb-3">
+      <li class="nav-item">
+        <a class="nav-link disabled">Enquiries</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link active disabled"
+          >Shortlisted {{current_user.shortlists|length}}
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link disabled">Saved Searches</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link disabled">Hidden</a>
+      </li>
+    </ul>
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+      {% for shortlist in current_user.shortlists %}
       <div class="col">
-        <h5>Featured {{type}} Agents</h5>
-        <div class="bg-light">
-          {% for user, listing, agent in query_result if listing.type == type %}
-          <div class="p-4 mb-2 list-group bg-white box-shadow">
-            <div
-              class="mb-2 agent-info d-flex justify-content-between align-items-center"
-            >
-              <div
-                class="agent-photo"
-                style="
-                  width: 60px;
-                  height: 60px;
-                  border-radius: 50%;
-                  overflow: hidden;
-                  border: 0.67px solid #212529;
-                  opacity: 0.25;
-                  margin-right: 16px;
-                "
-              >
-                <img src="" />
-              </div>
-              <a
-                href="/find-agent/{{user.first_name.replace(' ', '-')|lower}}-{{user.last_name.replace(' ', '-')|lower}}-{{agent.id}}"
-                class="btn btn-outline-secondary d-inline-flex align-items-center"
-              >
-                View Profile
-              </a>
+        <div class="card shadow-sm">
+          <a
+            title="{{shortlist.listing.title}}"
+            href="/listing/{{shortlist.listing.title.replace(' ', '-')|lower}}-{{shortlist.listing.id}}"
+            class="nav-link"
+            ><img
+              class="card-img-top"
+              src="{{shortlist.listing.photo}}"
+              style="width: 100%; height: 225px; display: block"
+            />
+          </a>
+          <div class="card-body">
+            <div class="listing-title">
+              <h6>{{shortlist.listing.title}}</h6>
             </div>
-            <div class="agent-details">
-              <div class="mb-1" style="font-size: 14px; font-weight: 500">
-                {{user.first_name}} {{user.last_name}}
+            <div class="listing-details" style="font-size: 14px">
+              <div class="listing-location">{{shortlist.listing.location}}</div>
+              <div class="listing-price">
+                S$ {{'{:,.0f}'.format(shortlist.listing.price|int)}}
               </div>
-              <div class="mb-1" style="font-size: 12px">
-                CEA {{agent.cea_registration_no}} / {{agent.agency_license_no}}
+              <div class="listing-features">
+                {{shortlist.listing.bedrooms}} Bedrooms &middot
+                {{shortlist.listing.bathrooms}} Bathrooms &middot
+                {{shortlist.listing.size_sqft}} sqft &middot S$
+                {{'{:,.2f}'.format(shortlist.listing.price/shortlist.listing.size_sqft)}}
+                psf
+              </div>
+              <div class="listing-type d-flex justify-content-between">
+                <span
+                  class="badge bg-success-subtle border border-light-subtle text-light-emphasis"
+                  >{{shortlist.listing.type}}</span
+                >
+                <span class="text-muted"
+                  >{{shortlist.date_created.strftime('%d-%b-%y')}}</span
+                >
               </div>
             </div>
           </div>
-          {% endfor %}
         </div>
       </div>
       {% endfor %}
     </div>
   </div>
+  {% endblock %}
 </div>
-{% endblock %}

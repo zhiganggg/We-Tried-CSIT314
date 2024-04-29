@@ -3,16 +3,60 @@ from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
 from .models import *
 from . import db
-from datetime import datetime
-from sqlalchemy.orm import joinedload
+from datetime import datetime, timedelta
+from collections import defaultdict
 
 views = Blueprint('views', __name__)
 
-@views.route('/', methods=['GET', 'POST'])
+@views.route('/home', methods=['GET', 'POST'])
 @login_required
 def home():
+    # Get the current date and the date from one week ago
+    end_date = datetime.now()
+    start_date = end_date - timedelta(days=7)  # One week ago
 
-  return render_template("home.html", user=current_user)
+    user_listings = Listing.query.filter_by(user_id=current_user.id).all()
+
+    listing_ids = [listing.id for listing in user_listings]
+
+    # Query the database for views and shortlists within the past week
+    views = View.query.filter(View.date_created >= start_date, View.date_created <= end_date,
+                              View.listing_id.in_(listing_ids)).all()
+    shortlists = Shortlist.query.filter(Shortlist.date_created >= start_date, Shortlist.date_created <= end_date,
+                                        Shortlist.listing_id.in_(listing_ids)).all()
+
+    # Create dictionaries to store the counts for each day
+    views_count = {}
+    shortlists_count = {}
+
+    # Populate the dictionaries with data from the database
+    for view in views:
+        date_str = view.date_created.strftime('%Y-%m-%d')
+        views_count[date_str] = views_count.get(date_str, 0) + 1
+
+    for shortlist in shortlists:
+        date_str = shortlist.date_created.strftime('%Y-%m-%d')
+        shortlists_count[date_str] = shortlists_count.get(date_str, 0) + 1
+
+    # Prepare the data for Chart.js
+    labels = list(views_count.keys())  # Assuming views and shortlists have the same dates
+    views_data = list(views_count.values())
+    shortlists_data = [shortlists_count.get(date, 0) for date in labels]
+
+    # Calculate the percentage change in views and shortlists
+    views_last_week = sum(views_data[:-1])  # Views from last week
+    views_this_week = sum(views_data)  # Views from this week
+    shortlists_last_week = sum(shortlists_data[:-1])  # Shortlists from last week
+    shortlists_this_week = sum(shortlists_data)  # Shortlists from this week
+
+    print(views_last_week, views_this_week)
+
+    percentage_change_views = ((views_this_week - views_last_week) / views_last_week) * 100
+    percentage_change_shortlists = ((shortlists_this_week - shortlists_last_week) / shortlists_last_week) * 100
+
+    return render_template('home.html', user=current_user, labels=labels, views_data=views_data,
+                           shortlists_data=shortlists_data, percentage_change_views=percentage_change_views,
+                           percentage_change_shortlists=percentage_change_shortlists)
 
 @views.route('/media/<path:filename>')
 def get_image(filename):
@@ -65,7 +109,7 @@ def create_listing():
           new_listing = Listing(title=title, description=description, type=type, price=price, 
                           bedrooms=bedrooms, bathrooms=bathrooms, size_sqft=size_sqft, 
                           location=location, availability=Availability.AVAILABLE, photo=file_path, 
-                          view_count=0, user_id=user.id, agent_id=current_user.agent.id)
+                          user_id=user.id, agent_id=current_user.agent.id)
           db.session.add(new_listing)
           db.session.commit()
           photo.save(file_path)
@@ -158,12 +202,14 @@ def shortlist(listing_id):
 def listing(title, id):
   listing = Listing.query.filter_by(id=id).first()
 
-  listing.view_count += 1
-  db.session.commit()
+  if not listing:
+    flash('Listing does not exist.', category='error')
+  else:
+    view = View(listing_id=id, date_created=datetime.now())
+    db.session.add(view)
+    db.session.commit()
 
-  print(listing.view_count)
-
-  return render_template('listing.html', user=current_user, listing=listing)
+    return render_template('listing.html', user=current_user, listing=listing)
 
 @views.route('/find-agent', methods=['GET', 'POST'])
 @login_required
@@ -293,3 +339,8 @@ def bedroom_filter():
       listings = Listing.query.filter_by(bedrooms=bedrooms).all()
 
   return render_template('buy.html', user=current_user, listings=listings)
+
+@views.route('/my-activities', methods=['GET', 'POST'])
+def my_activities():
+
+   return render_template('my_activities.html', user=current_user)

@@ -251,11 +251,13 @@
               </div>
               <div class="listing-details">
                 <div class="listing-location">{{listing.location}}</div>
-                <div class="listing-price">S${{listing.price}}</div>
+                <div class="listing-price">
+                  S$ {{'{:,.0f}'.format(listing.price|int)}}
+                </div>
                 <div class="listing-features">
                   {{listing.bedrooms}} Bedrooms &middot {{listing.bathrooms}}
                   Bathrooms &middot {{listing.size_sqft}} sqft &middot S$
-                  {{"%.2f" % (listing.price/listing.size_sqft)}} psf
+                  {{'{:,.2f}'.format(listing.price/listing.size_sqft)}} psf
                 </div>
                 <div class="listing-type">
                   <span
@@ -272,8 +274,9 @@
                     <div class="agent-name">
                       Listed by
                       <span style="font-weight: 500"
-                        >{{listing.agent.user.first_name}}</span
-                      >
+                        >{{listing.agent.user.first_name}}
+                        {{listing.agent.user.last_name}}
+                      </span>
                     </div>
                   </div>
                   <button
