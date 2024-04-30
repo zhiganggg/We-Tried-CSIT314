@@ -413,12 +413,13 @@
                   {{listing.agent.agency_license_no}}
                 </div>
                 <div>
-                  <button
+                  <a
+                    href="/find-agent/{{listing.agent.user.first_name.replace(' ', '-')|lower}}-{{listing.agent.user.last_name.replace(' ', '-')|lower}}-{{listing.agent.id}}"
                     class="btn btn-outline-secondary rounded-pill px-3 form-control"
                   >
                     <i class="bi bi-star-fill"></i>
                     Reviews
-                  </button>
+                  </a>
                 </div>
               </div>
             </div>

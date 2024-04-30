@@ -200,27 +200,58 @@
           id="navbar"
         >
           <div class="navbar-nav">
-            <a class="nav-item nav-link text-secondary" href="/home">Home</a>
-            {% if user.is_authenticated %}
-            <a class="nav-item nav-link text-white" href="/buy">Buy</a>
-            <a class="nav-item nav-link text-white" href="/sell">Sell</a>
-            {% if user.role.name.lower() == 'admin' %}
+            {% if user.is_authenticated %} {% if user.role.name.lower() ==
+            'admin' %}
+            <a class="nav-item nav-link text-white" href="/admin-dashboard"
+              >Dashboard</a
+            >
             <a class="nav-item nav-link text-white" href="/users">Users</a>
             <a class="nav-item nav-link text-white" href="/roles">Roles</a>
-            {% endif %}
+            {% else %}
+            <a class="nav-item nav-link text-secondary" href="/dashboard"
+              >Dashboard</a
+            >
+            <a class="nav-item nav-link text-white" href="/buy">Buy</a>
+            <a class="nav-item nav-link text-white" href="/sell">Sell</a>
+            {% if user.role.name.lower() == 'buyer/seller' %}
             <a class="nav-item nav-link text-white" href="/find-agent"
               >Find Agent</a
             >
-            {% else %}
+            {% endif %} {% if user.role.name.lower() == 'agent' %}
+            <div class="dropdown">
+              <a
+                class="nav-link dropdown-toggle text-white"
+                type="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                For Agents
+              </a>
+              <ul class="dropdown-menu">
+                <li>
+                  <a class="dropdown-item" href="/find-agent">AgentNet</a>
+                </li>
+                <li>
+                  <a
+                    class="dropdown-item"
+                    href="/find-agent/{{user.first_name.replace(' ', '-')|lower}}-{{user.last_name.replace(' ', '-')|lower}}-{{user.agent.id}}"
+                    >Agent Profile</a
+                  >
+                </li>
+              </ul>
+            </div>
+            {% endif %} {% endif %} {% else %}
             <a class="nav-item nav-link text-white" href="/login">Login</a>
             <a class="nav-item nav-link text-white" href="/sign-up">Sign Up</a>
             {% endif %}
           </div>
           {% if user.is_authenticated %}
           <div class="text-end d-flex gap-2">
+            {% if user.role.name.lower() != 'admin' %}
             <a class="btn btn-outline-light" href="/my-activities"
               >My Activities</a
             >
+            {% endif %}
             <div class="dropdown">
               <button
                 class="btn btn-outline-light"

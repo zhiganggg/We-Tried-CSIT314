@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for, jsonify
-from .models import *
+from .models2 import *
 from werkzeug.security import generate_password_hash, check_password_hash
 from . import db
 from flask_login import login_user, login_required, logout_user, current_user
@@ -17,7 +17,7 @@ def login():
             if check_password_hash(user.password, password):
                 flash('Logged in successfully!', category='success')
                 login_user(user, remember=True)
-                return redirect(url_for('views.home'))
+                return redirect(url_for('views.dashboard'))
             else:
                 flash('Incorrect password, try again.', category='error')
         else:
@@ -76,7 +76,7 @@ def sign_up():
 
                 login_user(new_user, remember=True)
                 flash('Account created!', category='success')
-                return redirect(url_for('views.home'))
+                return redirect(url_for('views.dashboard'))
 
     return render_template('sign_up.html', user=current_user, roles=roles)
 
@@ -100,7 +100,7 @@ def update_profile():
         db.session.commit()
 
         flash('Profile updated!', category='success')
-        return redirect(url_for('views.home'))
+        return redirect(url_for('views.dashboard'))
     
     return render_template('update_profile.html', user=current_user)
 
@@ -124,7 +124,7 @@ def change_password():
             db.session.commit()
 
             flash('Password changed successfully!', category='success')
-            return redirect(url_for('views.home'))
+            return redirect(url_for('views.dashboard'))
 
     return render_template('change_password.html', user=current_user)
 
@@ -134,6 +134,28 @@ def users():
     users = User.query.all()
 
     return render_template('users.html', user=current_user, users=users, UserStatus=UserStatus)
+
+@auth.route('/edit-user', methods=['GET', 'POST'])
+@login_required
+def edit_user():
+    if request.method == "POST":
+        user_id = request.form.get('user_id')
+        email = request.form.get('email')
+        first_name = request.form.get('first-name')
+        last_name = request.form.get('last-name')
+
+        user = User.query.get(user_id)
+        if user:
+            user.email = email
+            user.first_name = first_name
+            user.last_name = last_name
+            db.session.commit()
+
+            flash('User updated successfully.', category='success')
+        else:
+            flash('User not found.', category='error')
+    
+    return redirect(url_for('auth.users'))
 
 @auth.route('/disable-user/<int:user_id>', methods=['POST'])
 @login_required
@@ -158,6 +180,20 @@ def enable_user(user_id):
     else:
         flash('User not found.', category='error')
     return redirect(url_for('auth.users'))
+
+@auth.route('/search_user', methods=['GET'])
+def search():
+    search_query = request.args.get('search')
+
+    if search_query:
+        filtered_users = [user for user in User.query.all() if 
+                          search_query.lower() in user.email.lower() or 
+                          search_query.lower() in user.first_name.lower() or 
+                          search_query.lower() in user.last_name.lower()]
+    else:
+        filtered_users = User.query.all()
+
+    return render_template('users.html', user=current_user, users=filtered_users)
 
 @auth.route('/roles', methods=['GET', 'POST'])
 @login_required

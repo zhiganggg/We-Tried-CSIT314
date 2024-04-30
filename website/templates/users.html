@@ -4,7 +4,24 @@
   <div class="py-5 text-center">
     <h2></h2>
   </div>
-  <h2>Users</h2>
+  <div class="d-flex justify-content-between align-items-center">
+    <h2>Users</h2>
+    <form id="searchFilterForm" action="/search_user" method="GET">
+      <div class="input-group">
+        <div class="input-group-prepend">
+          <span class="input-group-text"><i class="bi bi-search"></i></span>
+        </div>
+        <input
+          type="text"
+          class="form-control"
+          id="search"
+          name="search"
+          placeholder="Search User"
+        />
+      </div>
+    </form>
+  </div>
+  <hr />
   <div class="table-responsive small">
     <table class="table table-striped table-sm">
       <thead>
@@ -28,19 +45,137 @@
           <td>{{user.role.name}}</td>
           <td>{{user.date_created}}</td>
           <td>
-            {% if user.status == UserStatus.ENABLED %}
-            <form action="/disable-user/{{user.id}}" method="post">
-              <button type="submit" class="btn btn-danger btn-sm">
-                Disable
+            <div class="btn-grp d-flex gap-2">
+              <button
+                class="btn btn-sm btn-outline-secondary"
+                data-bs-toggle="modal"
+                data-bs-target="#editUserModal{{user.id}}"
+              >
+                Edit
               </button>
-            </form>
-            {% else %}
-            <form action="/enable-user/{{user.id}}" method="post">
-              <button type="submit" class="btn btn-success btn-sm">
-                Enable
-              </button>
-            </form>
-            {% endif %}
+              {% if user.status|string == 'UserStatus.ENABLED' %}
+              <form action="/disable-user/{{user.id}}" method="post">
+                <button type="submit" class="btn btn-danger btn-sm">
+                  Disable
+                </button>
+              </form>
+              {% else %}
+              <form action="/enable-user/{{user.id}}" method="post">
+                <button type="submit" class="btn btn-success btn-sm">
+                  Enable
+                </button>
+              </form>
+              {% endif %}
+            </div>
+            <div
+              class="modal fade"
+              id="editUserModal{{user.id}}"
+              tabindex="-1"
+              aria-labelledby="editUserModalLabel"
+              aria-hidden="true"
+            >
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="editUserModalLabel{{user.id}}">
+                      Edit User
+                    </h5>
+                    <button
+                      type="button"
+                      class="btn-close"
+                      data-bs-dismiss="modal"
+                      aria-label="Close"
+                    ></button>
+                  </div>
+                  <div class="modal-body">
+                    <form id="editUserForm" action="/edit-user" method="POST">
+                      <input type="hidden" name="user_id" value="{{user.id}}" />
+                      <div class="mb-3">
+                        <label for="name" class="form-label">User Email:</label>
+                        <input
+                          type="text"
+                          class="form-control"
+                          id="email"
+                          name="email"
+                          value="{{user.email}}"
+                          required
+                        />
+                      </div>
+                      <div class="mb-3">
+                        <label for="name" class="form-label"
+                          >User First Name:</label
+                        >
+                        <input
+                          type="text"
+                          class="form-control"
+                          id="first-name"
+                          name="first-name"
+                          value="{{user.first_name}}"
+                          required
+                        />
+                      </div>
+                      <div class="mb-3">
+                        <label for="name" class="form-label"
+                          >User Last Name:</label
+                        >
+                        <input
+                          type="text"
+                          class="form-control"
+                          id="last-name"
+                          name="last-name"
+                          value="{{user.last_name}}"
+                          required
+                        />
+                      </div>
+                      <div class="mb-3">
+                        <label for="role">Role:</label><br />
+                        <select
+                          class="form-control"
+                          id="role"
+                          name="role"
+                          required
+                          disabled
+                        >
+                          <option>{{user.role.name}}</option>
+                        </select>
+                        <br />
+                        {% if user.role.name.lower() == "agent" %}
+                        <div id="agent-fields">
+                          <label for="cea-registration-no"
+                            >CEA Registration No:</label
+                          ><br />
+                          <input
+                            type="text"
+                            class="form-control"
+                            id="cea-registration-no"
+                            name="cea-registration-no"
+                            placeholder="Enter CEA registration no."
+                            value="{{user.agent.cea_registration_no}}"
+                            disabled
+                          /><br />
+                          <label for="agency-license-no"
+                            >Agency License No:</label
+                          ><br />
+                          <input
+                            type="text"
+                            class="form-control"
+                            id="agency-license-no"
+                            name="agency-license-no"
+                            placeholder="Enter Agency license no."
+                            value="{{user.agent.agency_license_no}}"
+                            disabled
+                          /><br />
+                        </div>
+                        {% endif %}
+                      </div>
+                      <button type="submit" class="btn btn-primary">
+                        Update
+                      </button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
           </td>
         </tr>
         {% endfor %}

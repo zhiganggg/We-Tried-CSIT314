@@ -202,8 +202,8 @@
     <div class="row">
       <div class="col-md-8">
         <div id="listings">
-          {% for listing in listings %} {% if listing.availability ==
-          Availability.AVAILABLE %}
+          {% for listing in listings %} {% if listing.availability|string ==
+          'Availability.AVAILABLE' %}
           <div class="card mb-4 box-shadow">
             {% set encoded_title = listing.title|replace(' ', '-')|urlencode %}
             <a
@@ -280,12 +280,13 @@
                       </span>
                     </div>
                   </div>
-                  <button
+                  <a
+                    href="/find-agent/{{listing.agent.user.first_name.replace(' ', '-')|lower}}-{{listing.agent.user.last_name.replace(' ', '-')|lower}}-{{listing.agent.id}}"
                     class="btn btn-outline-secondary d-inline-flex align-items-center"
                     type="button"
                   >
                     Contact Agent
-                  </button>
+                  </a>
                 </div>
               </div>
             </div>

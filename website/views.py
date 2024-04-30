@@ -1,32 +1,32 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for, send_from_directory, jsonify
 from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
-from .models import *
+from .models2 import *
 from . import db
 from datetime import datetime, timedelta
 from collections import defaultdict
 
 views = Blueprint('views', __name__)
 
-@views.route('/home', methods=['GET', 'POST'])
+@views.route('/dashboard', methods=['GET', 'POST'])
 @login_required
-def home():
+def dashboard():
     # Get the current date and the date from one week ago
     end_date = datetime.now()
     start_date = end_date - timedelta(days=7)  # One week ago
 
     if current_user.agent:
-       user_listings = Listing.query.filter_by(agent_id=current_user.agent.id).all()
+       user_listing = Listing.query.filter_by(agent_id=current_user.agent.id).all()
     else:
-       user_listings = Listing.query.filter_by(user_id=current_user.id).all()
+       user_listing = Listing.query.filter_by(user_id=current_user.id).all()
 
-    listing_ids = [listing.id for listing in user_listings]
+    listing_id = [listing.id for listing in user_listing]
 
     # Query the database for views and shortlists within the past week
     views = View.query.filter(View.date_created >= start_date, View.date_created <= end_date,
-                              View.listing_id.in_(listing_ids)).all()
+                              View.listing_id.in_(listing_id)).all()
     shortlists = Shortlist.query.filter(Shortlist.date_created >= start_date, Shortlist.date_created <= end_date,
-                                        Shortlist.listing_id.in_(listing_ids)).all()
+                                        Shortlist.listing_id.in_(listing_id)).all()
 
     # Create dictionaries to store the counts for each day
     views_count = {}
@@ -67,8 +67,11 @@ def home():
     
     else:
       percentage_change_shortlists = 0
+    
+    print('Views:', views_data)
+    print('Shortlists:', shortlists_data)
 
-    return render_template('home.html', user=current_user, table_data=table_data, labels=labels, views_data=views_data,
+    return render_template('dashboard.html', user=current_user, table_data=table_data, labels=labels, views_data=views_data,
                            shortlists_data=shortlists_data, percentage_change_views=percentage_change_views,
                            percentage_change_shortlists=percentage_change_shortlists)
 
@@ -164,7 +167,7 @@ def delete_listing(id):
 
   if not listing:
     flash('Listing does not exist.', category='error')
-  elif current_user.id != listing.id:
+  elif not current_user.agent or current_user.agent.id != listing.agent_id:
     flash('You do not have permission to delete this listing.', category='error')
   else:
     db.session.delete(listing)
@@ -244,7 +247,7 @@ def listing(title, id):
   if not listing:
     flash('Listing does not exist.', category='error')
   else:
-    view = View(listing_id=id, date_created=datetime.now())
+    view = View(user_id=current_user.id, listing_id=id)
     db.session.add(view)
     db.session.commit()
 
