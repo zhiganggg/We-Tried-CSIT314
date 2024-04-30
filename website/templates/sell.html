@@ -29,7 +29,11 @@
             <div
               class="listing-title d-flex justify-content-between align-items-center"
             >
-              <h5>{{listing.title}}</h5>
+              <h5>
+                {% if listing.availability == Availability.UNAVAILABLE %}
+                <span style="color: red">Sold</span> &middot {% endif %}
+                {{listing.title}}
+              </h5>
               {% if user.agent.id == listing.agent_id %}
               <div class="btn-group">
                 <button
@@ -45,6 +49,21 @@
                       >Edit</a
                     >
                   </li>
+                  {% if listing.availability == Availability.AVAILABLE %}
+                  <li>
+                    <a href="mark-sold/{{listing.id}}" class="dropdown-item"
+                      >Mark as Sold</a
+                    >
+                  </li>
+                  {% else %}
+                  <li>
+                    <a
+                      href="mark-available/{{listing.id}}"
+                      class="dropdown-item"
+                      >Mark as Available</a
+                    >
+                  </li>
+                  {% endif %}
                   <li>
                     <a
                       href="/delete-listing/{{listing.id}}"

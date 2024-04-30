@@ -41,29 +41,41 @@ content %}
             />
           </a>
           <div class="card-body">
-            <div class="listing-title">
-              <h6>{{shortlist.listing.title}}</h6>
-            </div>
-            <div class="listing-details" style="font-size: 14px">
-              <div class="listing-location">{{shortlist.listing.location}}</div>
-              <div class="listing-price">
-                S$ {{'{:,.0f}'.format(shortlist.listing.price|int)}}
-              </div>
-              <div class="listing-features">
-                {{shortlist.listing.bedrooms}} Bedrooms &middot
-                {{shortlist.listing.bathrooms}} Bathrooms &middot
-                {{shortlist.listing.size_sqft}} sqft &middot S$
-                {{'{:,.2f}'.format(shortlist.listing.price/shortlist.listing.size_sqft)}}
-                psf
-              </div>
-              <div class="listing-type d-flex justify-content-between">
-                <span
-                  class="badge bg-success-subtle border border-light-subtle text-light-emphasis"
-                  >{{shortlist.listing.type}}</span
-                >
-                <span class="text-muted"
-                  >{{shortlist.date_created.strftime('%d-%b-%y')}}</span
-                >
+            <div class="row">
+              <div class="col">
+                <div class="listing-title">
+                  <h6>
+                    {% if shortlist.listing.availability|string ==
+                    "Availability.UNAVAILABLE" %}<span style="color: red"
+                      >Sold</span
+                    >
+                    &middot {% endif %} {{shortlist.listing.title}}
+                  </h6>
+                </div>
+                <div class="listing-details" style="font-size: 14px">
+                  <div class="listing-location">
+                    {{shortlist.listing.location}}
+                  </div>
+                  <div class="listing-price">
+                    S$ {{'{:,.0f}'.format(shortlist.listing.price|int)}}
+                  </div>
+                  <div class="listing-features">
+                    {{shortlist.listing.bedrooms}} Bedrooms &middot
+                    {{shortlist.listing.bathrooms}} Bathrooms &middot
+                    {{shortlist.listing.size_sqft}} sqft &middot S$
+                    {{'{:,.2f}'.format(shortlist.listing.price/shortlist.listing.size_sqft)}}
+                    psf
+                  </div>
+                  <div class="listing-type d-flex justify-content-between">
+                    <span
+                      class="badge bg-success-subtle border border-light-subtle text-light-emphasis"
+                      >{{shortlist.listing.type}}</span
+                    >
+                    <span class="text-muted"
+                      >{{shortlist.date_created.strftime('%d-%b-%y')}}</span
+                    >
+                  </div>
+                </div>
               </div>
             </div>
           </div>

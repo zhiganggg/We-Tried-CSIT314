@@ -15,7 +15,10 @@ def home():
     end_date = datetime.now()
     start_date = end_date - timedelta(days=7)  # One week ago
 
-    user_listings = Listing.query.filter_by(user_id=current_user.id).all()
+    if current_user.agent:
+       user_listings = Listing.query.filter_by(agent_id=current_user.agent.id).all()
+    else:
+       user_listings = Listing.query.filter_by(user_id=current_user.id).all()
 
     listing_ids = [listing.id for listing in user_listings]
 
@@ -43,18 +46,29 @@ def home():
     views_data = list(views_count.values())
     shortlists_data = [shortlists_count.get(date, 0) for date in labels]
 
+    # Inside the Flask route
+    # Prepare data for rendering the table
+    table_data = [{'date': label, 'shortlists': shortlists_data[index], 'views': views_data[index]} for index, label in enumerate(labels)]
+
     # Calculate the percentage change in views and shortlists
     views_last_week = sum(views_data[:-1])  # Views from last week
     views_this_week = sum(views_data)  # Views from this week
     shortlists_last_week = sum(shortlists_data[:-1])  # Shortlists from last week
     shortlists_this_week = sum(shortlists_data)  # Shortlists from this week
 
-    print(views_last_week, views_this_week)
+    if views_last_week != 0:
+      percentage_change_views = ((views_this_week - views_last_week) / views_last_week) * 100
+    
+    else:
+      percentage_change_views = 0
+    
+    if shortlists_last_week != 0:
+      percentage_change_shortlists = ((shortlists_this_week - shortlists_last_week) / shortlists_last_week) * 100
+    
+    else:
+      percentage_change_shortlists = 0
 
-    percentage_change_views = ((views_this_week - views_last_week) / views_last_week) * 100
-    percentage_change_shortlists = ((shortlists_this_week - shortlists_last_week) / shortlists_last_week) * 100
-
-    return render_template('home.html', user=current_user, labels=labels, views_data=views_data,
+    return render_template('home.html', user=current_user, table_data=table_data, labels=labels, views_data=views_data,
                            shortlists_data=shortlists_data, percentage_change_views=percentage_change_views,
                            percentage_change_shortlists=percentage_change_shortlists)
 
@@ -67,13 +81,13 @@ def get_image(filename):
 def buy():
   listings = Listing.query.all()
 
-  return render_template("buy.html", user=current_user, listings=listings)
+  return render_template("buy.html", user=current_user, listings=listings, Availability=Availability)
 
 @views.route('/sell', methods=['GET', 'POST'])
 @login_required
 def sell():
   listings = Listing.query.all()
-  return render_template('sell.html', user=current_user, listings=listings)
+  return render_template('sell.html', user=current_user, listings=listings, Availability=Availability)
 
 @views.route('/create-listing', methods=['GET', 'POST'])
 @login_required
@@ -117,6 +131,31 @@ def create_listing():
           return redirect(url_for('views.sell'))
 
   return render_template("create_listing.html", user=current_user, users=users)
+
+@views.route("/mark-sold/<int:id>")
+@login_required
+def mark_sold(id):
+    listing = Listing.query.get(id)
+    if listing:
+        listing.availability = Availability.UNAVAILABLE
+        db.session.commit()
+        flash('Listing marked as sold.', category='success')
+    else:
+        flash('Listing not found.', category='error')
+    return redirect(url_for('views.sell'))
+
+@views.route("/mark-available/<int:id>")
+@login_required
+def mark_available(id):
+    listing = Listing.query.get(id)
+    if listing:
+        listing.availability = Availability.AVAILABLE
+        db.session.commit()
+        flash('Listing marked as available.', category='success')
+    else:
+        flash('Listing not found.', category='error')
+    return redirect(url_for('views.sell'))
+
 
 @views.route("/delete-listing/<id>")
 @login_required

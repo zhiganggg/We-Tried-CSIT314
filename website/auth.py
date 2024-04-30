@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, flash, redirect, url_for
+from flask import Blueprint, render_template, request, flash, redirect, url_for, jsonify
 from .models import *
 from werkzeug.security import generate_password_hash, check_password_hash
 from . import db
@@ -81,6 +81,7 @@ def sign_up():
     return render_template('sign_up.html', user=current_user, roles=roles)
 
 @auth.route('/update-profile', methods=['GET', 'POST'])
+@login_required
 def update_profile():
     if current_user.role == "agent":
         agent = Agent.query.filter_by(user_id=current_user.id).first()
@@ -183,6 +184,25 @@ def create_role():
 
     return redirect(url_for('auth.roles'))
 
+@auth.route('/edit-role', methods=['POST'])
+@login_required
+def edit_role():
+    if request.method == 'POST':
+        role_id = request.form.get('role_id')
+        name = request.form.get('name')
+        description = request.form.get('description')
+
+        role = Role.query.get(role_id)
+        if role:
+            role.name = name
+            role.description = description
+            db.session.commit()
+            flash('Role updated successfully.', category='success')
+        else:
+            flash('Role not found.', category='error')
+
+    return redirect(url_for('auth.roles'))
+
 @auth.route('/delete-role/<int:role_id>', methods=['POST'])
 @login_required
 def delete_role(role_id):
@@ -206,3 +226,50 @@ def create_admin():
     print('Admin role created successfully.')
 
     return render_template('create_admin.html', user=current_user, role=role)
+
+@auth.route('/create-accounts', methods=['POST'])
+def create_accounts():
+    data = request.json
+    
+    if data:
+        created_accounts = []
+        for entry in data:
+            email = entry.get('email')
+            first_name = entry.get('first_name')
+            last_name = entry.get('last_name')
+            password = entry.get('password')
+            role_id = entry.get('role_id')
+            
+            # Omit cea_registration_no and agency_license_no
+            # Generate user only if all required fields are present
+            if email and first_name and last_name and password and role_id:
+                existing_user = User.query.filter_by(email=email).first()
+                if existing_user:
+                    created_accounts.append({'email': email, 'status': 'Already exists'})
+                else:
+                    role = Role.query.get(role_id)
+                    if not role:
+                        created_accounts.append({'email': email, 'status': 'Role not found'})
+                    else:
+                        new_user = User(email=email, first_name=first_name, last_name=last_name, password=generate_password_hash(password, method='pbkdf2:sha256'), role=role, status=UserStatus.ENABLED)
+                        db.session.add(new_user)
+                        db.session.commit()
+                        created_accounts.append({'email': email, 'status': 'Created'})
+                        
+                        if role.name == 'Agent':
+                            cea_registration_no = entry.get('cea_registration_no')
+                            agency_license_no = entry.get('agency_license_no')
+                            
+                            if cea_registration_no and agency_license_no:
+                                new_agent = Agent(user=new_user, cea_registration_no=cea_registration_no, agency_license_no=agency_license_no)
+                                db.session.add(new_agent)
+                                db.session.commit()
+                            else:
+                                created_accounts[-1]['status'] = 'Agent data missing'
+            else:
+                created_accounts.append({'email': email, 'status': 'Incomplete data'})
+
+        return jsonify({'message': 'Accounts created', 'created_accounts': created_accounts}), 201
+    else:
+        return jsonify({'message': 'No data received for user creation.'}), 400
+
