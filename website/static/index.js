@@ -26,7 +26,31 @@ function shortlist(listingId) {
         shortlistButton.className = "btn btn-outline-secondary";
       }
     })
-    .catch((e) => alert("Could not like post."));
+    .catch((error) => {
+      console.error("Error posting shortlist:", error);
+      alert("Could not shortlist listing. Please try again later.");
+    });
+}
+
+function shortlist2(listingId) {
+  const shortlistButton2 = document.getElementById(
+    `shortlist-button2-${listingId}`
+  );
+
+  fetch(`/shortlist-listing/${listingId}`, { method: "POST" })
+    .then((res) => res.json())
+    .then((data) => {
+      if (data["shortlisted"] === true) {
+        shortlistButton2.innerHTML =
+          '<i class="bi bi-heart-fill"></i> Unshortlist';
+      } else {
+        shortlistButton2.innerHTML = '<i class="bi bi-heart"></i> Shortlist';
+      }
+    })
+    .catch((error) => {
+      console.error("Error posting shortlist:", error);
+      alert("Could not shortlist listing. Please try again later.");
+    });
 }
 
 function calculateMortgage() {

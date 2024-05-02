@@ -14,12 +14,18 @@ def login():
 
         user = User.query.filter_by(email=email).first()
         if user:
-            if check_password_hash(user.password, password):
-                flash('Logged in successfully!', category='success')
-                login_user(user, remember=True)
-                return redirect(url_for('views.dashboard'))
+            if user.status == UserStatus.ENABLED:
+                if check_password_hash(user.password, password):
+                    flash('Logged in successfully!', category='success')
+                    login_user(user, remember=True)
+                    return redirect(url_for('views.dashboard'))
+            
+                else:
+                    flash('Incorrect password, try again.', category='error')
+            
             else:
-                flash('Incorrect password, try again.', category='error')
+                flash('Your account is disabled. Please contact support.', category='error')
+
         else:
             flash('Email does not exist.', category='erorr')
 
