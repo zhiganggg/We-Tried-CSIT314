@@ -144,10 +144,9 @@ def mark_sold(id):
 @views.route("/mark-available/<int:id>")
 @login_required
 def mark_available(id):
-    listing = Listing.query.get(id)
+    listing = listing_entity.get_listing_by_id(id)
     if listing:
-        listing.availability = Availability.AVAILABLE
-        db.session.commit()
+        listing_entity.update_listing_availability(listing, Availability.AVAILABLE)
         flash('Listing marked as available.', category='success')
     else:
         flash('Listing not found.', category='error')
@@ -157,15 +156,14 @@ def mark_available(id):
 @views.route("/delete-listing/<id>")
 @login_required
 def delete_listing(id):
-  listing = Listing.query.filter_by(id=id).first()
+  listing =listing_entity.get_listing_by_id(id)
 
   if not listing:
     flash('Listing does not exist.', category='error')
   elif not current_user.agent or current_user.agent.id != listing.agent_id:
     flash('You do not have permission to delete this listing.', category='error')
   else:
-    db.session.delete(listing)
-    db.session.commit()
+    listing_entity.delete_listing(listing)
     flash('Listing deleted.', category='success')
 
   return redirect(url_for('views.sell'))
@@ -173,7 +171,7 @@ def delete_listing(id):
 @views.route('/update-listing/<id>', methods=['GET', 'POST'])
 @login_required
 def update_listing(id):
-    listing = Listing.query.get(id)
+    listing = listing_entity.get_listing_by_id(id)
 
     if not listing:
         flash('Listing does not exist.', category='error')
@@ -199,16 +197,7 @@ def update_listing(id):
                 photo.save(file_path)
                 listing.photo = file_path
 
-            listing.title = title
-            listing.description = description
-            listing.type = type
-            listing.price = price
-            listing.bedrooms = bedrooms
-            listing.bathrooms = bathrooms
-            listing.size_sqft = size_sqft
-            listing.location = location
-
-            db.session.commit()
+            listing_entity.update_listing(listing,title,description,type,price,bedrooms,bathrooms,size_sqft,location)
             flash('Listing updated!', category='success')
             return redirect(url_for('views.sell'))
 
@@ -218,39 +207,34 @@ def update_listing(id):
 @views.route('/shortlist-listing/<listing_id>', methods=['POST'])
 @login_required
 def shortlist(listing_id):
-  listing = Listing.query.filter_by(id=listing_id).first()
-  shortlist = Shortlist.query.filter_by(user_id=current_user.id, listing_id=listing_id).first()
+  listing = listing_entity.get_listing_by_id(listing_id)
+  shortlist = shortlist_entity.get_shortlist_by_id(current_user.id, listing_id)
 
   if not listing:
     return jsonify({'error': 'Listing does not exist.'}, 400)
   elif shortlist:
-    db.session.delete(shortlist)
-    db.session.commit()
+    shortlist_entity.delete_shortlist(shortlist)
   else:
-    shortlist = Shortlist(user_id=current_user.id, listing_id=listing_id)
-    db.session.add(shortlist)
-    db.session.commit()
+    shortlist_entity.add_shortlist(current_user.id, listing_id)
   
   return jsonify({"shortlists": len(listing.shortlists), "shortlisted": current_user.id in map(lambda x: x.user_id, listing.shortlists)})
 
 @views.route('/listing/<title>-<id>', methods=['GET', 'POST'])
 @login_required
 def listing(title, id):
-  listing = Listing.query.filter_by(id=id).first()
+  listing = listing_entity.get_listing_by_id(id)
 
   if not listing:
     flash('Listing does not exist.', category='error')
   else:
-    view = View(user_id=current_user.id, listing_id=id)
-    db.session.add(view)
-    db.session.commit()
+    view = view_entity.add_view(current_user.id, id)
 
     return render_template('listing.html', user=current_user, listing=listing)
 
 @views.route('/find-agent', methods=['GET', 'POST'])
 @login_required
 def find_agent():
-    query_result = db.session.query(Listing, Agent).join(Listing, Listing.agent_id == Agent.id).all()
+    query_result = listing_entity.get_listing_by_agent(Agent.id)
 
     def get_types(query_result):
         types = {}
@@ -268,9 +252,9 @@ def find_agent():
 @views.route('/find-agent/<first_name>-<last_name>-<agent_id>', methods=['GET', 'POST'])
 @login_required
 def agent(first_name, last_name, agent_id):
-  agent = Agent.query.filter_by(id=agent_id).first()
+  agent = agent_entity.get_agent_by_id(agent_id)
   
-  reviews = Review.query.filter_by(agent_id=agent_id).all()
+  reviews = review_entity.get_review_by_agentId(agent_id)
 
   return render_template('agent.html', user=current_user, agent=agent, reviews=reviews)
 
@@ -280,45 +264,42 @@ def create_comment(agent_id):
   rating_value = request.form.get('rating')
   comment_value = request.form.get('comment')
   
-  agent = Agent.query.filter_by(id=agent_id).first()
+  agent = agent_entity.get_agent_by_id(agent_id)
 
   if not agent:
     flash('Agent does not exist.', category='error')
   
   else:
-    review = Review.query.filter_by(agent_id=agent_id, user_id=current_user.id).first()
+    review = review_entity.get_review_by_agentId_userId(agent_id, current_user.id)
 
     if not review:
-      review = Review(agent_id=agent_id, user_id=current_user.id)
-      db.session.add(review)
+      review_entity.add_review(agent_id, current_user.id)
 
     if rating_value:
-      rating = Rating.query.filter_by(review_id=review.id).first()
+      rating = rating_entity.get_rating_by_reviewId(review.id)
 
       if rating:
         rating.rating = rating_value
 
       else:
-        rating = Rating(rating=rating_value, review_id=review.id)
-        db.session.add(rating)
+        rating_entity.add_rating(rating=rating_value, review_id=review.id)
 
     elif comment_value:
-      comment = Comment.query.filter_by(review_id=review.id).first()
+      comment = comment_entity.get_comment_by_reviewId(review.id)
       
       if comment:
         comment.comment = comment_value
 
       else:
-        comment = Comment(comment=comment_value, review_id=review.id)
-        db.session.add(comment)
+        comment_entity.add_comment(comment_value, review.id)
 
     else:
       flash('No rating or comment is submitted', category='error')
   
-  db.session.commit()
+  # db.session.commit()
   
   user_id = agent.user_id
-  user = User.query.get(user_id)
+  user = user_entity.get_user_by_userId(user_id)
 
   return redirect(url_for('views.agent', first_name=user.first_name, last_name=user.last_name, agent_id=agent_id))
 
@@ -329,9 +310,9 @@ def search():
     search_query = request.args.get('search')
 
     if search_query:
-        filtered_listings = [listing for listing in Listing.query.all() if search_query.lower() in listing.location.lower()]
+        filtered_listings = [listing for listing in listing_entity.get_listing() if search_query.lower() in listing.location.lower()]
     else:
-        filtered_listings = Listing.query.all()
+        filtered_listings = listing_entity.get_listing()
 
     return render_template('buy.html', user=current_user, listings=filtered_listings)
 
@@ -340,9 +321,9 @@ def type_filter():
   type = request.args.get('type')
 
   if type == 'All' or type == 'clear':
-    listings = Listing.query.all()
+    listings = listing_entity.get_listing()
   else:
-    listings = Listing.query.filter_by(type=type).all()
+    listings = listing_entity.get_listing_by_type(type)
 
   return render_template('buy.html', user=current_user, listings=listings)
 
@@ -352,13 +333,13 @@ def price_filter():
     max_price = request.args.get('maxPrice')
 
     if min_price and max_price:
-        listings = Listing.query.filter(Listing.price.between(min_price, max_price)).all()
+        listings = listing_entity.get_listing_by_price(min_price=min_price, max_price=max_price, type='between')
     elif min_price:
-        listings = Listing.query.filter(Listing.price >= min_price).all()
+        listings = listing_entity.get_listing_by_price(min_price=min_price, type='min')
     elif max_price:
-        listings = Listing.query.filter(Listing.price <= max_price).all()
+        listings = listing_entity.get_listing_by_price(max_price=max_price, type='max')
     else:
-        listings = Listing.query.all()
+        listings = listing_entity.get_listing()
 
     return render_template('buy.html', user=current_user, listings=listings)
 
@@ -367,12 +348,9 @@ def bedroom_filter():
   bedrooms = request.args.get('bedrooms')
 
   if bedrooms == 'clear':
-    listings = Listing.query.all()
+    listings = listing_entity.get_listing()
   else:
-    if bedrooms == '5':
-      listings = Listing.query.filter(Listing.bedrooms >= 5).all()
-    else:
-      listings = Listing.query.filter_by(bedrooms=bedrooms).all()
+    listings = listing_entity.get_listing_by_bedrooms(bedrooms)
 
   return render_template('buy.html', user=current_user, listings=listings)
 
