@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, request, flash, redirect, url_for,
 from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
 from .models2 import *
+from .entity import *
 from . import db
 from datetime import datetime, timedelta
 from collections import defaultdict
@@ -16,17 +17,15 @@ def dashboard():
     start_date = end_date - timedelta(days=7)  # One week ago
 
     if current_user.agent:
-       user_listing = Listing.query.filter_by(agent_id=current_user.agent.id).all()
+       user_listing = listing_entity.get_listing_by_agent(current_user.agent.id)
     else:
-       user_listing = Listing.query.filter_by(user_id=current_user.id).all()
+       user_listing = listing_entity.get_listing_by_user(current_user.id)
 
     listing_id = [listing.id for listing in user_listing]
 
     # Query the database for views and shortlists within the past week
-    views = View.query.filter(View.date_created >= start_date, View.date_created <= end_date,
-                              View.listing_id.in_(listing_id)).all()
-    shortlists = Shortlist.query.filter(Shortlist.date_created >= start_date, Shortlist.date_created <= end_date,
-                                        Shortlist.listing_id.in_(listing_id)).all()
+    views = view_entity.get_views_past_week(start_date, end_date, listing_id)
+    shortlists = shortlist_entity.get_shortlist_past_week(start_date, end_date, listing_id)
 
     # Create dictionaries to store the counts for each day
     views_count = {}
@@ -82,20 +81,19 @@ def get_image(filename):
 @views.route('/buy', methods=['GET', 'POST'])
 @login_required
 def buy():
-  listings = Listing.query.all()
-
+  listings = listing_entity.get_listing()
   return render_template("buy.html", user=current_user, listings=listings, Availability=Availability)
 
 @views.route('/sell', methods=['GET', 'POST'])
 @login_required
 def sell():
-  listings = Listing.query.all()
+  listings = listing_entity.get_listing()
   return render_template('sell.html', user=current_user, listings=listings, Availability=Availability)
 
 @views.route('/create-listing', methods=['GET', 'POST'])
 @login_required
 def create_listing():
-  users = User.query.all()
+  users = user_entity.get_user()
 
   if request.method == "POST":
     title = request.form.get('title')
@@ -118,17 +116,14 @@ def create_listing():
         file_name = secure_filename(photo.filename)
         file_path = f'./media/{file_name}'
 
-        user = User.query.filter_by(email=user_email).first()
+        user = user_entity.get_user_by_email(user_email)
         if not user:
           flash('User with provided email does not exist.', category='error')
         else:
-
-          new_listing = Listing(title=title, description=description, type=type, price=price, 
+          listing_entity.add_listing(title=title, description=description, type=type, price=price, 
                           bedrooms=bedrooms, bathrooms=bathrooms, size_sqft=size_sqft, 
                           location=location, availability=Availability.AVAILABLE, photo=file_path, 
                           user_id=user.id, agent_id=current_user.agent.id)
-          db.session.add(new_listing)
-          db.session.commit()
           photo.save(file_path)
           flash('Listing created!', category='success')
           return redirect(url_for('views.sell'))
@@ -138,10 +133,9 @@ def create_listing():
 @views.route("/mark-sold/<int:id>")
 @login_required
 def mark_sold(id):
-    listing = Listing.query.get(id)
+    listing = listing_entity.get_listing_by_id(id)
     if listing:
-        listing.availability = Availability.UNAVAILABLE
-        db.session.commit()
+        listing_entity.update_listing_availability(listing, Availability.UNAVAILABLE)
         flash('Listing marked as sold.', category='success')
     else:
         flash('Listing not found.', category='error')
