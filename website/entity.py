@@ -15,7 +15,7 @@ class role_entity:
 
 class agent_entity:
     def get_agent_by_id(agent_id):
-        return Agent.query.filter_by(agent_id).first()
+        return Agent.query.filter_by(id=agent_id).first()
 
 class listing_entity:
     def get_listing():
@@ -134,6 +134,11 @@ class rating_entity:
         db.session.add(rating)
         db.session.commit()
         return True
+    
+    def update_rating(rating,rating_value):
+        rating.rating = rating_value
+        db.session.commit()
+        return True
 
 class comment_entity:
     def get_comment_by_reviewId(reviewId):
@@ -144,3 +149,9 @@ class comment_entity:
         db.session.add(comment)
         db.session.commit()
         return True
+    
+    def update_comment(comment,comment_value):
+        comment.comment = comment_value
+        db.session.commit()
+        return True
+
