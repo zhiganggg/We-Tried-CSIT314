@@ -370,7 +370,7 @@ class createCommentView(MethodView):
                     rating_entity.update_rating(rating,rating_value)
 
                 else:
-                    rating_entity.add_rating(rating=rating_value, review_id=review.id)
+                    rating_entity.add_rating(rating_value=rating_value, reviewId=review.id)
 
             elif comment_value:
                 comment = comment_entity.get_comment_by_reviewId(review.id)
