@@ -10,6 +10,13 @@ from flask.views import MethodView
 
 views = Blueprint('views', __name__)
 
+class homeView(MethodView):
+    def get(self):
+        listings = listing_entity.get_listing()
+        return render_template('home.html', user=current_user, listings=listings, Availability=Availability)
+# Register the class-based view with the app
+views.add_url_rule('/', view_func=homeView.as_view('home'))
+
 class dashboardView(MethodView):
     @login_required
     def get(self):

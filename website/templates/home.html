@@ -1,0 +1,61 @@
+{% extends "base.html" %} {% block title %}Home{% endblock %} {% block content %}
+<img src="../static/home_poster.png" class="img-fluid" alt="We-Tried-Poster">
+
+<div class="container">
+    <br>
+    <h3 class="d-flex justify-content-between align-items-center">
+        Recent 
+        <span style="font-size: 14px;"><a href="/buy">View More ></a></span>
+      </h3>
+    {% set count = namespace(value=0) %}
+    <div class="row my-3">
+        {% for listing in listings %}
+            {% if listing.availability|string == 'Availability.AVAILABLE' %}
+                {% if count.value < 4 %}
+                    
+                    <div class="col border m-3">
+                        <a
+                        title="{{listing.title}}"
+                        href="/listing/{{listing.title.replace(' ', '-')|lower}}-{{listing.id}}"
+                        class="nav-link"
+                        >
+                        <div class="image-container">
+                            <img src="{{listing.photo}}" alt="{{listing.title}}">
+                        </div>
+                        <p class="property-title ms-1" style="font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;margin-bottom: 0;">
+                            {{ listing.title | truncate(25, True, "...") }}
+                        </p>
+                        <p class="listing-price ms-1">
+                            S$ {{'{:,.0f}'.format(listing.price|int)}}
+                        </p>
+                        </a>
+                    </div>
+                    
+                    {% set count.value = count.value + 1 %}
+                {% endif %}
+            {% endif %}
+        {% endfor %}
+        
+    </div>
+</div>
+
+
+
+<style>
+    .image-container {
+        position: relative;
+        width: 100%;
+        height: 0;
+        padding-top: 56.25%; /* 16:9 Aspect Ratio (56.25%) */
+    }
+
+    .image-container img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+</style>
+{% endblock %}
