@@ -225,6 +225,7 @@
                   <button type="button" class="btn btn-outline-secondary">
                     <i class="bi bi-eye-slash-fill"></i>
                   </button>
+                  {% if listing.user_id != user.id%}
                   {% if user.id in
                   listing.shortlists|map(attribute="user_id")|list %}
                   <button
@@ -245,9 +246,11 @@
                     <i class="bi bi-heart"></i>
                   </button>
                   {% endif %}
+                  
                   <span id="shortlists-count-{{listing.id}}">
                     {{listing.shortlists|length}}
                   </span>
+                  {% endif %}
                 </div>
               </div>
               <div class="listing-details">
@@ -263,8 +266,13 @@
                 <div class="listing-type">
                   <span
                     class="badge bg-success-subtle border border-light-subtle text-light-emphasis"
-                    >{{listing.type}}</span
-                  >
+                    >{{listing.type}}</span>
+                  
+                  {% if listing.user_id == user.id%}
+                  <span
+                  class="badge bg-warning-subtle border border-light-subtle text-light-emphasis"
+                  >Listed by you</span>
+                  {% endif %}
                 </div>
                 <hr />
                 <div
