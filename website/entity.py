@@ -127,7 +127,7 @@ class review_entity:
 
 class rating_entity:
     def get_rating_by_reviewId(id):
-        return Rating.query.filter_by(review_id=id).first()
+        return Rating.query.filter_by(id=id).first()
     
     def add_rating(rating_value, reviewId):
         rating = Rating(rating=rating_value, review_id=reviewId)
