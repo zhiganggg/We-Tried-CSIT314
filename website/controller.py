@@ -290,13 +290,16 @@ views.add_url_rule('/shortlist-listing/<listing_id>', view_func=shortListView.as
 
 class listingView(MethodView):
     @login_required
-    def get(self,id):
+    def get(self,title,id):
+        print('broken 0')
         listing = listing_entity.get_listing_by_id(id)
 
         if not listing:
             flash('Listing does not exist.', category='error')
+            print('broken 1')
         else:
             view = view_entity.add_view(current_user.id, id)
+            print('broken 2')
 
         return render_template('listing.html', user=current_user, listing=listing)
 
