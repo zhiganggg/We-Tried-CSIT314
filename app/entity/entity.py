@@ -148,7 +148,7 @@ class User(db.Model, UserMixin):
         return cls.query.get(id)
 
     @classmethod
-    def get_user_email(cls, email):
+    def get_user_by_email(cls, email):
 
         return cls.query.filter_by(email=email).first()
     

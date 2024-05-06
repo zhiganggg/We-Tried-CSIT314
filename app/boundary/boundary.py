@@ -11,7 +11,7 @@ from datetime import datetime, timedelta
 boundary = Blueprint("boundary", __name__)
 
 # loginPage
-class loginPage(MethodView):
+class loginBoundary(MethodView):
     def get(self):
 
         return render_template("user/loginPage.html", user=current_user)
@@ -20,13 +20,22 @@ class loginPage(MethodView):
         email = request.form["email"]
         password = request.form["password"]
 
-        current_user = loginController(email, password)
+        user = loginController.retrieveUser(email)
+        if user:
+            if user.status.value == "ENABLED":
+                if check_password_hash(user.password, password):
+                    flash("Logged in successfully!", category="success")
+                    login_user(user, remember=True)
+                    return redirect(url_for("controller.home"))
+                
+                else:
+                    flash("Incorrect password, try again.", category="error")
 
-        status, flash_msg = current_user.loginUser()
-        flash(flash_msg, category=status)
+            else:
+                flash("Your account is disabled. Please contact support.", category="error")
 
-        if status == 'success':
-            return redirect(url_for("boundary.home"))
+        else:
+            flash("Email does not exist.", category="error")
 
         return render_template("user/loginPage.html", user=current_user)
               
