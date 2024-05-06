@@ -20,13 +20,13 @@ class loginBoundary(MethodView):
         email = request.form["email"]
         password = request.form["password"]
 
-        user = loginController.retrieveUser(email)
+        user = retrieveUserByEmailController.get(email)
         if user:
             if user.status.value == "ENABLED":
                 if check_password_hash(user.password, password):
                     flash("Logged in successfully!", category="success")
                     login_user(user, remember=True)
-                    return redirect(url_for("controller.home"))
+                    return redirect(url_for("boundary.home"))
                 
                 else:
                     flash("Incorrect password, try again.", category="error")
@@ -40,21 +40,21 @@ class loginBoundary(MethodView):
         return render_template("user/loginPage.html", user=current_user)
               
 #views
-boundary.add_url_rule("/login", view_func=loginPage.as_view("login"))
+boundary.add_url_rule("/login", view_func=loginBoundary.as_view("login"))
 
-#logoutController
-class logoutController(MethodView):
+#logoutBoundary
+class logoutBoundary(MethodView):
     def get(self):
         logout_user()
-        return redirect(url_for("controller.login"))
+        return redirect(url_for("boundary.login"))
     
 #views
-boundary.add_url_rule("/logout", view_func=logoutController.as_view("logout"))
+boundary.add_url_rule("/logout", view_func=logoutBoundary.as_view("logout"))
 
 #signupController
-class signupController(MethodView):
+class signupBoundary(MethodView):
     def get(self):
-        profiles = Profile.get_all_profiles()
+        profiles = retrieveAllProfileController.get()
 
         return render_template("user/signupPage.html", user=current_user, profiles=profiles)
     
@@ -66,12 +66,12 @@ class signupController(MethodView):
         verify_password = request.form["verify_password"]
         profile_id = request.form["profile"]
 
-        profile = Profile.get_profile_id(profile_id)
+        profile = retrieveProfileByIdController.get(profile_id)
 
         cea_registration_no = request.form["cea_registration_no"]
         agency_license_no = request.form["agency_license_no"]
 
-        existing_user = User.get_user_email(email)
+        existing_user = retrieveUserByEmailController.get(email)
         if existing_user:
             flash("Email already exists", category="error")
         
@@ -88,23 +88,23 @@ class signupController(MethodView):
             flash("Passwords must be at least 7 characters.", category="error")
         
         else:
-            agent = Agent.get_cea_no(cea_registration_no)
+            agent = retrieveCeaController.get(cea_registration_no)
 
             if agent:
                 flash("Agent with CEA registration number {} already exists.".format(cea_registration_no))
             
             else:
-                new_user = User.create_user(email, first_name, last_name, generate_password_hash(password, method="pbkdf2:sha256"), profile.id)
+                new_user = createUserController.get(email, first_name, last_name, generate_password_hash(password, method="pbkdf2:sha256"), profile.id)
 
                 if profile.name == "Agent":
-                    new_agent = Agent.create_agent(cea_registration_no, agency_license_no, new_user.id)
+                    new_agent = createAgentController.get(cea_registration_no, agency_license_no, new_user.id)
 
                 login_user(new_user, remember=True)
                 flash("Account created!", category="success")
                 return redirect(url_for("controller.home"))
             
 #views
-boundary.add_url_rule("/sign-up", view_func=signupController.as_view("signup"))
+boundary.add_url_rule("/sign-up", view_func=signupBoundary.as_view("signup"))
 
 #updateAccountController
 class updateAccountController(MethodView):
@@ -117,7 +117,7 @@ class updateAccountController(MethodView):
         first_name = request.form["first_name"]
         last_name = request.form["last_name"]
 
-        update_user = User.update_user(current_user.id, email, first_name, last_name)
+        update_user = updateUserController.get(current_user.id, email, first_name, last_name)
 
         if update_user is None:
             flash("User not found.", category="error")
