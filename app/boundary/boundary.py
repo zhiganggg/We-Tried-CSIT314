@@ -51,7 +51,7 @@ class logoutBoundary(MethodView):
 #views
 boundary.add_url_rule("/logout", view_func=logoutBoundary.as_view("logout"))
 
-#signupController
+#signupBoundary
 class signupBoundary(MethodView):
     def get(self):
         profiles = retrieveAllProfileController.get()
@@ -101,13 +101,13 @@ class signupBoundary(MethodView):
 
                 login_user(new_user, remember=True)
                 flash("Account created!", category="success")
-                return redirect(url_for("controller.home"))
+                return redirect(url_for("boundary.home"))
             
 #views
 boundary.add_url_rule("/sign-up", view_func=signupBoundary.as_view("signup"))
 
-#updateAccountController
-class updateAccountController(MethodView):
+#updateAccountBoundary
+class updateAccountBoundary(MethodView):
     def get(self):
 
         return render_template("user/updateAccountPage.html", user=current_user)
@@ -131,10 +131,10 @@ class updateAccountController(MethodView):
         return render_template("user/updateAccountPage.html", user=current_user)
     
 #views
-boundary.add_url_rule("/update-account", view_func=updateAccountController.as_view("updateAccount"))
+boundary.add_url_rule("/update-account", view_func=updateAccountBoundary.as_view("updateAccount"))
 
-#updatePasswordController
-class updatePasswordController(MethodView):
+#updatePasswordBoundary
+class updatePasswordBoundary(MethodView):
     def get(self):
 
         return render_template("user/updatePasswordPage.html", user=current_user)
@@ -154,7 +154,7 @@ class updatePasswordController(MethodView):
             flash("New password must be at least 7 characters.", category="error")
         
         else:
-            update_password = User.update_password(current_user.id, generate_password_hash(new_password, method="pbkdf2:sha256"))
+            update_password = updatePasswordController.get(current_user.id, generate_password_hash(new_password, method="pbkdf2:sha256"))
 
             if update_password:
                 flash("Password changed successfully.", category="success")
@@ -165,12 +165,12 @@ class updatePasswordController(MethodView):
         return render_template("user/updatePasswordPage.html", user=current_user)
     
 #views
-boundary.add_url_rule("/update-password", view_func=updatePasswordController.as_view("updatePassword"))
+boundary.add_url_rule("/update-password", view_func=updatePasswordBoundary.as_view("updatePassword"))
 
-#homeController
-class homeController(MethodView):
+#homeBoundary
+class homeBoundary(MethodView):
     def get(self):
-        user = User.get_user_id(current_user.id)
+        user = retrieveUserByIdController.get(current_user.id)
         end_date = datetime.now()
         start_date = end_date - timedelta(days=7)
 
@@ -180,14 +180,14 @@ class homeController(MethodView):
         else:
 
             if current_user.agent:
-                user_listings = Listing.get_listing_by_agent(current_user.agent.id)
+                user_listings = retrieveListingByAgentController.get(current_user.agent.id)
             else:
-                user_listings = Listing.get_listing_by_user(current_user.id)
+                user_listings = retrieveListingByUserController.get(current_user.id)
 
             listing_ids = [listing.id for listing in user_listings]
 
-            views = View.get_views_in_period(listing_ids, start_date, end_date)
-            shortlists = Shortlist.get_shortlists_in_period(listing_ids, start_date, end_date)
+            views = retrieveViewsInPeriodController.get(listing_ids, start_date, end_date)
+            shortlists = retrieveShortlistInPeriodController.get(listing_ids, start_date, end_date)
 
             views_count = {}
             shortlists_count = {}
@@ -221,45 +221,45 @@ class homeController(MethodView):
                                 percentage_change_shortlists=percentage_change_shortlists)
 
 #views
-boundary.add_url_rule("/home", view_func=homeController.as_view("home"))
+boundary.add_url_rule("/home", view_func=homeBoundary.as_view("home"))
 
-#profileController
-class profileController(MethodView):
+#profileBoundary
+class profileBoundary(MethodView):
     def get(self):
-        profiles = Profile.get_all_profiles()
+        profiles = retrieveAllProfileController.get()
 
         return render_template("admin/profilePage.html", user=current_user, profiles=profiles)
     
 #views
-boundary.add_url_rule("/profile", view_func=profileController.as_view("profile"))
+boundary.add_url_rule("/profile", view_func=profileBoundary.as_view("profile"))
 
-#createProfileController    
-class createProfleController(MethodView):
+#createProfileBoundary   
+class createProfileBoundary(MethodView):
     def post(self):
         name = request.form["name"]
         description = request.form["description"]
 
-        existing_profile = Profile.get_profile_name(name)
+        existing_profile = retrieveProfileByNameController.get(name)
         if existing_profile:
             flash("Profile name already exists.", category="error")
         
         else:
-            new_profile = Profile.create_profile(name, description)
+            new_profile = createProfileController.get(name, description)
             flash("Profile created successfully.", category="success")
             
-        return redirect(url_for("controller.profile"))
+        return redirect(url_for("boundary.profile"))
     
 #views
-boundary.add_url_rule("/create-profile", view_func=createProfleController.as_view("createProfile"))
+boundary.add_url_rule("/create-profile", view_func=createProfileBoundary.as_view("createProfile"))
 
-#updateProfileController
-class updateProfileController(MethodView):
+#updateProfileBoundary
+class updateProfileBoundary(MethodView):
     def post(self):
         profile_id = request.form["profile_id"]
         name = request.form["name"]
         description = request.form["description"]
 
-        update_profile = Profile.update_profile(profile_id, name, description)
+        update_profile = updateProfileController.get(profile_id, name, description)
 
         if update_profile is None:
             flash("Profile not found.", category="error")
@@ -270,15 +270,15 @@ class updateProfileController(MethodView):
         else:
             flash("Profile updated successfully.", category="success")
 
-        return redirect(url_for("controller.profile"))
+        return redirect(url_for("boundary.profile"))
     
 #views
-boundary.add_url_rule("/update-profile", view_func=updateProfileController.as_view("updateProfile"))
+boundary.add_url_rule("/update-profile", view_func=updateProfileBoundary.as_view("updateProfile"))
 
-#deleteProfileController
-class deleteProfileController(MethodView):
+#deleteProfileBoundary
+class deleteProfileBoundary(MethodView):
     def post(self, id):
-        delete_profile = Profile.delete_profile(id)
+        delete_profile = deleteProfileController.get(id)
 
         if delete_profile:
             flash("Profile deleted successfully", category="success")
@@ -286,30 +286,30 @@ class deleteProfileController(MethodView):
         else:
             flash("An error occurred while deleting the profile", category="error")
 
-        return redirect(url_for("controller.profile"))
+        return redirect(url_for("boundary.profile"))
     
 #views
-boundary.add_url_rule("/delete-profile/<int:id>", view_func=deleteProfileController.as_view("deleteProfile"))
+boundary.add_url_rule("/delete-profile/<int:id>", view_func=deleteProfileBoundary.as_view("deleteProfile"))
 
-#userController
-class userController(MethodView):
+#userBoundary
+class userBoundary(MethodView):
     def get(self):
-        users = User.get_all_users()
+        users = retrieveUserController.get()
 
         return render_template("admin/userPage.html", user=current_user, users=users)
     
 #views
-boundary.add_url_rule("/user", view_func=userController.as_view("user"))
+boundary.add_url_rule("/user", view_func=userBoundary.as_view("user"))
 
-#updateUserController
-class updateUserController(MethodView):
+#updateUserBoundary
+class updateUserBoundary(MethodView):
     def post(self):
         user_id = request.form["user_id"]
         email = request.form["email"]
         first_name = request.form["first_name"]
         last_name = request.form["last_name"]
 
-        update_user = User.update_user(user_id, email, first_name, last_name)
+        update_user = updateUserController.get(user_id, email, first_name, last_name)
         
         if update_user is None:
             flash("User not found.", category="error")
@@ -320,15 +320,15 @@ class updateUserController(MethodView):
         else:
             flash("User updated successfully.", category="success")
 
-        return redirect(url_for("controller.user"))
+        return redirect(url_for("boundary.user"))
     
 #views
-boundary.add_url_rule("/update-user", view_func=updateUserController.as_view("updateUser"))
+boundary.add_url_rule("/update-user", view_func=updateUserBoundary.as_view("updateUser"))
 
-#updateUserStatusController
-class updateUserStatusController(MethodView):
+#updateUserStatusBoundary
+class updateUserStatusBoundary(MethodView):
     def post(self, id):
-        update_ustatus = User.update_status(id)
+        update_ustatus = updateUserStatusController.get(id)
 
         if update_ustatus is None:
             flash("User not found.", category="error")
@@ -336,121 +336,121 @@ class updateUserStatusController(MethodView):
         else:
             flash(f"User status updated to {update_ustatus.value}.", category="success")
 
-        return redirect(url_for("controller.user"))
+        return redirect(url_for("boundary.user"))
     
 #views
-boundary.add_url_rule("/update-ustatus/<int:id>", view_func=updateUserStatusController.as_view("updateUserStatus"))
+boundary.add_url_rule("/update-ustatus/<int:id>", view_func=updateUserStatusBoundary.as_view("updateUserStatus"))
 
-#searchUserController
-class searchUserController(MethodView):
+#searchUserBoundary
+class searchUserBoundary(MethodView):
     def get(self):
         search_query = request.args.get("search")
-        filtered_users = User.search_user(search_query)
+        filtered_users = searchUserController.get(search_query)
 
         return render_template("admin/userPage.html", user=current_user, users=filtered_users)
     
 #views
-boundary.add_url_rule("/search-user", view_func=searchUserController.as_view("searchUser"))
+boundary.add_url_rule("/search-user", view_func=searchUserBoundary.as_view("searchUser"))
 
-#mediaController
-class mediaController(MethodView):
+#mediaBoundary
+class mediaBoundary(MethodView):
     def get(self, filename):
         return send_from_directory('../media', filename)
 
-boundary.add_url_rule('/media/<path:filename>', view_func=mediaController.as_view('media'))
+boundary.add_url_rule('/media/<path:filename>', view_func=mediaBoundary.as_view('media'))
 
-#buyController
-class buyController(MethodView):
+#buyBoundary
+class retrieveListingBoundary(MethodView):
     def get(self):
-        listings = Listing.get_all_listings()
+        listings = retrieveAllListingController.get()
 
         return render_template("user/buyPage.html", user=current_user, listings=listings)
     
 #views
-boundary.add_url_rule("/buy", view_func=buyController.as_view("buy"))
+boundary.add_url_rule("/buy", view_func=retrieveListingBoundary.as_view("buy"))
 
-#searchListingLocationController
-class searchListingLocationController(MethodView):
+#searchListingLocationBoundary
+class searchListingLocationBoundary(MethodView):
     def get(self):
         search_query = request.args.get("search")
-        filtered_listings = Listing.search_listing_by_location(search_query)
+        filtered_listings = searchListingLocationController.get(search_query)
 
         return render_template("user/buyPage.html", user=current_user, listings=filtered_listings)
     
 #views
-boundary.add_url_rule("/search-location", view_func=searchListingLocationController.as_view("searchListingLocation"))
+boundary.add_url_rule("/search-location", view_func=searchListingLocationBoundary.as_view("searchListingLocation"))
 
-#searchListingTypeController
-class searchListingTypeController(MethodView):
+#searchListingTypeBoundary
+class searchListingTypeBoundary(MethodView):
     def get(self):
         type = request.args.get("type")
 
         if type == "All" or type == "clear":
-            filtered_listings = Listing.get_all_listings()
+            filtered_listings = retrieveAllListingController.get()
 
         else:
-            filtered_listings = Listing.search_listing_by_type(type)
+            filtered_listings = searchListingTypeController.get(type)
 
         return render_template("user/buyPage.html", user=current_user, listings=filtered_listings)
     
 #views
-boundary.add_url_rule("/search-type", view_func=searchListingTypeController.as_view("searchListingType"))
+boundary.add_url_rule("/search-type", view_func=searchListingTypeBoundary.as_view("searchListingType"))
 
-#searchListingPriceController
-class searchListingPriceController(MethodView):
+#searchListingPriceBoundary
+class searchListingPriceBoundary(MethodView):
     def get(self):
         min_price = request.args.get("minPrice")
         max_price = request.args.get("maxPrice")
 
         if min_price and max_price:
-            filtered_listings = Listing.search_by_price_range(min_price, max_price)
+            filtered_listings = searchListingByPriceRangeController.get(min_price, max_price)
         
         elif min_price:
-            filtered_listings = Listing.search_by_min_price(min_price)
+            filtered_listings = searchListingByMinPriceController.get(min_price)
 
         elif max_price:
-            filtered_listings = Listing.search_by_max_price(max_price)
+            filtered_listings = searchListingByMaxPriceController.get(max_price)
 
         else:
-            filtered_listings = Listing.get_all_listings
+            filtered_listings = retrieveAllListingController.get()
 
         return render_template("user/buyPage.html", user=current_user, listings=filtered_listings)
     
 #views
-boundary.add_url_rule("/search-price", view_func=searchListingPriceController.as_view("searchListingPrice"))
+boundary.add_url_rule("/search-price", view_func=searchListingPriceBoundary.as_view("searchListingPrice"))
 
-#searchListingBedroomController
-class searchListingBedroomController(MethodView):
+#searchListingBedroomBoundary
+class searchListingBedroomBoundary(MethodView):
     def get(self):
         bedrooms = request.args.get("bedrooms")
 
         if bedrooms == "clear":
-            filtered_listings = Listing.get_all_listings()
+            filtered_listings = retrieveAllListingController.get()
         
         else:
             if bedrooms == "5":
                 filtered_listings = Listing.search_by_min_bedrooms(5)
 
             else:
-                filtered_listings = Listing.search_by_bedrooms(bedrooms)
+                filtered_listings = searchListingByBedrooms.get(bedrooms)
 
         return render_template("user/buyPage.html", user=current_user, listings=filtered_listings)
     
 #views
-boundary.add_url_rule("/search-bedrooms", view_func=searchListingBedroomController.as_view("searchListingBedrooms"))
+boundary.add_url_rule("/search-bedrooms", view_func=searchListingBedroomBoundary.as_view("searchListingBedrooms"))
     
-#sellController
-class sellController(MethodView):
+#sellBoundary
+class sellBoundary(MethodView):
     def get(self):
-        listings = Listing.get_all_listings()
+        listings = retrieveAllListingController.get()
 
         return render_template("user/sellPage.html", user=current_user, listings=listings)
  
 #views
-boundary.add_url_rule("/sell", view_func=sellController.as_view("sell"))
+boundary.add_url_rule("/sell", view_func=sellBoundary.as_view("sell"))
 
-#createListingController
-class createListingController(MethodView):
+#createListingBoundary
+class createListingBoundary(MethodView):
     def get(self):
 
         return render_template("agent/createListingPage.html", user=current_user)
@@ -484,20 +484,20 @@ class createListingController(MethodView):
                     flash("User with provided email does not exist.", category="error")
 
                 else:
-                    new_listing = Listing.create_listing(title, description, type, price, bedrooms, 
+                    new_listing =createListingController.get(title, description, type, price, bedrooms, 
                                     bathrooms, size_sqft, location, file_path, user.id, current_user.agent.id)
                     
                     photo.save(file_path)
                     flash("Listing created!", category="success")
-                    return redirect(url_for("controller.sell"))
+                    return redirect(url_for("boundary.sell"))
                 
 #views
-boundary.add_url_rule("/create-listing", view_func=createListingController.as_view("createListing"))
+boundary.add_url_rule("/create-listing", view_func=createListingBoundary.as_view("createListing"))
 
-#updateListingController
-class updateListingController(MethodView):
+#updateListingBoundary
+class updateListingBoundary(MethodView):
     def get(self, id):
-        listing = Listing.get_listing_id(id)
+        listing = retrieveListingByIdController.get(id)
 
         return render_template("agent/updateListingPage.html", user=current_user, listing=listing)
     
@@ -525,7 +525,7 @@ class updateListingController(MethodView):
             else:
                 file_path = None
             
-            update_listing = Listing.update_listing(id, title, description, type, price, bedrooms, 
+            update_listing = updateListingController.get(id, title, description, type, price, bedrooms, 
                                                     bathrooms, size_sqft, location, file_path)
             
             if update_listing is None:
@@ -533,15 +533,15 @@ class updateListingController(MethodView):
             
             else:
                 flash("Listing updated!", category="success")
-                return redirect(url_for("controller.sell"))
+                return redirect(url_for("boundary.sell"))
     
 #views
-boundary.add_url_rule("/update-listing/<int:id>", view_func=updateListingController.as_view("updateListing"))
+boundary.add_url_rule("/update-listing/<int:id>", view_func=updateListingBoundary.as_view("updateListing"))
 
-#updateListingStatusController
-class updateListingStatusController(MethodView):
+#updateListingStatusBoundary
+class updateListingStatusBoundary(MethodView):
     def post(self, id):
-        update_lstatus = Listing.update_status(id)
+        update_lstatus = updateListingStatusByIdController.get(id)
 
         if update_lstatus is None:
             flash("Listing not found.", category="error")
@@ -549,15 +549,15 @@ class updateListingStatusController(MethodView):
         else:
             flash(f"Listing updated to {update_lstatus.value}.", category="success")
 
-        return redirect(url_for("controller.sell"))
+        return redirect(url_for("boundary.sell"))
     
 #views
-boundary.add_url_rule("/update-lstatus/<int:id>", view_func=updateListingStatusController.as_view("updateListingStatus"))
+boundary.add_url_rule("/update-lstatus/<int:id>", view_func=updateListingStatusBoundary.as_view("updateListingStatus"))
 
-#deleteListingController
-class deleteListingController(MethodView):
+#deleteListingBoundary
+class deleteListingBoundary(MethodView):
     def post(self, id):
-        delete_listing = Listing.delete_listing(id)
+        delete_listing = deleteListingByIdController.get(id)
 
         if delete_listing:
             flash("Listing deleted successfully", category="success")
@@ -565,60 +565,60 @@ class deleteListingController(MethodView):
         else:
             flash("An error occurred while deleting the listing", category="error")
 
-        return redirect(url_for("controller.sell"))
+        return redirect(url_for("boundary.sell"))
     
 #views
-boundary.add_url_rule("/delete-listing/<int:id>", view_func=deleteListingController.as_view("deleteListing"))
+boundary.add_url_rule("/delete-listing/<int:id>", view_func=deleteListingBoundary.as_view("deleteListing"))
 
 #viewListingController
-class viewListingController(MethodView):
+class viewListingBoundary(MethodView):
     def get(self, title, listing_id):
-        listing = Listing.get_listing_id(listing_id)
+        listing = retrieveListingByIdController.get(listing_id)
 
         if not listing:
             flash("Listing does not exist.", category="error")
-            return redirect(url_for("controller.buy"))
+            return redirect(url_for("boundary.buy"))
         
         View.create_view(current_user.id, listing_id)
 
         return render_template("user/listingPage.html", user=current_user, listing=listing)
     
 #views
-boundary.add_url_rule("/listing/<string:title>-<int:listing_id>", view_func=viewListingController.as_view("viewListing"))
+boundary.add_url_rule("/listing/<string:title>-<int:listing_id>", view_func=viewListingBoundary.as_view("viewListing"))
 
-#shortlistListingController
-class shortlistListingController(MethodView):
+#shortlistListingBoundary
+class shortlistListingBoundary(MethodView):
     def post(self, id):
-        listing = Listing.get_listing_id(id)
-        shortlist = Shortlist.get_shortlist(current_user.id, id)
+        listing = retrieveListingByIdController.get(id)
+        shortlist = retrieveShortlistByUserIdController.get(current_user.id, id)
 
         if not listing:
             return jsonify({"error": "Listing does not exist."}, 400)
         
         elif shortlist:
-            Shortlist.delete_shortlist(shortlist.user_id, shortlist.listing_id)
+            deleteShortlistByUserIDController.get(shortlist.user_id, shortlist.listing_id)
         
         else:
-            Shortlist.create_shortlist(current_user.id, id)
+            createShortlistByUserIDController.get(current_user.id, id)
 
         return jsonify({"shortlists": len(listing.shortlists), "shortlisted": current_user.id in map(lambda x: x.user_id, listing.shortlists)})
     
 #views
-boundary.add_url_rule("/shortlist-listing/<int:id>", view_func=shortlistListingController.as_view("shortlistListing"))
+boundary.add_url_rule("/shortlist-listing/<int:id>", view_func=shortlistListingBoundary.as_view("shortlistListing"))
 
 #viewShortlistListingController
-class viewShortlistListingController(MethodView):
+class viewShortlistListingBoundary(MethodView):
     def get(self):
 
         return render_template("user/myActivitiesPage.html", user=current_user)
 
 #views
-boundary.add_url_rule("/my-activities", view_func=viewShortlistListingController.as_view("viewShortlistListing"))
+boundary.add_url_rule("/my-activities", view_func=viewShortlistListingBoundary.as_view("viewShortlistListing"))
 
 #findAgentController
-class findAgentController(MethodView):
+class findAgentBoundary(MethodView):
     def get(self):
-        query_result = Listing.get_all_listings_with_agents()
+        query_result = retrieveListingWithAgentsController.get()
         types = self.get_types(query_result)
 
         return render_template("user/findAgentPage.html", user=current_user, types=types)
@@ -635,7 +635,7 @@ class findAgentController(MethodView):
         return types
     
 #views
-boundary.add_url_rule("/find-agent", view_func=findAgentController.as_view("findAgent"))
+boundary.add_url_rule("/find-agent", view_func=findAgentBoundary.as_view("findAgent"))
 
 #viewAgentController
 class viewAgentController(MethodView):
@@ -649,30 +649,30 @@ class viewAgentController(MethodView):
 boundary.add_url_rule("/find-agent/<string:first_name>-<string:last_name>-<int:agent_id>", view_func=viewAgentController.as_view("viewAgent"))
 
 #createRatingController
-class createRatingController(MethodView):
+class createRatingBoundary(MethodView):
     def post(self, agent_id):
         rating_value = request.form["rating"]
-        agent = Agent.get_agent_id(agent_id)
+        agent = retrieveAgentByIdController.get(agent_id)
 
         if not agent:
             flash("Agent does not exist.", category="error")
         
         else:
-            review = Review.get_review(agent_id, current_user.id)
+            review = retrieveReviewByIdController.get(agent_id, current_user.id)
 
             if not review:
-                review = Review.create_review(agent_id, current_user.id)
+                review = createReviewByIdController.get(agent_id, current_user.id)
 
             if rating_value:
-                Rating.create_or_update_rating(rating_value, review.id)
+                createUpdateRatingController.get(rating_value, review.id)
 
-        return redirect(url_for("controller.viewAgent", first_name=agent.user.first_name, last_name=agent.user.last_name, agent_id=agent_id))
+        return redirect(url_for("boundary.viewAgent", first_name=agent.user.first_name, last_name=agent.user.last_name, agent_id=agent_id))
     
 #views
-boundary.add_url_rule("/create-rating/<int:agent_id>", view_func=createRatingController.as_view("createRating"))
+boundary.add_url_rule("/create-rating/<int:agent_id>", view_func=createRatingBoundary.as_view("createRating"))
 
 #createCommentController
-class createCommentController(MethodView):
+class createCommentBoundary(MethodView):
     def post(self, agent_id):
         comment_value = request.form["comment"]
         agent = Agent.get_agent_id(agent_id)
@@ -681,16 +681,16 @@ class createCommentController(MethodView):
             flash("Agent does not exist.", category="error")
         
         else:
-            review = Review.get_review(agent_id, current_user.id)
+            review = retrieveReviewByIdController.get(agent_id, current_user.id)
 
             if not review:
-                review = Review.create_review(agent_id, current_user.id)
+                review = createReviewByIdController.get(agent_id, current_user.id)
 
             if comment_value:
                 Comment.create_or_update_comment(comment_value, review.id)
 
-        return redirect(url_for("controller.viewAgent", first_name=agent.user.first_name, last_name=agent.user.last_name, agent_id=agent_id))
+        return redirect(url_for("boundary.viewAgent", first_name=agent.user.first_name, last_name=agent.user.last_name, agent_id=agent_id))
     
 #views
-boundary.add_url_rule("/create-comment/<int:agent_id>", view_func=createCommentController.as_view("createComment"))
+boundary.add_url_rule("/create-comment/<int:agent_id>", view_func=createCommentBoundary.as_view("createComment"))
 
