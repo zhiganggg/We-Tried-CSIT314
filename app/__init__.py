@@ -14,8 +14,8 @@ def create_app():
    db.init_app(app)
 
    # Import and register blueprints
-   from .controller.controller import controller
-   app.register_blueprint(controller)
+   from .boundary.boundary import boundary
+   app.register_blueprint(boundary)
 
    from .entity.entity import User
 
