@@ -1,0 +1,29 @@
+{% extends "user/base.html" %} {% block title %}Login{% endblock %} {% block
+content %}
+<div class="container">
+  <div class="py-5 text-center">
+    <h2>Login</h2>
+  </div>
+  <form method="POST">
+    <label for="email">Email Address</label>
+    <input
+      type="email"
+      class="form-control"
+      id="email"
+      name="email"
+      placeholder="Enter email"
+    /><br />
+    <label for="password">Password</label>
+    <input
+      type="password"
+      class="form-control"
+      id="password1"
+      name="password"
+      placeholder="Enter password"
+    />
+    <br />
+    <button type="submit" class="btn btn-primary form-control">Login</button
+    ><br /><br />
+  </form>
+</div>
+{% endblock %}
