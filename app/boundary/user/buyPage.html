@@ -1,0 +1,314 @@
+{% extends "user/base.html" %} {% block title %}Buy{% endblock %} {% block
+content %}
+<div class="container">
+  <div class="album py-5 bg-white">
+    <div class="d-flex justify-content-between gap-2 align-items-center">
+      <div class="col">
+        <form id="searchFilterForm" action="/search-location" method="GET">
+          <div class="input-group">
+            <div class="input-group-prepend">
+              <span class="input-group-text"><i class="bi bi-search"></i></span>
+            </div>
+            <input
+              type="text"
+              class="form-control"
+              id="search"
+              name="search"
+              placeholder="Search Location"
+            />
+          </div>
+        </form>
+      </div>
+      <div class="col-auto">
+        <div class="btn-group ms-2">
+          <button
+            type="button"
+            class="btn btn-outline-secondary dropdown-toggle"
+            data-bs-toggle="dropdown"
+            aria-expanded="true"
+          >
+            Property Type
+          </button>
+          <ul class="p-3 dropdown-menu" style="width: 420px">
+            <li class="widget-header mb-3">
+              <h6>Property Type</h6>
+            </li>
+            <form id="typeFilterForm" action="/search-type" method="GET">
+              <div class="widget-body">
+                <ul class="nav nav-pill mb-3">
+                  <li class="van-link active">
+                    <label>
+                      <input type="radio" name="type" value="All" />
+                      <span>All</span>
+                    </label>
+                  </li>
+                  <li class="van-link active">
+                    <label>
+                      <input type="radio" name="type" value="HDB" />
+                      <span>HDB</span>
+                    </label>
+                  </li>
+                  <li class="van-link active">
+                    <label>
+                      <input type="radio" name="type" value="Condominium" />
+                      <span>Condo</span>
+                    </label>
+                  </li>
+                  <li class="van-link active">
+                    <label>
+                      <input type="radio" name="type" value="Landed House" />
+                      <span>Landed</span>
+                    </label>
+                  </li>
+                  <li class="van-link active">
+                    <label>
+                      <input type="radio" name="type" value="Apartment" />
+                      <span>Apartment</span>
+                    </label>
+                  </li>
+                </ul>
+              </div>
+              <hr />
+              <li class="widget-footer d-flex justify-content-between">
+                <button class="btn" disabled>Clear</button>
+                <button type="submit" class="btn btn-danger" id="typeFilterBtn">
+                  Apply Filter
+                </button>
+              </li>
+            </form>
+          </ul>
+        </div>
+        <div class="btn-group ms-2">
+          <button
+            type="button"
+            class="btn btn-outline-secondary dropdown-toggle"
+            data-bs-toggle="dropdown"
+            aria-expanded="true"
+          >
+            Price
+          </button>
+          <ul class="p-3 dropdown-menu" style="width: 300px">
+            <li class="widget-header mb-3">
+              <h6>Price</h6>
+            </li>
+            <form id="priceFilterForm" action="/search-price" method="GET">
+              <div class="widget-body d-flex gap-3">
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">S$</span>
+                  </div>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="minPriceInput"
+                    name="minPrice"
+                    placeholder="Min"
+                  />
+                </div>
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">S$</span>
+                  </div>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="maxPriceInput"
+                    name="maxPrice"
+                    placeholder="Max"
+                  />
+                </div>
+              </div>
+              <hr />
+              <li class="widget-footer d-flex justify-content-between">
+                <button class="btn" disabled>Clear</button>
+                <button
+                  type="submit"
+                  class="btn btn-danger"
+                  id="priceFilterBtn"
+                >
+                  Apply Filter
+                </button>
+              </li>
+            </form>
+          </ul>
+        </div>
+        <div class="btn-group ms-2">
+          <button
+            type="button"
+            class="btn btn-outline-secondary dropdown-toggle"
+            data-bs-toggle="dropdown"
+            aria-expanded="true"
+          >
+            Bedroom
+          </button>
+          <ul class="p-3 dropdown-menu" style="width: 300px">
+            <li class="widget-header mb-3">
+              <h6>Bedroom</h6>
+            </li>
+            <form id="bedroomFilterForm" action="/search-bedrooms" method="GET">
+              <div class="widget-body">
+                <ul class="nav nav-pill mb-3">
+                  <li class="van-link active">
+                    <label>
+                      <input type="radio" name="bedrooms" value="1" />
+                      <span>1</span>
+                    </label>
+                  </li>
+                  <li class="van-link active">
+                    <label>
+                      <input type="radio" name="bedrooms" value="2" />
+                      <span>2</span>
+                    </label>
+                  </li>
+                  <li class="van-link active">
+                    <label>
+                      <input type="radio" name="bedrooms" value="3" />
+                      <span>3</span>
+                    </label>
+                  </li>
+                  <li class="van-link active">
+                    <label>
+                      <input type="radio" name="bedrooms" value="4" />
+                      <span>4</span>
+                    </label>
+                  </li>
+                  <li class="van-link active">
+                    <label>
+                      <input type="radio" name="bedrooms" value="5" />
+                      <span>5+</span>
+                    </label>
+                  </li>
+                </ul>
+              </div>
+              <hr />
+              <li class="widget-footer d-flex justify-content-between">
+                <button class="btn" disabled>Clear</button>
+                <button
+                  type="submit"
+                  class="btn btn-danger"
+                  id="bedroomFilterBtn"
+                >
+                  Apply Filter
+                </button>
+              </li>
+            </form>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="album py-5 bg-light">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-8">
+        <div id="listings">
+          {% for listing in listings %} {% if listing.availability.value ==
+          'AVAILABLE' %}
+          <div class="card mb-4 box-shadow">
+            <a
+              title="{{listing.title}}"
+              href="/listing/{{listing.title.replace(' ', '-')|lower}}-{{listing.id}}"
+              class="nav-link"
+            >
+              <img
+                class="card-img-top"
+                src="{{listing.photo}}"
+                style="width: 100%; display: block"
+            /></a>
+            <div class="card-body">
+              <div
+                class="listing-title d-flex justify-content-between align-items-center"
+              >
+                <h5>{{listing.title}}</h5>
+                <div class="btn-grp btn-group-sm">
+                  <button type="button" class="btn btn-outline-secondary">
+                    <i class="bi bi-eye-slash-fill"></i>
+                  </button>
+                  {% if user.id in
+                  listing.shortlists|map(attribute="user_id")|list %}
+                  <button
+                    type="button"
+                    class="btn btn-outline-secondary active"
+                    id="shortlist-button-{{listing.id}}"
+                    onclick="shortlist({{listing.id}})"
+                  >
+                    <i class="bi bi-heart"></i>
+                  </button>
+                  {% else %}
+                  <button
+                    type="button"
+                    class="btn btn-outline-secondary"
+                    id="shortlist-button-{{listing.id}}"
+                    onclick="shortlist({{listing.id}})"
+                  >
+                    <i class="bi bi-heart"></i>
+                  </button>
+                  {% endif %}
+                  <span id="shortlists-count-{{listing.id}}">
+                    {{listing.shortlists|length}}
+                  </span>
+                </div>
+              </div>
+              <div class="listing-details">
+                <div class="listing-location">{{listing.location}}</div>
+                <div class="listing-price">
+                  S$ {{'{:,.0f}'.format(listing.price|int)}}
+                </div>
+                <div class="listing-features">
+                  {{listing.bedrooms}} Bedrooms &middot {{listing.bathrooms}}
+                  Bathrooms &middot {{listing.size_sqft}} sqft &middot S$
+                  {{'{:,.2f}'.format(listing.price/listing.size_sqft)}} psf
+                </div>
+                <div class="listing-type">
+                  <span
+                    class="badge bg-success-subtle border border-light-subtle text-light-emphasis"
+                    >{{listing.type}}</span
+                  >
+                </div>
+                <hr />
+                <div
+                  class="listing-agent d-flex justify-content-between align-items-center"
+                >
+                  <div class="agent-info d-flex">
+                    <img src="agent-photo" />
+                    <div class="agent-name">
+                      Listed by
+                      <span style="font-weight: 500"
+                        >{{listing.agent.user.first_name}}
+                        {{listing.agent.user.last_name}}
+                      </span>
+                    </div>
+                  </div>
+                  <a
+                    href="/find-agent/{{listing.agent.user.first_name.replace(' ', '-')|lower}}-{{listing.agent.user.last_name.replace(' ', '-')|lower}}-{{listing.agent.id}}"
+                    class="btn btn-outline-secondary d-inline-flex align-items-center"
+                    type="button"
+                  >
+                    Contact Agent
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+          {% endif %} {% endfor %}
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div>
+          <h4 class="fst-italic">Frequently Asked Questions</h4>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  const navLinks = document.querySelectorAll(".dropdown-menu .van-link");
+
+  navLinks.forEach((link) => {
+    link.addEventListener("click", function (event) {
+      event.stopPropagation();
+    });
+  });
+</script>
+{% endblock %}

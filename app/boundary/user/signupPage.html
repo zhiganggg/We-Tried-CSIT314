@@ -1,0 +1,84 @@
+{% extends "user/base.html" %} {% block title %}Sign Up{% endblock %} {% block
+content %}
+<div class="container">
+  <div class="py-5 text-center">
+    <h2>Sign Up</h2>
+  </div>
+  <form action="/sign-up" method="POST">
+    <label for="email">Email Address:</label><br />
+    <input
+      type="text"
+      class="form-control"
+      id="email"
+      name="email"
+      placeholder="Enter email"
+    /><br />
+    <div class="row">
+      <div class="col-md-6">
+        <label for="first_name">First Name:</label><br />
+        <input
+          type="text"
+          class="form-control"
+          id="first_name"
+          name="first_name"
+          placeholder="Enter first name"
+        /><br />
+      </div>
+      <div class="col-md-6">
+        <label for="last_name">Last Name:</label><br />
+        <input
+          type="text"
+          class="form-control"
+          id="last_name"
+          name="last_name"
+          placeholder="Enter last name"
+        /><br />
+      </div>
+    </div>
+    <label for="password">Password:</label><br />
+    <input
+      type="password"
+      class="form-control"
+      id="password"
+      name="password"
+      placeholder="Enter password"
+    /><br />
+    <label for="verify_password">Password (Confirm):</label><br />
+    <input
+      type="password"
+      class="form-control"
+      id="verify_password"
+      name="verify_password"
+      placeholder="Confirm password"
+    /><br />
+    <label for="profile">Profile:</label><br />
+    <select class="form-control" id="profile" name="profile" required>
+      {% for profile in profiles %}
+      <option value="{{profile.id}}">{{profile.name}}</option>
+      {% endfor %}
+    </select>
+    <br />
+    <div id="agent-fields" style="display: none">
+      <label for="cea-registration-no">CEA Registration No:</label><br />
+      <input
+        type="text"
+        class="form-control"
+        id="cea_registration_no"
+        name="cea_registration_no"
+        placeholder="Enter CEA registration no."
+      /><br />
+      <label for="agency-license-no">Agency License No:</label><br />
+      <input
+        type="text"
+        class="form-control"
+        id="agency_license_no"
+        name="agency_license_no"
+        placeholder="Enter Agency license no."
+      /><br />
+    </div>
+    <button type="submit" class="btn btn-primary form-control" type="submit">
+      Sign Up</button
+    ><br /><br />
+  </form>
+</div>
+{% endblock %}
