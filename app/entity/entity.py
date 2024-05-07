@@ -41,6 +41,19 @@ class Profile(db.Model):
         
         else:
             return False
+        
+    @classmethod
+    def search_profile(cls, search_query):
+        if search_query:
+            filtered_profiles = cls.query.filter(
+                (cls.name.ilike(f"%{search_query}%")) |
+                (cls.description.ilike(f"%{search_query}%"))
+            ).all()
+        
+        else:
+            filtered_profiles = cls.query.all()
+
+        return filtered_profiles
             
     @classmethod
     def delete_profile(cls, id):

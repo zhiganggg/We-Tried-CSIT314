@@ -51,6 +51,10 @@ class updateProfileController:
 class deleteProfileController:
     def get(self, profile_id):
         return Profile.delete_profile(profile_id)
+    
+class searchProfileController:
+    def get(self, search_query):
+        return Profile.search_profile(search_query)
 
 #UserController
 class userController:
@@ -210,4 +214,13 @@ class createCommentController:
             return Comment.create_or_update_comment(comment_value, review.id)
         else:
             return False
+
+#GetViewsInPeriodController        
+class getViewsInPeriodController:
+    def get(self, listing_ids, start_date, end_date):
+        return View.get_views_in_period(listing_ids, start_date, end_date)
+    
+class getShortlistsInPeriodController:
+    def get(self, listing_ids, start_date, end_date):
+        return Shortlist.get_shortlists_in_period(listing_ids, start_date, end_date)
         

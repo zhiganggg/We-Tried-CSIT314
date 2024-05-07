@@ -38,7 +38,7 @@ class loginPage(MethodView):
                 if check_password_hash(user.password, password):
                     login_user(user, remember=True)
                     flash("Logged in successfully!", category="success")
-                    return redirect(url_for("boundary.buy"))
+                    return redirect(url_for("boundary.home"))
                 
                 else:
                     flash("Incorrect password, try again.", category="error")
@@ -177,6 +177,7 @@ class updatePassword(MethodView):
     
 boundary.add_url_rule("/update-password", view_func=updatePassword.as_view("updatePassword"))
 
+#HomePage
 class homePage(MethodView):
     @login_required
     def get(self):
@@ -184,8 +185,12 @@ class homePage(MethodView):
         start_date = end_date - timedelta(days=7)
 
         if current_user.profile.name == "Admin":
+
+            listings = viewListingsController().get()
+
+            users = userController().get()
             
-            return render_template("admin/homePage.html", user=current_user)
+            return render_template("admin/homePage.html", user=current_user, listings=listings, users=users)
         
         else:
 
@@ -193,9 +198,39 @@ class homePage(MethodView):
 
             listing_ids = [listing.id for listing in user_listings]
 
-            views = 
+            views = getViewsInPeriodController().get(listing_ids, start_date, end_date)
+            shortlists = getShortlistsInPeriodController().get(listing_ids, start_date, end_date)
 
-            return render_template("user/homePage.html", user=current_user)
+            views_count = {}
+            shortlists_count = {}
+
+            for view in views:
+                date_str = view.date_created.strftime('%Y-%m-%d')
+                views_count[date_str] = views_count.get(date_str, 0) + 1
+
+            for shortlist in shortlists:
+                date_str = shortlist.date_created.strftime('%Y-%m-%d')
+                shortlists_count[date_str] = shortlists_count.get(date_str, 0) + 1
+
+            labels = list(views_count.keys())
+            views_data = list(views_count.values())
+            shortlists_data = [shortlists_count.get(date, 0) for date in labels]
+
+            table_data = [{'date': label, 'shortlists': shortlists_count.get(label, 0), 'views': views_count.get(label, 0)} for label in labels]
+
+            views_last_week = sum(views_data[:-1]) if views_data else 0
+            views_this_week = sum(views_data)
+            shortlists_last_week = sum(shortlists_data[:-1]) if shortlists_data else 0
+            shortlists_this_week = sum(shortlists_data)
+            shortlists_this_week = sum(shortlists_data)
+
+            percentage_change_views = ((views_this_week - views_last_week) / views_last_week) * 100 if views_last_week != 0 else 0
+            percentage_change_shortlists = ((shortlists_this_week - shortlists_last_week) / shortlists_last_week) * 100 if shortlists_last_week != 0 else 0
+
+            return render_template("user/homePage.html", user=current_user, table_data=table_data, labels=labels,
+                                   views_data=views_data, shortlists_data=shortlists_data,
+                                   percentage_change_views=percentage_change_views,
+                                   percentage_change_shortlists=percentage_change_shortlists)
     
 boundary.add_url_rule("/home", view_func=homePage.as_view("home"))
 
@@ -266,6 +301,19 @@ class deleteProfile(MethodView):
 
 boundary.add_url_rule("/delete-profile/<int:profile_id>", view_func=deleteProfile.as_view("deleteProfile"))
 
+#SearchProfile
+class searchProfile(MethodView):
+    @login_required
+    def get(self):
+
+        search_query = request.args.get("search")
+        filtered_profiles = searchProfileController().get(search_query)
+
+        return render_template("admin/profilePage.html", user=current_user, profiles=filtered_profiles)
+
+    
+boundary.add_url_rule("/search-profile", view_func=searchProfile.as_view("searchProfile"))
+
 #UserPage
 class userPage(MethodView):
     @login_required
@@ -326,7 +374,7 @@ class searchUser(MethodView):
 
         return render_template("admin/userPage.html", user=current_user, users=filtered_users)
     
-boundary.add_url_rule("/seaarch-user", view_func=searchUser.as_view("searchUser"))
+boundary.add_url_rule("/search-user", view_func=searchUser.as_view("searchUser"))
 
 #BuyPage
 class buyPage(MethodView):
