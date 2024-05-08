@@ -466,6 +466,24 @@ class Review(db.Model):
     def get_review_by_agent(cls, agent_id):
 
         return cls.query.filter_by(agent_id=agent_id).all()
+    
+    @classmethod
+    def get_review_by_agent_user(cls, agent_id, user_id):
+
+        return cls.query.filter_by(agent_id=agent_id, user_id=user_id).first()
+    
+    @classmethod
+    def delete_review(cls, id):
+        review = cls.query.filter_by(id=id).first()
+
+        if review:
+            db.session.delete(review)
+            db.session.commit()
+            return True
+        
+        else:
+            return False
+        
 
 class Rating(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -485,7 +503,19 @@ class Rating(db.Model):
             db.session.add(new_rating)
         
         db.session.commit()
-        return rating    
+        return rating
+
+    @classmethod
+    def delete_rating(cls, review_id):
+        rating = cls.query.filter_by(review_id=review_id).first()
+
+        if rating:
+            db.session.delete(rating)
+            db.session.commit()
+            return True
+        
+        else:
+            return False
 
 class Comment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -506,3 +536,15 @@ class Comment(db.Model):
         
         db.session.commit()
         return comment
+    
+    @classmethod
+    def delete_comment(cls, review_id):
+        comment = cls.query.filter_by(review_id=review_id).first()
+
+        if comment:
+            db.session.delete(comment)
+            db.session.commit()
+            return True
+        
+        else:
+            return False

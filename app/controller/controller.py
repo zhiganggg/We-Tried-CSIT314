@@ -197,30 +197,70 @@ class getReviewsController:
 class createRatingController:
     def get(self, agent_id, user_id, rating_value):
 
+        agent = Agent.get_agent_id(agent_id)
         review = Review.get_or_create_review(agent_id, user_id)
 
         if review:
-            return Rating.create_or_update_rating(rating_value, review.id)
+            return Rating.create_or_update_rating(rating_value, review.id), agent
         else:
-            return False
+            return False, agent
         
 #CreateCommentController
 class createCommentController:
     def get(self, agent_id, user_id, comment_value):
 
+        agent = Agent.get_agent_id(agent_id)
         review = Review.get_or_create_review(agent_id, user_id)
 
         if review:
-            return Comment.create_or_update_comment(comment_value, review.id)
+            return Comment.create_or_update_comment(comment_value, review.id), agent
         else:
-            return False
+            return False, agent
+
+#DeleteRatingController
+class deleteRatingController:
+    def get(self, agent_id, user_id):
+
+        agent = Agent.get_agent_id(agent_id)
+        review = Review.get_review_by_agent_user(agent_id, user_id)
+
+        if review:
+            delete_rating = Rating.delete_rating(review.id)
+            
+            if delete_rating:
+
+                if not review.comments:
+                    Review.delete_review(review.id)
+                return True, agent
+            
+        return False, agent
+
+#DeleteCommentController
+class deleteCommentController:
+    def get(self, agent_id, user_id):
+
+        agent = Agent.get_agent_id(agent_id)
+        review = Review.get_review_by_agent_user(agent_id, user_id)
+
+        if review:
+            delete_comment = Comment.delete_comment(review.id)
+            
+            if delete_comment:
+
+                if not review.ratings:
+                    Review.delete_review(review.id)
+                return True, agent
+        
+        return False, agent
 
 #GetViewsInPeriodController        
 class getViewsInPeriodController:
     def get(self, listing_ids, start_date, end_date):
         return View.get_views_in_period(listing_ids, start_date, end_date)
     
+#GetShortlistsInPeriodController
 class getShortlistsInPeriodController:
     def get(self, listing_ids, start_date, end_date):
         return Shortlist.get_shortlists_in_period(listing_ids, start_date, end_date)
-        
+            
+

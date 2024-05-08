@@ -42,9 +42,7 @@ content %}
       <h1>Customer Reviews</h1>
       {% for review in reviews %}
       <div class="p-4 mb-4 card text-center bg-light">
-        <div
-          class="mb-2 user-info d-flex justify-content-start align-items-top"
-        >
+        <div class="list-group-item d-flex gap-3">
           <svg
             class="bd-placeholder-img flex-shrink-0 me-2 rounded"
             width="32"
@@ -59,7 +57,7 @@ content %}
             <rect width="100%" height="100%" fill="#007bff"></rect>
             <text x="50%" y="50%" fill="#007bff" dy=".3em"></text>
           </svg>
-          <div class="user-name">
+          <div class="user-name w-100">
             <h6 style="text-align: left; margin-left: 3px">
               {{review.user.first_name}} {{review.user.last_name}}
             </h6>
@@ -83,6 +81,31 @@ content %}
             </div>
             {% endfor %}
           </div>
+          <small class>
+            {% if user.id == review.user.id %}
+            <button
+              type="button"
+              class="btn btn-sm btn-secondary dropdown-toggle"
+              data-bs-toggle="dropdown"
+            ></button>
+            <ul class="dropdown-menu">
+              <li>
+                <form action="/delete-rating/{{agent.id}}" method="post">
+                  <button type="submit" class="dropdown-item">
+                    Delete Rating
+                  </button>
+                </form>
+              </li>
+              <li>
+                <form action="/delete-comment/{{agent.id}}" method="post">
+                  <button type="submit" class="dropdown-item">
+                    Delete Comment
+                  </button>
+                </form>
+              </li>
+            </ul>
+            {% endif %}
+          </small>
         </div>
       </div>
       {% endfor %} {% if user.profile.name.lower() == 'buyer/seller' %}

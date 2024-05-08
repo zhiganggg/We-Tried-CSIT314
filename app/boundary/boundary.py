@@ -641,11 +641,12 @@ class createRating(MethodView):
     def post(self, agent_id):
         rating_value = request.form["rating"]
 
-        rating = createRatingController().get(agent_id, current_user.id, rating_value)
+        rating, agent = createRatingController().get(agent_id, current_user.id, rating_value)
+        
         if not rating:
             flash("An error occurred while rating the agent.", category="error")
 
-        return redirect(url_for("boundary.viewAgent", first_name=rating.review.agent.user.first_name, last_name=rating.review.agent.user.last_name, agent_id=agent_id))
+        return redirect(url_for("boundary.viewAgent", first_name=agent.user.first_name, last_name=agent.user.last_name, agent_id=agent_id))
     
 boundary.add_url_rule("/create-rating/<int:agent_id>", view_func=createRating.as_view("createRating"))
 
@@ -654,10 +655,41 @@ class createComment(MethodView):
     def post(self, agent_id):
         comment_value = request.form["comment"]
 
-        comment = createCommentController().get(agent_id, current_user.id, comment_value)
+        comment, agent = createCommentController().get(agent_id, current_user.id, comment_value)
+
         if comment is False:
             flash("An error occurred while rating the agent.", category="error")
 
-        return redirect(url_for("boundary.viewAgent", first_name=comment.review.agent.user.first_name, last_name=comment.review.agent.user.last_name, agent_id=agent_id))
+        return redirect(url_for("boundary.viewAgent", first_name=agent.user.first_name, last_name=agent.user.last_name, agent_id=agent_id))
     
 boundary.add_url_rule("/create-comment/<int:agent_id>", view_func=createComment.as_view("createComment"))
+
+#DeleteRating
+class deleteRating(MethodView):
+    def post(self, agent_id):
+        rating, agent = deleteRatingController().get(agent_id, current_user.id)
+
+        if rating:
+            flash("Rating deleted successfully", category="success")
+
+        else:
+            flash("An error occurred while deleting the rating", category="error")
+
+        return redirect(url_for("boundary.viewAgent", first_name=agent.user.first_name, last_name=agent.user.last_name, agent_id=agent_id))
+
+boundary.add_url_rule("/delete-rating/<int:agent_id>", view_func=deleteRating.as_view("deleteRating"))
+
+#CreateComment
+class deleteComment(MethodView):
+    def post(self, agent_id):
+        comment, agent = deleteCommentController().get(agent_id, current_user.id)
+
+        if comment:
+            flash("Comment deleted successfully", category="success")
+
+        else:
+            flash("An error occurred while deleting the comment", category="error")
+
+        return redirect(url_for("boundary.viewAgent", first_name=agent.user.first_name, last_name=agent.user.last_name, agent_id=agent_id))
+    
+boundary.add_url_rule("/delete-comment/<int:agent_id>", view_func=deleteComment.as_view("deleteComment"))
