@@ -399,7 +399,7 @@ class searchListingLocation(MethodView):
     @login_required
     def get(self):
         search_query = request.args.get("search")
-        filtered_listings = searchListingLocationController.get(search_query)
+        filtered_listings = searchListingLocationController().get(search_query)
 
         return render_template("user/buyPage.html", user=current_user, listings=filtered_listings)
     
