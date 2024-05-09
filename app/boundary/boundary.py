@@ -21,6 +21,14 @@ class fileDirectory(MethodView):
 
 boundary.add_url_rule('/media/<path:filename>', view_func=fileDirectory.as_view('media'))
 
+class landingPage(MethodView):
+    def get(self):
+        listings = viewListingsController().get()
+
+        return render_template("user/landingPage.html", user=current_user, listings=listings)
+    
+boundary.add_url_rule('/', view_func=landingPage.as_view('/'))
+
 #57, 83
 #LoginPage
 class loginPage(MethodView):    
@@ -388,6 +396,7 @@ boundary.add_url_rule("/buy", view_func=buyPage.as_view("buy"))
 
 #SearchListingLocation
 class searchListingLocation(MethodView):
+    @login_required
     def get(self):
         search_query = request.args.get("search")
         filtered_listings = searchListingLocationController.get(search_query)
@@ -398,6 +407,7 @@ boundary.add_url_rule("/search-location", view_func=searchListingLocation.as_vie
 
 #SearchListingType
 class searchListingType(MethodView):
+    @login_required
     def get(self):
         type = request.args.get("type")
 
@@ -413,6 +423,7 @@ boundary.add_url_rule("/search-type", view_func=searchListingType.as_view("searc
 
 #SearchListingPrice
 class searchListingPrice(MethodView):
+    @login_required
     def get(self):
         min_price = request.args.get("minPrice")
         max_price = request.args.get("maxPrice")
@@ -425,6 +436,7 @@ boundary.add_url_rule("/search-price", view_func=searchListingPrice.as_view("sea
 
 #SearchListingBedroom
 class searchListingBedroom(MethodView):
+    @login_required
     def get(self):
         bedrooms = request.args.get("bedrooms")
 
@@ -440,6 +452,7 @@ boundary.add_url_rule("/search-bedrooms", view_func=searchListingBedroom.as_view
 
 #sellPage
 class sellPage(MethodView):
+    @login_required
     def get(self):
         listings = viewListingsController().get()
 
@@ -449,10 +462,12 @@ boundary.add_url_rule("/sell", view_func=sellPage.as_view("sell"))
 
 #CreateListing
 class createListing(MethodView):
+    @login_required
     def get(self):
 
         return render_template("agent/createListingPage.html", user=current_user)
     
+    @login_required
     def post(self):
         title = request.form["title"]
         description = request.form["description"]
@@ -498,11 +513,13 @@ boundary.add_url_rule("/create-listing", view_func=createListing.as_view("create
 
 #UpdateListing
 class updateListing(MethodView):
+    @login_required
     def get(self, listing_id):
         listing = getListingController().get(listing_id)
 
         return render_template("agent/updateListingPage.html", user=current_user, listing=listing)
     
+    @login_required
     def post(self, listing_id):
         title = request.form["title"]
         description = request.form["description"]
@@ -541,6 +558,7 @@ boundary.add_url_rule("/update-listing/<int:listing_id>", view_func=updateListin
 
 #SpdateListingStatus
 class updateListingStatus(MethodView):
+    @login_required
     def post(self, listing_id):
         
         update_lstatus = updateListingStatusController().get(listing_id)
@@ -557,6 +575,7 @@ boundary.add_url_rule("/update-lstatus/<int:listing_id>", view_func=updateListin
 
 #DeleteListing
 class deleteListing(MethodView):
+    @login_required
     def post(self, listing_id):
         delete_listing = deleteListingController().get(listing_id)
 
@@ -572,6 +591,7 @@ boundary.add_url_rule("/delete-listing/<int:listing_id>", view_func=deleteListin
 
 #viewListing
 class viewListing(MethodView):
+    @login_required
     def get(self, title, listing_id):
         listing = viewListingController().get(current_user.id, listing_id)
 
@@ -585,6 +605,7 @@ boundary.add_url_rule("/listing/<string:title>-<int:listing_id>", view_func=view
 
 #ShortlistListingController
 class shortlistListing(MethodView):
+    @login_required
     def post(self, listing_id):
         listing = getListingController().get(listing_id)
 
@@ -599,6 +620,7 @@ boundary.add_url_rule("/shortlist-listing/<int:listing_id>", view_func=shortlist
 
 #ViewShortlistListing
 class viewShortlistListing(MethodView):
+    @login_required
     def get(self):
 
         return render_template("user/myActivitiesPage.html", user=current_user)
@@ -607,12 +629,14 @@ boundary.add_url_rule("/my-activities", view_func=viewShortlistListing.as_view("
 
 #findAgentController
 class findAgentPage(MethodView):
+    @login_required
     def get(self):
         query_result = viewListingsByAgentController().get()
         types = self.get_types(query_result)
 
         return render_template("user/findAgentPage.html", user=current_user, types=types)
     
+    @login_required
     def get_types(self, query_result):
         types = {}
         for listing, agent in query_result:
@@ -628,6 +652,7 @@ boundary.add_url_rule("/find-agent", view_func=findAgentPage.as_view("findAgent"
 
 #viewAgentController
 class agentPage(MethodView):
+    @login_required
     def get(self, first_name, last_name, agent_id):
         agent = getAgentController().get(agent_id)
         reviews = getReviewsController().get(agent_id)
@@ -638,6 +663,7 @@ boundary.add_url_rule("/find-agent/<string:first_name>-<string:last_name>-<int:a
 
 #CreateRating
 class createRating(MethodView):
+    @login_required
     def post(self, agent_id):
         rating_value = request.form["rating"]
 
@@ -652,6 +678,7 @@ boundary.add_url_rule("/create-rating/<int:agent_id>", view_func=createRating.as
 
 #CreateComment
 class createComment(MethodView):
+    @login_required
     def post(self, agent_id):
         comment_value = request.form["comment"]
 
@@ -666,6 +693,7 @@ boundary.add_url_rule("/create-comment/<int:agent_id>", view_func=createComment.
 
 #DeleteRating
 class deleteRating(MethodView):
+    @login_required
     def post(self, agent_id):
         rating, agent = deleteRatingController().get(agent_id, current_user.id)
 
@@ -681,6 +709,7 @@ boundary.add_url_rule("/delete-rating/<int:agent_id>", view_func=deleteRating.as
 
 #CreateComment
 class deleteComment(MethodView):
+    @login_required
     def post(self, agent_id):
         comment, agent = deleteCommentController().get(agent_id, current_user.id)
 

@@ -1,0 +1,87 @@
+{% extends "user/base.html" %} {% block title %}Home{% endblock %} {% block
+content %}
+<div class="container-fluid" style="padding-left: 0; padding-right: 0">
+  <div class="row">
+    <div class="col mb-3">
+      <div class="bg-body-secondary text-center">
+        <a href="/buy" style="display: block">
+          <img
+            src="/media/landing.jpg"
+            class="img-fluid"
+            style="max-width: 100%; height: auto"
+            alt="Landing Image"
+          />
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="container">
+  <div class="row">
+    <div class="col">
+      <div class="listing-group p-4">
+        <div class="listing-header mb-3">
+          <h3>Handpicked for you</h3>
+        </div>
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-3">
+          {% for listing in listings[:4] %}
+          <div class="col">
+            <div class="card shadow-sm">
+              <a
+                title="{{listing.title}}"
+                href="/listing/{{listing.title.replace(' ', '-')|lower}}-{{listing.id}}"
+                class="nav-link"
+              >
+                <img
+                  class="card-img-top"
+                  src="{{listing.photo}}"
+                  style="width: 100%; height: 225px; display: block"
+                />
+              </a>
+              <div class="card-body">
+                <div class="row">
+                  <div class="col">
+                    <div class="listing-title">
+                      <h6>
+                        {% if listing.availability|string ==
+                        "Availability.UNAVAILABLE" %}<span style="color: red"
+                          >Sold</span
+                        >
+                        &middot; {% endif %} {{listing.title}}
+                      </h6>
+                    </div>
+                    <div class="listing-details" style="font-size: 14px">
+                      <div class="listing-location">{{listing.location}}</div>
+                      <div class="listing-price">
+                        S$ {{'{:,.0f}'.format(listing.price|int)}}
+                      </div>
+                      <div class="listing-features">
+                        {{listing.bedrooms}} Bedrooms &middot;
+                        {{listing.bathrooms}} Bathrooms &middot;
+                        {{listing.size_sqft}} sqft &middot; S$
+                        {{'{:,.2f}'.format(listing.price/listing.size_sqft)}}
+                        psf
+                      </div>
+                      <div class="listing-type d-flex justify-content-between">
+                        <span
+                          class="badge bg-success-subtle border border-light-subtle text-light-emphasis"
+                          >{{listing.type}}</span
+                        >
+                        <span class="text-muted"
+                          >{{listing.date_created.strftime('%d-%b-%y')}}</span
+                        >
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
