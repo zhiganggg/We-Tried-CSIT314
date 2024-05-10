@@ -1,5 +1,6 @@
 import unittest
 from flask import Flask
+from flask_login import UserMixin, LoginManager, login_user, logout_user, current_user
 from run import app
 
 class FlaskTest(unittest.TestCase):
