@@ -2,7 +2,7 @@ import unittest, time
 from flask import Flask
 from flask_login import UserMixin, LoginManager, login_user, logout_user, current_user
 from run import app
-from .app.entity.entity import *  # Assuming your User model is in models.py
+from .app.entity import *  # Assuming your User model is in models.py
 
 class FlaskTest(unittest.TestCase):
 
