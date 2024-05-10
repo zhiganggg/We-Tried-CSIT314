@@ -22,8 +22,12 @@ class FlaskTest(unittest.TestCase):
         if response.status_code == 200:
             if "Logged in successfully!" in response.text:
                 print("Login successful")
-            elif "Incorrect password, try again." in response.text or "Your account is disabled. Please contact support." in response.text or "User does not exist." in response.text:
-                print("Error login in one of the 3 reasons")
+            elif "Incorrect password, try again." in response.text:
+                print("Error: Incorrect password, try again.")
+            elif "Your account is disabled. Please contact support." in response.text:
+                print("Error: Your account is disabled. Please contact support.")
+            elif "User does not exist." in response.text:
+                print("Error: User does not exist.")
             else:
                 print("Error login")
         
