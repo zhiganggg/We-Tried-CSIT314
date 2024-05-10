@@ -10,7 +10,6 @@ class FlaskTest(unittest.TestCase):
         app.config['TESTING'] = True
         self.app = app.test_client()
         with app.app_context():
-            db.create_all()
             # Create a user for testing
             user = User.create_user(email='test@example.com', first_name='Test', last_name='User', password='test_password', profile_id=2)
 
