@@ -84,8 +84,8 @@ class FlaskTest(unittest.TestCase):
 
     def test_signup_page_post_success(self):
         print('\n=====test_signup_page_post_success=====')
-        response = self.app.post('/sign-up', data=dict(email='test@example.com', first_name='Test', last_name='User',
-                                                          password='test_password', verify_password='test_password',
+        response = self.app.post('/sign-up', data=dict(email='test2@example.com', first_name='Test2', last_name='User',
+                                                          password='test_password123', verify_password='test_password123',
                                                           profile=2, cea_registration_no='', agency_license_no=''), follow_redirects=True)
         self.assertEqual(response.status_code, 200)
         if response.status_code == 200:
