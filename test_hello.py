@@ -13,11 +13,6 @@ class FlaskTest(unittest.TestCase):
             # Create a user for testing
             user = User.create_user(email='test@example.com', first_name='Test', last_name='User', password='test_password', profile_id=2)
 
-    def tearDown(self):
-        with app.app_context():
-            db.session.remove()
-            db.drop_all()
-
     def test_login_page_post_success(self):
         response = self.app.post('/login', data=dict(email='test@example.com', password='test_password'), follow_redirects=True)
         self.assertEqual(response.status_code, 200)
