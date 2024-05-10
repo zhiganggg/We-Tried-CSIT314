@@ -1,4 +1,4 @@
-import unittest
+import unittest, time
 from flask import Flask
 from flask_login import UserMixin, LoginManager, login_user, logout_user, current_user
 from run import app
@@ -20,7 +20,7 @@ class FlaskTest(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
 
         # Print the redirected URL if there is one
-        
+        time.sleep(10)
         print("Redirected to:", response.location)
         # self.assertIn(b'Logged in successfully', response.data)
         
