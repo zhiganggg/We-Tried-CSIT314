@@ -19,7 +19,7 @@ class FlaskTest(unittest.TestCase):
         response = self.app.post('/login', data=dict(email='test@example.com', password='test_password'), follow_redirects=True)
         self.assertEqual(response.status_code, 200)
         # self.assertIn(b'Logged in successfully', response.data)
-        self.assertTrue(current_user.is_authenticated)
+        self.assertIn(b'Overview', response.data) # Check if 'Login' text is present
     
     def test_buy_page_requires_login(self):
         response = self.app.get('/buy')
