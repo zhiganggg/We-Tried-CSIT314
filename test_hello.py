@@ -12,7 +12,7 @@ class FlaskTest(unittest.TestCase):
         with app.app_context():
             db.create_all()
             # Create a user for testing
-            user = User.create_user(email='test@example.com', first_name='Test', last_name='User, password='test_password', profile_id=2)
+            user = User.create_user(email='test@example.com', first_name='Test', last_name='User', password='test_password', profile_id=2)
 
     def tearDown(self):
         with app.app_context():
