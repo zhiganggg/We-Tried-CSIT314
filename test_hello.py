@@ -102,10 +102,11 @@ class FlaskTest(unittest.TestCase):
         print("Redirected to:", response.location)
 
     def test_buy_page_logged_in(self):
+        print('\n=====test_buy_page_logged_in=====')
         # Login
-        response = self.app.post('/login', data=dict(email='test@example.com', password='test_password123'), follow_redirects=True)
+        response = self.app.post('/login', data=dict(email='test@example.com', password='test_password'), follow_redirects=True)
         self.assertEqual(response.status_code, 200)
-        self.assertTrue(b'Logged in successfully' in response.data)
+        self.assertTrue(b'Logged in successfully!' in response.test)
 
         # Access buy page after login
         response = self.client.get('/buy')
