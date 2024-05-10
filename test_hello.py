@@ -92,12 +92,13 @@ class FlaskTest(unittest.TestCase):
                 print("Account created!")
             elif "User already exists" in response.text:
                 print("User already exists")
-        print('test_signup_page_post_success redirect:', response.location)
+        print('Redirect to:', response.location) # none is correct
         
     def test_buy_page_requires_login(self):
+        print('\n=====test_buy_page_requires_login=====')
         response = self.app.get('/buy')
         self.assertEqual(response.status_code, 302)  # Redirect to login page
-        print("[Buy]Redirected to:", response.location)
+        print("Redirected to:", response.location)
 
 if __name__ == '__main__':
     unittest.main()
