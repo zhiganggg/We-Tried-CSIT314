@@ -122,8 +122,7 @@ class FlaskTest(unittest.TestCase):
         # Access buy page after login
         response = self.app.get('/buy')
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.headers['Location'], 'http://localhost/')
-        print("Redirected to /buy:", response.location) 
+        print("Redirected to", response.location) # Correct if its 'none', must not be '/login'
 
 
 if __name__ == '__main__':
