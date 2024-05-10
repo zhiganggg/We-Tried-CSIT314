@@ -3,6 +3,7 @@ from flask import Flask
 from flask_login import UserMixin, LoginManager, login_user, logout_user, current_user
 from run import app
 from app.entity.entity import User  # Assuming your User model is in models.py
+from werkzeug.security import generate_password_hash, check_password_hash
 
 class FlaskTest(unittest.TestCase):
 
@@ -11,7 +12,7 @@ class FlaskTest(unittest.TestCase):
         self.app = app.test_client()
         with app.app_context():
             # Create a user for testing
-            user = User.create_user(email='test@example.com', first_name='Test', last_name='User', password='test_password', profile_id=2)
+            user = User.create_user(email='test@example.com', first_name='Test', last_name='User', password=generate_password_hash('test_password', method="pbkdf2:sha256"), profile_id=2)
 
     def test_login_page_post_success(self):
         response = self.app.post('/login', data=dict(email='test@example.com', password='test_password'), follow_redirects=True)
