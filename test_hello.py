@@ -18,11 +18,7 @@ class FlaskTest(unittest.TestCase):
     def test_login_page_post_success(self):
         response = self.app.post('/login', data=dict(email='test@example.com', password='test_password'), follow_redirects=True)
         self.assertEqual(response.status_code, 200)
-
-        # Print the redirected URL if there is one
-        time.sleep(10)
-        print("Redirected to:", response.location)
-        # self.assertIn(b'Logged in successfully', response.data)
+        self.assertIn(b'Logged in successfully!', response.data)
         
     
     def test_buy_page_requires_login(self):
