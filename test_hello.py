@@ -2,12 +2,22 @@ import unittest, time
 from flask import Flask
 from flask_login import UserMixin, LoginManager, login_user, logout_user, current_user
 from run import app
+from .app.entity.entity import *  # Assuming your User model is in models.py
 
 class FlaskTest(unittest.TestCase):
 
     def setUp(self):
         app.config['TESTING'] = True
         self.app = app.test_client()
+        with app.app_context():
+            db.create_all()
+            # Create a user for testing
+            user = User.create_user(email='test@example.com', first_name='Test', last_name='User, password='test_password', profile_id=2)
+
+    def tearDown(self):
+        with app.app_context():
+            db.session.remove()
+            db.drop_all()
 
     def test_login_page_post_success(self):
         response = self.app.post('/login', data=dict(email='test@example.com', password='test_password'), follow_redirects=True)
@@ -35,8 +45,6 @@ class FlaskTest(unittest.TestCase):
         response = self.app.get('/buy')
         self.assertEqual(response.status_code, 302)  # Redirect to login page
         print("[Buy]Redirected to:", response.location)
-
-    
 
 if __name__ == '__main__':
     unittest.main()
