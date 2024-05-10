@@ -9,7 +9,7 @@ class FlaskTest(unittest.TestCase):
         self.app = app.test_client()
 
     def test_signup_page_post_success(self):
-        response = self.client.post('/sign-up', data=dict(email='test@example.com', first_name='Test', last_name='User',
+        response = self.app.post('/sign-up', data=dict(email='test@example.com', first_name='Test', last_name='User',
                                                           password='test_password', verify_password='test_password',
                                                           profile='2', cea_registration_no='', agency_license_no=''), follow_redirects=True)
         self.assertEqual(response.status_code, 200)
