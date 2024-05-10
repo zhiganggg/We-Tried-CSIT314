@@ -109,7 +109,7 @@ class FlaskTest(unittest.TestCase):
         
         if response.status_code == 200:
             if "Logged in successfully!" in response.text:
-                print("Login successful")
+                print("Login successful as Test User")
             elif "Incorrect password, try again." in response.text:
                 print("Error: Incorrect password, try again.")
             elif "Your account is disabled. Please contact support." in response.text:
@@ -122,9 +122,7 @@ class FlaskTest(unittest.TestCase):
         # Access buy page after login
         response = self.app.get('/buy')
         self.assertEqual(response.status_code, 200)
-        if response.status_code == 200:
-            if "Logged in successfully!" in response.text:
-                print("Redirected to:", response.location)
+        print("Redirected to /buy:", response.location) 
 
 
 if __name__ == '__main__':
