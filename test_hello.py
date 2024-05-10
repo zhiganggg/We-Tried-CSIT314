@@ -1,7 +1,8 @@
 import unittest, time
 from flask import Flask
 from flask_login import UserMixin, LoginManager, login_user, logout_user, current_user
-from run import app,db
+from run import app
+from app import db
 from app.entity.entity import User  # Assuming your User model is in models.py
 from werkzeug.security import generate_password_hash, check_password_hash
 
