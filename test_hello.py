@@ -12,5 +12,18 @@ class FlaskTest(unittest.TestCase):
         response = self.app.get('/buy')
         self.assertEqual(response.status_code, 302)  # Redirect to login page
 
+    def test_buy_page_logged_in(self):
+        # Login
+        response = self.client.post('/login', data=dict(username='test_user', password='test_password'), follow_redirects=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(b'Logged in successfully' in response.data)
+
+        # Access buy page after login
+        response = self.client.get('/buy')
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'Buy Page', response.data)
+        self.assertIn(b'Listings', response.data)  # Check if listings are rendered
+        # Add more assertions as needed
+
 if __name__ == '__main__':
     unittest.main()
