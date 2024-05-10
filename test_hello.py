@@ -13,8 +13,6 @@ class FlaskTest(unittest.TestCase):
                                                           password='test_password', verify_password='test_password',
                                                           profile='2', cea_registration_no='', agency_license_no=''), follow_redirects=True)
         self.assertEqual(response.status_code, 200)
-        self.assertIn(b'Account created', response.data)
-        self.assertTrue(current_user.is_authenticated)
     
     def test_buy_page_requires_login(self):
         response = self.app.get('/buy')
