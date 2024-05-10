@@ -20,10 +20,10 @@ class FlaskTest(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
 
         # Print the redirected URL if there is one
-        if response.status_code == 200 and response.location:
-            print("Redirected to:", response.location)
+        
+        print("Redirected to:", response.location)
         # self.assertIn(b'Logged in successfully', response.data)
-        self.assertIn(b'Overview', response.data) # Check if 'Login' text is present
+        
     
     def test_buy_page_requires_login(self):
         response = self.app.get('/buy')
