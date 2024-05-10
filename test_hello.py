@@ -20,10 +20,12 @@ class FlaskTest(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         
         if response.status_code == 200:
-            if "Logged in successfully!" not in response.text:
-                print("Unable load content")
-            else:
+            if "Logged in successfully!" in response.text:
                 print("Login successful")
+            elif "Incorrect password, try again." in response.text or "Your account is disabled. Please contact support." in response.text or "User does not exist." in response.text:
+                print("Error login in one of the 3 reasons")
+            else:
+                print("Error login")
         
     
     def test_buy_page_requires_login(self):
