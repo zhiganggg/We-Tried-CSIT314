@@ -28,6 +28,7 @@ class FlaskTest(unittest.TestCase):
     def test_buy_page_requires_login(self):
         response = self.app.get('/buy')
         self.assertEqual(response.status_code, 302)  # Redirect to login page
+        print("[Buy]Redirected to:", response.location)
 
     
 
