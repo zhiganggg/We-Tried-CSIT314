@@ -1,19 +1,39 @@
 # app/control/controller.py
 from app.entity.entity import *
 
-#LoginManger API
-class loginManagerController:
+#1
+#LoginManager => [LoginManagerController]
+class loginManagerController: #API
     def get(id):
         return User.get_user_id(id)
 
-#57, 83
-#LoginController
-class loginController:
+#2
+#DisplayLandingPage => [DisplayLandingController]
+class displayLandingController: 
+    def get(self):
+        return Listing.get_all_listings()
+
+#3
+#LoginUser => [LoginUserController]
+class loginUserController: #57, 69, 83, 92
     def get(self, email):
         return User.get_user_by_email(email)
 
-#SignupController
-class signupController:
+#4
+#DisplaySignupPage => [DisplaySignupController]
+class displaySignupController: #68, 82, 91
+    def get(self):
+        return Profile.get_all_profiles()
+
+#5
+#SignupUser => [CEAController]
+class ceaController: 
+    def get(self, cea_registration_no):
+        return Agent.get_cea_no(cea_registration_no)
+
+#6
+#SignupUser => [SignupUserController]
+class signupUserController: #68, 82, 91
     def get(self, email, first_name, last_name, password, 
              profile_id, cea_registration_no, agency_license_no):
         
@@ -27,102 +47,59 @@ class signupController:
 
         return new_user
 
-#ceaController
-class ceaController:
-    def get(self, cea_registration_no):
-        return Agent.get_cea_no(cea_registration_no)
-
-#ProfileController
-class profileController:
-    def get(self):
-        return Profile.get_all_profiles()
-
-#CreateProfileController
-class createProfileController:
-    def get(self, name, description):
-        return Profile.create_profile(name, description)
-
-#UpdateProfileController
-class updateProfileController:
-    def get(self, profile_id, name, description):
-        return Profile.update_profile(profile_id, name, description)
-
-#DeleteProfileController
-class deleteProfileController:
-    def get(self, profile_id):
-        return Profile.delete_profile(profile_id)
-    
-class searchProfileController:
-    def get(self, search_query):
-        return Profile.search_profile(search_query)
-
-#UserController
-class userController:
-    def get(self):
-        return User.get_all_users()
-
-#UpdateUserController
-class updateUserController:
+#7
+#UpdateUserAccount => [UpdateUserAccountController]
+class updateUserAccountController: #72, 85, 94
     def get(self, user_id, email, first_name, last_name):
         return User.update_user(user_id, email, first_name, last_name)
 
-#UpdateUserStatusController
-class updateUserStatusController:
-    def get(self, user_id):
-        return User.update_status(user_id)
-    
-#UpdateUserPasswordController
-class updateUserPasswordController:
+#8    
+#UpdateUserPassword => [UpdateUserPasswordController]
+class updateUserPasswordController: #72, 85, 94
     def get(self, user_id, password):
         return User.update_password(user_id, password)
 
-#SearchUserController
-class searchUserController:
-    def get(self, search_query):
-        return User.search_user(search_query)
+#9
+#DisplayHomePage => [DisplayAdminHomeController]
+class displayAdminHomeController: 
+    def get(self):
+        return Listing.get_all_listings(), User.get_all_users()
 
-#ViewListingsController
-class viewListingsController:
+#10    
+#DisplayHomePage => [DisplayHomeController]
+class displayHomeController: 
+    def get(self, user, start_date, end_date):
+
+        if user.agent:
+            user_listings = Listing.get_listing_by_agent(user.agent.id)
+        else:
+            user_listings = Listing.get_listing_by_user(user.id)
+
+        listing_ids = [listing.id for listing in user_listings]
+
+        return View.get_views_in_period(listing_ids, start_date, end_date), Shortlist.get_shortlists_in_period(listing_ids, start_date, end_date)
+
+#11
+#DisplayBuyPage => [DisplayBuyController]
+class displayBuyController: 
     def get(self):
         return Listing.get_all_listings()
 
-#ViewListingController
-class viewListingController:
-    def get(self, user_id, listing_id):
-        
-        listing = Listing.get_listing_id(listing_id)
-        if listing:
-            View.create_view(user_id, listing_id)
-            return listing
-        else:
-            return False
-
-#ViewListingController
-class getListingController:
-    def get(self, listing_id):
-        return Listing.get_listing_id(listing_id)
-    
-class userListingController:
-    def get(self, user):
-
-        if user.agent:
-            return Listing.get_listing_by_agent(user.agent.id)
-        
-        else:
-            return Listing.get_listing_by_user(user.id)
-
-#SearchListingLocationController
-class searchListingLocationController:
+#12
+#SearchListingLocation => [SearchListingLocationController]
+class searchListingLocationController: 
     def get(self, search_query):
         return Listing.search_listing_by_location(search_query)
-    
-#SearchListingTypeController
-class searchListingTypeController:
+
+#13    
+#SearchListingType => [SearchListingTypeController]
+class searchListingTypeController: 
     def get(self, type):
         return Listing.search_listing_by_type(type)
 
-#SearchListingPriceController    
-class searchListingPriceController:
+#14
+#SearchListingPrice => [SearchListingPriceController]
+class searchListingPriceController: 
     def get(self, min_price, max_price):
         
         if min_price and max_price:
@@ -137,8 +114,9 @@ class searchListingPriceController:
         else:
             return Listing.get_all_listings
 
-#SearchListingBedroomController        
-class searchListingBedroomController:
+#15
+#SearchListingBedroom => [SearchListingBedroomController]
+class searchListingBedroomController: 
     def get(self, bedrooms):
 
         if bedrooms == "5":
@@ -147,15 +125,51 @@ class searchListingBedroomController:
         else:
             return Listing.search_by_bedrooms(bedrooms)
 
-#CreateListingController
+#16    
+#ShorlistListing => [ShortlistListingController]
+class shortlistListingController: #77, 78
+    def get(self, user_id, listing_id):
+            return Listing.get_listing_id(listing_id), Shortlist.manage_shortlist(user_id, listing_id)
+
+#17    
+#ViewListing => [ViewListingController]
+class viewListingController: 
+    def get(self, user_id, listing_id):
+        
+        listing = Listing.get_listing_id(listing_id)
+        if listing:
+            View.create_view(user_id, listing_id)
+            return listing
+        else:
+            return False
+#18        
+#DisplaySell => [DisplaySellController]
+class displaySellController: 
+    def get(self):
+        return Listing.get_all_listings()
+    
+#19
+#CreateListing => [CreateListingController]
 class createListingController:
     def get(self, title, description, type, price, bedrooms, 
-             bathrooms, size_sqft, location, file_path, user_id, agent_id):
+             bathrooms, size_sqft, location, file_path, user_email, agent_id):
         
-        return Listing.create_listing(title, description, type, price, bedrooms, 
-                                      bathrooms, size_sqft, location, file_path, user_id, agent_id)
+        user = User.get_user_by_email(user_email)
 
-#UpdateListingController
+        if user:
+            return Listing.create_listing(title, description, type, price, bedrooms, 
+                                        bathrooms, size_sqft, location, file_path, user.id, agent_id)
+        else:
+            return None
+
+#20
+#DisplayUpdateListing => [DisplayUpdateListingController]
+class displayUpdateListingController:
+    def get(self, listing_id):
+        return Listing.get_listing_id(listing_id)
+
+#21
+#UpdateListing => [UpdateListingController]
 class updateListingController:
     def get(self, listing_id, title, description, type, price, 
              bedrooms, bathrooms, size_sqft, location, file_path):
@@ -163,37 +177,32 @@ class updateListingController:
         return Listing.update_listing(listing_id, title, description, type, price, 
                                       bedrooms, bathrooms, size_sqft, location, file_path)
 
-#UpdateListingStatusController    
+#22
+#UpdateListingStatus => [UpdateListingStatusController]
 class updateListingStatusController:
     def get(self, listing_id):
         return Listing.update_status(listing_id)
     
-#DeleteListingController
+#23
+#DeleteListing => DeleteListingController
 class deleteListingController:
     def get(self, listing_id):
         return Listing.delete_listing(listing_id)
-
-#ShortlistListingController    
-class shortlistListingController:
-    def get(self, user_id, listing_id):
-            return Shortlist.manage_shortlist(user_id, listing_id)
-
-#ViewListingsByAgentController    
-class viewListingsByAgentController:
+    
+#24
+#DisplayFindAgent => [DisplayFindAgentController]
+class displayFindAgentController:
     def get(self):
         return Listing.get_all_listings_with_agents()
     
-#GetAgentController
-class getAgentController:
+#25
+#ViewAgent => [ViewAgentController]    
+class viewAgentController:
     def get(self, agent_id):
-        return Agent.get_agent_id(agent_id)
+        return Agent.get_agent_id(agent_id), Review.get_review_by_agent(agent_id)
     
-#GetReviewsController
-class getReviewsController:
-    def get(self, agent_id):
-        return Review.get_review_by_agent(agent_id)
-    
-#CreateRatingController
+#26    
+#CreateRating => [CreateRatingController]
 class createRatingController:
     def get(self, agent_id, user_id, rating_value):
 
@@ -205,7 +214,8 @@ class createRatingController:
         else:
             return False, agent
         
-#CreateCommentController
+#27        
+#CreateComment => [CreateCommentController]
 class createCommentController:
     def get(self, agent_id, user_id, comment_value):
 
@@ -217,7 +227,8 @@ class createCommentController:
         else:
             return False, agent
 
-#DeleteRatingController
+#28
+#DeleteRating => [DeleteRatingController]
 class deleteRatingController:
     def get(self, agent_id, user_id):
 
@@ -235,7 +246,8 @@ class deleteRatingController:
             
         return False, agent
 
-#DeleteCommentController
+#29
+#DeleteComment => [DeleteCommentController]
 class deleteCommentController:
     def get(self, agent_id, user_id):
 
@@ -252,15 +264,57 @@ class deleteCommentController:
                 return True, agent
         
         return False, agent
-
-#GetViewsInPeriodController        
-class getViewsInPeriodController:
-    def get(self, listing_ids, start_date, end_date):
-        return View.get_views_in_period(listing_ids, start_date, end_date)
     
-#GetShortlistsInPeriodController
-class getShortlistsInPeriodController:
-    def get(self, listing_ids, start_date, end_date):
-        return Shortlist.get_shortlists_in_period(listing_ids, start_date, end_date)
-            
+#30
+#DisplayUserPage => [DisplayUserController]
+class displayUserController:
+    def get(self):
+        return User.get_all_users()
 
+#31    
+#UpdateUser => [UpdateUserController]
+class updateUserController:
+    def get(self, user_id, email, first_name, last_name):
+        return User.update_user(user_id, email, first_name, last_name)
+
+#32
+#UpdateUserStatus => [UpdateUserStatusController]
+class updateUserStatusController:
+    def get(self, user_id):
+        return User.update_status(user_id)
+
+#33
+#SearchUser => [SearchUserController]
+class searchUserController:
+    def get(self, search_query):
+        return User.search_user(search_query)
+
+#34
+#DisplayProfilePage => [DisplayProfileController]
+class displayProfileController:
+    def get(self):
+        return Profile.get_all_profiles()
+
+#35
+#CreateProfile => [CreateProfileController]
+class createProfileController:
+    def get(self, name, description):
+        return Profile.create_profile(name, description)
+
+#36
+#UpdateProfle => [UpdateProfileController]
+class updateProfileController:
+    def get(self, profile_id, name, description):
+        return Profile.update_profile(profile_id, name, description)
+
+#37
+#DeleteProfile => [DeleteProfileController]
+class deleteProfileController:
+    def get(self, profile_id):
+        return Profile.delete_profile(profile_id)
+
+#38    
+#SearchProfile => [SearchProfileController]
+class searchProfileController:
+    def get(self, search_query):
+        return Profile.search_profile(search_query)

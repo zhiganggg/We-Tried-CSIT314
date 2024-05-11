@@ -260,8 +260,12 @@ class Listing(db.Model):
                           bathrooms=bathrooms, size_sqft=size_sqft, location=location, photo=file_path, user_id=user_id, 
                           agent_id=agent_id)
         db.session.add(new_listing)
-        db.session.commit()
-        return new_listing
+        try:
+            db.session.commit()
+            return True
+        except:
+            db.session.rollback()
+            return False
     
     @classmethod
     def update_listing(cls, id, title, description, type, price, 
@@ -432,7 +436,7 @@ class View(db.Model):
         db.session.add(new_view)
         db.session.commit()
         return new_view
-    
+
     @classmethod
     def get_views_in_period(cls, listing_ids, start_date, end_date):
 
@@ -484,7 +488,6 @@ class Review(db.Model):
         else:
             return False
         
-
 class Rating(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     rating = db.Column(db.Float, nullable=False)
