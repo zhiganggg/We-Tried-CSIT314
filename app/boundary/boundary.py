@@ -560,8 +560,6 @@ boundary.add_url_rule("/find-agent", view_func=displayFindAgent.as_view("display
 class viewAgent(MethodView):
     @login_required
     def get(self, first_name, last_name, agent_id):
-        agent = getAgentController().get(agent_id)
-        reviews = getReviewsController().get(agent_id)
 
         agent, reviews = viewAgentController().get(agent_id)
 
