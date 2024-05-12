@@ -40,7 +40,7 @@ content %}
     <hr />
     <div class="p-4 p-md-5 mb-4 rounded text-body-emphasis">
       <h1>Customer Reviews</h1>
-      {% for review in reviews %}
+      {% for feedback in feedbacks %}
       <div class="p-4 mb-4 card text-center bg-light">
         <div class="list-group-item d-flex gap-3">
           <svg
@@ -59,10 +59,10 @@ content %}
           </svg>
           <div class="user-name w-100">
             <h6 style="text-align: left; margin-left: 3px">
-              {{review.user.first_name}} {{review.user.last_name}}
+              {{feedback.user.first_name}} {{feedback.user.last_name}}
             </h6>
             <div class="d-flex justify-content-start align-items-center gap-2">
-              {% for rating in review.ratings %}
+              {% for rating in feedback.ratings %}
               <input
                 class="rating bg-light"
                 max="5"
@@ -71,18 +71,18 @@ content %}
                 type="range"
               />{% endfor %}
               <span style="color: #999999; font-size: 12px"
-                >{{review.date_created.strftime('%d %B %Y')}}</span
+                >{{feedback.date_created.strftime('%d %B %Y')}}</span
               >
             </div>
             <br />
-            {% for comment in review.comments %}
+            {% for review in feedback.reviews %}
             <div style="font-size: 14px; text-align: left; margin-left: 3px">
-              {{comment.comment}}
+              {{review.review}}
             </div>
             {% endfor %}
           </div>
           <small class>
-            {% if user.id == review.user.id %}
+            {% if user.id == feedback.user.id %}
             <button
               type="button"
               class="btn btn-sm btn-secondary dropdown-toggle"
@@ -97,7 +97,7 @@ content %}
                 </form>
               </li>
               <li>
-                <form action="/delete-comment/{{agent.id}}" method="post">
+                <form action="/delete-review/{{agent.id}}" method="post">
                   <button type="submit" class="dropdown-item">
                     Delete Comment
                   </button>
@@ -128,12 +128,12 @@ content %}
           <li class="nav-item" role="presentation">
             <button
               class="nav-link"
-              id="pills-comment-tab"
+              id="pills-review-tab"
               data-bs-toggle="pill"
-              data-bs-target="#pills-comment"
+              data-bs-target="#pills-review"
               type="button"
               role="tab"
-              aria-controls="pills-comment"
+              aria-controls="pills-review"
               aria-selected="false"
             >
               Review
@@ -177,15 +177,15 @@ content %}
           </div>
           <div
             class="tab-pane fade"
-            id="pills-comment"
+            id="pills-review"
             role="tabpanel"
-            aria-labelledby="pills-comment-tab"
+            aria-labelledby="pills-review-tab"
             tabindex="0"
           >
             <form
-              id="commentForm"
+              id="reviewForm"
               method="POST"
-              action="/create-comment/{{agent.id}}"
+              action="/create-review/{{agent.id}}"
             >
               <input
                 type="text"
@@ -194,8 +194,8 @@ content %}
                 readonly
               />
               <textarea
-                id="comment"
-                name="comment"
+                id="review"
+                name="review"
                 class="form-control mb-3"
                 placeholder="Comment something!"
               ></textarea>

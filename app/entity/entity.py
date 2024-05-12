@@ -99,7 +99,7 @@ class User(db.Model, UserMixin):
     listing = db.relationship("Listing", back_populates="user")
     shortlists = db.relationship("Shortlist", back_populates="user")
     views = db.relationship("View", back_populates="user")
-    reviews = db.relationship("Review", back_populates="user")
+    feedbacks = db.relationship("Feedback", back_populates="user")
 
     @classmethod
     def create_user(cls, email, first_name, last_name, password, profile_id):
@@ -197,7 +197,7 @@ class Agent(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey("user.id", ondelete="CASCADE"), nullable=False)
     user = db.relationship("User", back_populates="agent", uselist=False)
     listings = db.relationship("Listing", back_populates="agent")
-    reviews = db.relationship("Review", back_populates="agent")
+    feedbacks = db.relationship("Feedback", back_populates="agent")
 
     @classmethod
     def create_agent(cls, cea_registration_no, agency_license_no, user_id):
@@ -444,44 +444,44 @@ class View(db.Model):
                                 cls.date_created <= end_date,
                                 cls.listing_id.in_(listing_ids)).all()
 
-class Review(db.Model):
+class Feedback(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     date_created = db.Column(db.DateTime(timezone=True), default=func.now())
-    ratings = db.relationship("Rating", back_populates="review")
-    comments = db.relationship("Comment", back_populates="review")
+    ratings = db.relationship("Rating", back_populates="feedback")
+    reviews = db.relationship("Review", back_populates="feedback")
     user_id = db.Column(db.Integer, db.ForeignKey("user.id", ondelete="CASCADE"), nullable=False)
-    user = db.relationship("User", back_populates="reviews", uselist=False)
+    user = db.relationship("User", back_populates="feedbacks", uselist=False)
     agent_id = db.Column(db.Integer, db.ForeignKey("agent.id", ondelete="CASCADE"), nullable=False)
-    agent = db.relationship("Agent", back_populates="reviews", uselist=False)
+    agent = db.relationship("Agent", back_populates="feedbacks", uselist=False)
 
     @classmethod
-    def get_or_create_review(cls, agent_id, user_id):
-        review = cls.query.filter_by(agent_id=agent_id, user_id=user_id).first()
+    def get_or_create_feedback(cls, agent_id, user_id):
+        feedback = cls.query.filter_by(agent_id=agent_id, user_id=user_id).first()
 
-        if review:
-            return review
+        if feedback:
+            return feedback
 
-        new_review = cls(agent_id=agent_id, user_id=user_id)
-        db.session.add(new_review)
+        new_feedback = cls(agent_id=agent_id, user_id=user_id)
+        db.session.add(new_feedback)
         db.session.commit()
-        return new_review
+        return new_feedback
     
     @classmethod
-    def get_review_by_agent(cls, agent_id):
+    def get_feedback_by_agent(cls, agent_id):
 
         return cls.query.filter_by(agent_id=agent_id).all()
     
     @classmethod
-    def get_review_by_agent_user(cls, agent_id, user_id):
+    def get_feedback_by_agent_user(cls, agent_id, user_id):
 
         return cls.query.filter_by(agent_id=agent_id, user_id=user_id).first()
     
     @classmethod
-    def delete_review(cls, id):
-        review = cls.query.filter_by(id=id).first()
+    def delete_feedback(cls, id):
+        feedback = cls.query.filter_by(id=id).first()
 
-        if review:
-            db.session.delete(review)
+        if feedback:
+            db.session.delete(feedback)
             db.session.commit()
             return True
         
@@ -491,26 +491,26 @@ class Review(db.Model):
 class Rating(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     rating = db.Column(db.Float, nullable=False)
-    review_id = db.Column(db.Integer, db.ForeignKey("review.id"), nullable=False)
-    review = db.relationship("Review", back_populates="ratings", uselist=False)
+    feedback_id = db.Column(db.Integer, db.ForeignKey("feedback.id"), nullable=False)
+    feedback = db.relationship("Feedback", back_populates="ratings", uselist=False)
 
     @classmethod
-    def create_or_update_rating(cls, rating_value, review_id):
-        rating = cls.query.filter_by(review_id=review_id).first()
+    def create_or_update_rating(cls, rating_value, feedback_id):
+        rating = cls.query.filter_by(feedback_id=feedback_id).first()
 
         if rating:
             rating.rating = rating_value
 
         else:
-            new_rating = cls(review_id=review_id, rating=rating_value)
+            new_rating = cls(feedback_id=feedback_id, rating=rating_value)
             db.session.add(new_rating)
         
         db.session.commit()
-        return rating
+        return True
 
     @classmethod
-    def delete_rating(cls, review_id):
-        rating = cls.query.filter_by(review_id=review_id).first()
+    def delete_rating(cls, feedback_id):
+        rating = cls.query.filter_by(feedback_id=feedback_id).first()
 
         if rating:
             db.session.delete(rating)
@@ -520,32 +520,32 @@ class Rating(db.Model):
         else:
             return False
 
-class Comment(db.Model):
+class Review(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    comment = db.Column(db.Text, nullable=False)
-    review_id = db.Column(db.Integer, db.ForeignKey("review.id"), nullable=False)
-    review = db.relationship("Review", back_populates="comments", uselist=False)
+    review = db.Column(db.Text, nullable=False)
+    feedback_id = db.Column(db.Integer, db.ForeignKey("feedback.id"), nullable=False)
+    feedback = db.relationship("Feedback", back_populates="reviews", uselist=False)
 
     @classmethod
-    def create_or_update_comment(cls, comment_value, review_id):
-        comment = cls.query.filter_by(review_id=review_id).first()
+    def create_or_update_review(cls, review_value, feedback_id):
+        review = cls.query.filter_by(feedback_id=feedback_id).first()
 
-        if comment:
-            comment.comment = comment_value
+        if review:
+            review.review = review_value
 
         else:
-            new_comment = cls(comment=comment_value, review_id=review_id)
-            db.session.add(new_comment)
+            new_review = cls(review=review_value, feedback_id=feedback_id)
+            db.session.add(new_review)
         
         db.session.commit()
-        return comment
+        return review
     
     @classmethod
-    def delete_comment(cls, review_id):
-        comment = cls.query.filter_by(review_id=review_id).first()
+    def delete_review(cls, feedback_id):
+        review = cls.query.filter_by(feedback_id=feedback_id).first()
 
-        if comment:
-            db.session.delete(comment)
+        if review:
+            db.session.delete(review)
             db.session.commit()
             return True
         

@@ -126,6 +126,7 @@ class signupUser(MethodView): #68, 82, 91
                 new_user = signupUserController().get(email, first_name, last_name, generate_password_hash(password, method="pbkdf2:sha256"), 
                                                profile_id, cea_registration_no, agency_license_no)
                 if new_user:
+                    print(new_user)
                     login_user(new_user, remember=True)
                     flash("Account created!", category="success")
                     return redirect(url_for("boundary.displayBuy"))
@@ -575,8 +576,8 @@ class createRating(MethodView):
         rating_value = request.form["rating"]
 
         rating, agent = createRatingController().get(agent_id, current_user.id, rating_value)
-        
-        if not rating:
+
+        if rating is False:
             flash("An error occurred while rating the agent.", category="error")
 
         return redirect(url_for("boundary.viewAgent", first_name=agent.user.first_name, last_name=agent.user.last_name, agent_id=agent_id))
@@ -584,20 +585,20 @@ class createRating(MethodView):
 boundary.add_url_rule("/create-rating/<int:agent_id>", view_func=createRating.as_view("createRating"))
 
 #27
-#[CreateComment] => CreateCommentController
-class createComment(MethodView):
+#[CreateReview] => CreateReviewController
+class createReview(MethodView):
     @login_required
     def post(self, agent_id):
-        comment_value = request.form["comment"]
+        review_value = request.form["review"]
 
-        comment, agent = createCommentController().get(agent_id, current_user.id, comment_value)
+        review, agent = createReviewController().get(agent_id, current_user.id, review_value)
 
-        if comment is False:
+        if review is False:
             flash("An error occurred while rating the agent.", category="error")
 
         return redirect(url_for("boundary.viewAgent", first_name=agent.user.first_name, last_name=agent.user.last_name, agent_id=agent_id))
     
-boundary.add_url_rule("/create-comment/<int:agent_id>", view_func=createComment.as_view("createComment"))
+boundary.add_url_rule("/create-review/<int:agent_id>", view_func=createReview.as_view("createReview"))
 
 #28
 #DeleteRating => DeleteRatingController
@@ -607,31 +608,31 @@ class deleteRating(MethodView):
         rating, agent = deleteRatingController().get(agent_id, current_user.id)
 
         if rating:
-            flash("Rating deleted successfully", category="success")
+            flash("Rating deleted successfully!", category="success")
 
         else:
-            flash("An error occurred while deleting the rating", category="error")
+            flash("An error occurred while deleting the rating.", category="error")
 
         return redirect(url_for("boundary.viewAgent", first_name=agent.user.first_name, last_name=agent.user.last_name, agent_id=agent_id))
 
 boundary.add_url_rule("/delete-rating/<int:agent_id>", view_func=deleteRating.as_view("deleteRating"))
 
 #29
-#[DeleteComment] => DeleteCommentController
-class deleteComment(MethodView):
+#[DeleteReview] => DeleteReviewController
+class deleteReview(MethodView):
     @login_required
     def post(self, agent_id):
-        comment, agent = deleteCommentController().get(agent_id, current_user.id)
+        review, agent = deleteReviewController().get(agent_id, current_user.id)
 
-        if comment:
-            flash("Comment deleted successfully", category="success")
+        if review:
+            flash("Review deleted successfully!", category="success")
 
         else:
-            flash("An error occurred while deleting the comment", category="error")
+            flash("An error occurred while deleting the review.", category="error")
 
         return redirect(url_for("boundary.viewAgent", first_name=agent.user.first_name, last_name=agent.user.last_name, agent_id=agent_id))
     
-boundary.add_url_rule("/delete-comment/<int:agent_id>", view_func=deleteComment.as_view("deleteComment"))
+boundary.add_url_rule("/delete-review/<int:agent_id>", view_func=deleteReview.as_view("deleteReview"))
 
 #30
 #[DisplayUserPage] => DisplayUserController
@@ -761,10 +762,10 @@ class deleteProfile(MethodView):
         
         delete_profile = deleteProfileController().get(profile_id)
         if delete_profile:
-            flash("Profile deleted successfully", category="success")
+            flash("Profile deleted successfully!", category="success")
 
         else:
-            flash("An error occurred while deleting the profile", category="error")
+            flash("An error occurred while deleting the profile.", category="error")
 
         return redirect(url_for("boundary.displayProfile"))
 
