@@ -476,6 +476,7 @@ class updateListing(MethodView):
             if photo:
                 file_name = secure_filename(photo.filename)
                 file_path = f"./app/media/{file_name}"
+                photo.save(file_path)
 
             else:
                 file_path = None
@@ -483,8 +484,7 @@ class updateListing(MethodView):
             update_listing = updateListingController().get(listing_id, title, description, type, price, bedrooms, 
                                                 bathrooms, size_sqft, location, file_path)
                 
-            if update_listing:
-                photo.save(file_path)
+            if update_listing: 
                 flash("Listing updated!", category="success")
                 return redirect(url_for("boundary.displaySell"))
             
