@@ -106,7 +106,7 @@ class User(db.Model, UserMixin):
         user = cls.query.filter_by(email=email).first()
 
         if user:
-            return False
+            return None
         
         else:
             new_user = cls(email=email, first_name=first_name, last_name=last_name, password=password, profile_id=profile_id)
@@ -167,7 +167,7 @@ class User(db.Model, UserMixin):
         return cls.query.all()
 
     @classmethod
-    def get_user_id(cls, id):
+    def get_user_by_id(cls, id):
 
         return cls.query.get(id)
 
@@ -204,7 +204,7 @@ class Agent(db.Model):
         agent = cls.query.filter_by(cea_registration_no=cea_registration_no).first()
 
         if agent:
-            return None
+            return False
 
         else:
             new_agent = cls(cea_registration_no=cea_registration_no, agency_license_no=agency_license_no, user_id=user_id)
@@ -213,7 +213,7 @@ class Agent(db.Model):
             return new_agent
     
     @classmethod
-    def get_agent_id(cls, id):
+    def get_agent_by_id(cls, id):
 
         return cls.query.get(id)
 
@@ -330,7 +330,7 @@ class Listing(db.Model):
         return cls.query.all()
     
     @classmethod
-    def get_listing_id(cls, id):
+    def get_listing_by_id(cls, id):
 
         return cls.query.get(id)
     

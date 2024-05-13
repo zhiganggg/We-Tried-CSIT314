@@ -5,7 +5,7 @@ from app.entity.entity import *
 #LoginManager => [LoginManagerController]
 class loginManagerController: #API
     def get(id):
-        return User.get_user_id(id)
+        return User.get_user_by_id(id)
 
 #2
 #DisplayLandingPage => [DisplayLandingController]
@@ -25,11 +25,11 @@ class displaySignupController: #68, 82, 91
     def get(self):
         return Profile.get_all_profiles()
 
-#5
-#SignupUser => [CEAController]
-class ceaController: 
-    def get(self, cea_registration_no):
-        return Agent.get_cea_no(cea_registration_no)
+# #5 [REMOVED]
+# #SignupUser => [CEAController]
+# class ceaController: 
+#     def get(self, cea_registration_no):
+#         return Agent.get_cea_no(cea_registration_no)
 
 #6
 #SignupUser => [SignupUserController]
@@ -37,15 +37,21 @@ class signupUserController: #68, 82, 91
     def get(self, email, first_name, last_name, password, 
              profile_id, cea_registration_no, agency_license_no):
         
-        new_user = User.create_user(email, first_name, last_name, password, profile_id)
+        agent = Agent.get_cea_no(cea_registration_no)
 
-        if not new_user:
+        if agent:
             return False
+        
+        else:
+            new_user = User.create_user(email, first_name, last_name, password, profile_id)
 
-        if new_user.profile.name == "Agent":
-            Agent.create_agent(cea_registration_no, agency_license_no, new_user.id)
+            if not new_user:
+                return None
 
-        return new_user
+            if new_user.profile.name == "Agent":
+                Agent.create_agent(cea_registration_no, agency_license_no, new_user.id)
+
+            return new_user
 
 #7
 #UpdateUserAccount => [UpdateUserAccountController]
@@ -129,14 +135,14 @@ class searchListingBedroomController:
 #ShorlistListing => [ShortlistListingController]
 class shortlistListingController: #77, 78
     def get(self, user_id, listing_id):
-            return Listing.get_listing_id(listing_id), Shortlist.manage_shortlist(user_id, listing_id)
+            return Listing.get_listing_by_id(listing_id), Shortlist.manage_shortlist(user_id, listing_id)
 
 #17    
 #ViewListing => [ViewListingController]
 class viewListingController: 
     def get(self, user_id, listing_id):
         
-        listing = Listing.get_listing_id(listing_id)
+        listing = Listing.get_listing_by_id(listing_id)
         if listing:
             View.create_view(user_id, listing_id)
             return listing
@@ -166,7 +172,7 @@ class createListingController:
 #DisplayUpdateListing => [DisplayUpdateListingController]
 class displayUpdateListingController:
     def get(self, listing_id):
-        return Listing.get_listing_id(listing_id)
+        return Listing.get_listing_by_id(listing_id)
 
 #21
 #UpdateListing => [UpdateListingController]
@@ -199,14 +205,14 @@ class displayFindAgentController:
 #ViewAgent => [ViewAgentController]    
 class viewAgentController:
     def get(self, agent_id):
-        return Agent.get_agent_id(agent_id), Feedback.get_feedback_by_agent(agent_id)
+        return Agent.get_agent_by_id(agent_id), Feedback.get_feedback_by_agent(agent_id)
     
 #26    
 #CreateRating => [CreateRatingController]
 class createRatingController:
     def get(self, agent_id, user_id, rating_value):
 
-        agent = Agent.get_agent_id(agent_id)
+        agent = Agent.get_agent_by_id(agent_id)
         feedback = Feedback.get_or_create_feedback(agent_id, user_id)
 
         if feedback:
@@ -219,7 +225,7 @@ class createRatingController:
 class createReviewController:
     def get(self, agent_id, user_id, review_value):
 
-        agent = Agent.get_agent_id(agent_id)
+        agent = Agent.get_agent_by_id(agent_id)
         feedback = Feedback.get_or_create_feedback(agent_id, user_id)
 
         if feedback:
@@ -232,7 +238,7 @@ class createReviewController:
 class deleteRatingController:
     def get(self, agent_id, user_id):
 
-        agent = Agent.get_agent_id(agent_id)
+        agent = Agent.get_agent_by_id(agent_id)
         feedback = Feedback.get_feedback_by_agent_user(agent_id, user_id)
 
         if feedback:
@@ -251,7 +257,7 @@ class deleteRatingController:
 class deleteReviewController:
     def get(self, agent_id, user_id):
 
-        agent = Agent.get_agent_id(agent_id)
+        agent = Agent.get_agent_by_id(agent_id)
         feedback = Feedback.get_feedback_by_agent_user(agent_id, user_id)
 
         if feedback:

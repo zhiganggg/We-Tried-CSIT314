@@ -117,22 +117,19 @@ class signupUser(MethodView): #68, 82, 91
         
         else:
 
-            agent = ceaController().get(cea_registration_no)
-
-            if agent:
+            new_user = signupUserController().get(email, first_name, last_name, generate_password_hash(password, method="pbkdf2:sha256"), 
+                                            profile_id, cea_registration_no, agency_license_no)
+            if new_user is False:
                 flash("Agent with CEA registration number {} already exists.".format(cea_registration_no), category="error")
-            
-            else:
-                new_user = signupUserController().get(email, first_name, last_name, generate_password_hash(password, method="pbkdf2:sha256"), 
-                                               profile_id, cea_registration_no, agency_license_no)
-                if new_user:
-                    print(new_user)
-                    login_user(new_user, remember=True)
-                    flash("Account created!", category="success")
-                    return redirect(url_for("boundary.displayBuy"))
 
-                else:
-                    flash("User already exists", category="error")
+            elif new_user is None:
+                flash("User already exists", category="error")
+            
+            else:                    
+                print(new_user)
+                login_user(new_user, remember=True)
+                flash("Account created!", category="success")
+                return redirect(url_for("boundary.displayBuy"))                    
 
         return redirect(url_for("boundary.displaySignup"))
                
@@ -562,9 +559,9 @@ class viewAgent(MethodView):
     @login_required
     def get(self, first_name, last_name, agent_id):
 
-        agent, reviews = viewAgentController().get(agent_id)
+        agent, feedbacks = viewAgentController().get(agent_id)
 
-        return render_template("user/agentPage.html", user=current_user, agent=agent, reviews=reviews)
+        return render_template("user/agentPage.html", user=current_user, agent=agent, feedbacks=feedbacks)
     
 boundary.add_url_rule("/find-agent/<string:first_name>-<string:last_name>-<int:agent_id>", view_func=viewAgent.as_view("viewAgent"))
 
