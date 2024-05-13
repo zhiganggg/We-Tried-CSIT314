@@ -652,7 +652,11 @@ class updateUser(MethodView):
         first_name = request.form["first_name"]
         last_name = request.form["last_name"]
 
+        if not email or not first_name or not last_name:
+            flash("All fields are required.", category="error")
+
         update_user = updateUserController().get(user_id, email, first_name, last_name)
+        
         if update_user is None:
             flash("User not found.", category="error")
 
@@ -660,7 +664,7 @@ class updateUser(MethodView):
             flash("User email already exists.", category="error")
 
         else:
-            flash("User updated successfully.", category="success")        
+            flash("User updated successfully!", category="success")        
 
         return redirect(url_for("boundary.displayUser"))
     
@@ -716,10 +720,13 @@ class createProfile(MethodView):
         name = request.form["name"]
         description = request.form["description"]
 
+        if not name or not description:
+            flash("All fields are required.", category="error")
+
         create_profile = createProfileController().get(name, description)
         
         if create_profile:
-            flash("Profile created successfully.", category="success")
+            flash("Profile created successfully!", category="success")
         
         else:    
             flash("Profile name already exists.", category="error")
