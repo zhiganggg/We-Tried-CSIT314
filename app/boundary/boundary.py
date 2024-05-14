@@ -491,7 +491,7 @@ class updateListing(MethodView):
         else:
             flash("All fields are required.", category="error")
 
-        return redirect(url_for("boundary.displaySell"))                
+        return redirect(url_for("boundary.displayUpdateListing", listing_id=listing_id))                
     
 boundary.add_url_rule("/update-listing/<int:listing_id>", view_func=updateListing.as_view("updateListing"))
 
@@ -509,7 +509,7 @@ class updateListingStatus(MethodView):
         else:
             flash(f"Listing updated to {update_lstatus.value}.", category="success")
 
-        return redirect(url_for("boundary.sell"))
+        return redirect(url_for("boundary.displaySell"))
     
 boundary.add_url_rule("/update-lstatus/<int:listing_id>", view_func=updateListingStatus.as_view("updateListingStatus"))
 
@@ -526,7 +526,7 @@ class deleteListing(MethodView):
         else:
             flash("An error occurred while deleting the listing", category="error")
 
-        return redirect(url_for("boundary.sell"))
+        return redirect(url_for("boundary.displaySell"))
     
 boundary.add_url_rule("/delete-listing/<int:listing_id>", view_func=deleteListing.as_view("deleteListing"))
 
@@ -652,9 +652,6 @@ class updateUser(MethodView):
         first_name = request.form["first_name"]
         last_name = request.form["last_name"]
 
-        if not email or not first_name or not last_name:
-            flash("All fields are required.", category="error")
-
         update_user = updateUserController().get(user_id, email, first_name, last_name)
         
         if update_user is None:
@@ -696,6 +693,8 @@ class searchUser(MethodView):
 
         search_query = request.args.get("search")
         filtered_users = searchUserController().get(search_query)
+
+        print(filtered_users)
 
         return render_template("admin/userPage.html", user=current_user, users=filtered_users)
     
@@ -752,7 +751,7 @@ class updateProfile(MethodView):
             flash("Profile name already exists.", category="error")
 
         else:
-            flash("Profile updated successfully.", category="success")
+            flash("Profile updated successfully!", category="success")
         
         return redirect(url_for("boundary.displayProfile"))
     
@@ -783,6 +782,8 @@ class searchProfile(MethodView):
 
         search_query = request.args.get("search")
         filtered_profiles = searchProfileController().get(search_query)
+
+        print(filtered_profiles)
 
         return render_template("admin/profilePage.html", user=current_user, profiles=filtered_profiles)
 

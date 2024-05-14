@@ -57,14 +57,17 @@ class Profile(db.Model):
             
     @classmethod
     def delete_profile(cls, id):
-        profile = cls.query.get(id)
-
-        if not profile:
+        try:
+            profile = cls.query.get(id)
+            
+            if not profile:
+                return False
+            
+            db.session.delete(profile)
+            db.session.commit()
+            return True
+        except Exception:
             return False
-        
-        db.session.delete(profile)
-        db.session.commit()
-        return True
 
     @classmethod
     def get_all_profiles(cls):

@@ -22,7 +22,7 @@ def create_app():
 
    #LoginManger API
    login_manager = LoginManager()
-   login_manager.login_view = 'boundary.login'
+   login_manager.login_view = 'boundary.loginUser'
    login_manager.init_app(app)
    
    @login_manager.user_loader
