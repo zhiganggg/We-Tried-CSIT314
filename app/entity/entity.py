@@ -503,7 +503,7 @@ class Rating(db.Model):
     agent = db.relationship("Agent", back_populates="ratings", uselist=False)
 
     @classmethod
-    def create_or_update_rating(cls, rating_value, user_id, agent_id):
+    def create_rating(cls, rating_value, user_id, agent_id):
         rating = cls.query.filter_by(user_id=user_id, agent_id=agent_id).first()
 
         if rating:
@@ -542,7 +542,7 @@ class Review(db.Model):
     agent = db.relationship("Agent", back_populates="reviews", uselist=False)
 
     @classmethod
-    def create_or_update_review(cls, review_value, user_id, agent_id):
+    def create_review(cls, review_value, user_id, agent_id):
         review = cls.query.filter_by(user_id=user_id, agent_id=agent_id).first()
 
         if review:

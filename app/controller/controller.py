@@ -212,14 +212,14 @@ class viewAgentController:
 class createRatingController:
     def get(self, agent_id, user_id, rating_value):
 
-        return Rating.create_or_update_rating(rating_value, user_id, agent_id), Agent.get_agent_by_id(agent_id)
+        return Rating.create_rating(rating_value, user_id, agent_id), Agent.get_agent_by_id(agent_id)
         
 #27        
 #CreateReview => [CreateReviewController]
 class createReviewController:
     def get(self, agent_id, user_id, review_value):
 
-        return Review.create_or_update_review(review_value, user_id, agent_id), Agent.get_agent_by_id(agent_id)
+        return Review.create_review(review_value, user_id, agent_id), Agent.get_agent_by_id(agent_id)
 
 #28
 #DeleteRating => [DeleteRatingController]
