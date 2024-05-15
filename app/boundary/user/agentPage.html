@@ -71,8 +71,12 @@ content %}
                 type="range"
               />{% endfor %}
               <span style="color: #999999; font-size: 12px"
-                >{{feedback.date_created.strftime('%d %B %Y')}}</span
-              >
+                >{% if feedback.ratings and feedback.ratings[0].date_created %}
+                {{feedback.ratings[0].date_created.strftime('%d %B %Y')}} {%
+                elif feedback.reviews and feedback.reviews[0].date_created %}
+                {{feedback.reviews[0].date_created.strftime('%d %B %Y')}} {%
+                else %} No Date Available {% endif %}
+              </span>
             </div>
             <br />
             {% for review in feedback.reviews %}

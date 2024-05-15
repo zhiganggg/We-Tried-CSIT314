@@ -205,71 +205,35 @@ class displayFindAgentController:
 #ViewAgent => [ViewAgentController]    
 class viewAgentController:
     def get(self, agent_id):
-        return Agent.get_agent_by_id(agent_id), Feedback.get_feedback_by_agent(agent_id)
+        return Agent.get_agent_by_id(agent_id), Rating.get_rating_by_agent(agent_id), Review.get_rating_by_agent(agent_id)
     
 #26    
 #CreateRating => [CreateRatingController]
 class createRatingController:
     def get(self, agent_id, user_id, rating_value):
 
-        agent = Agent.get_agent_by_id(agent_id)
-        feedback = Feedback.get_or_create_feedback(agent_id, user_id)
-
-        if feedback:
-            return Rating.create_or_update_rating(rating_value, feedback.id), agent
-        else:
-            return False, agent
+        return Rating.create_or_update_rating(rating_value, user_id, agent_id), Agent.get_agent_by_id(agent_id)
         
 #27        
 #CreateReview => [CreateReviewController]
 class createReviewController:
     def get(self, agent_id, user_id, review_value):
 
-        agent = Agent.get_agent_by_id(agent_id)
-        feedback = Feedback.get_or_create_feedback(agent_id, user_id)
-
-        if feedback:
-            return Review.create_or_update_review(review_value, feedback.id), agent
-        else:
-            return False, agent
+        return Review.create_or_update_review(review_value, user_id, agent_id), Agent.get_agent_by_id(agent_id)
 
 #28
 #DeleteRating => [DeleteRatingController]
 class deleteRatingController:
     def get(self, agent_id, user_id):
 
-        agent = Agent.get_agent_by_id(agent_id)
-        feedback = Feedback.get_feedback_by_agent_user(agent_id, user_id)
-
-        if feedback:
-            delete_rating = Rating.delete_rating(feedback.id)
-            
-            if delete_rating:
-
-                if not feedback.reviews:
-                    Feedback.delete_feedback(feedback.id)
-                return True, agent
-            
-        return False, agent
+        return Rating.delete_rating(user_id, agent_id), Agent.get_agent_by_id(agent_id)
 
 #29
 #DeleteReview => [DeleteReviewController]
 class deleteReviewController:
     def get(self, agent_id, user_id):
 
-        agent = Agent.get_agent_by_id(agent_id)
-        feedback = Feedback.get_feedback_by_agent_user(agent_id, user_id)
-
-        if feedback:
-            delete_review = Review.delete_review(feedback.id)
-            
-            if delete_review:
-
-                if not feedback.ratings:
-                    Feedback.delete_feedback(feedback.id)
-                return True, agent
-        
-        return False, agent
+        return Review.delete_review(user_id, agent_id), Agent.get_agent_by_id(agent_id)
     
 #30
 #DisplayUserPage => [DisplayUserController]

@@ -12,7 +12,7 @@ payload = {
 }
 
 # Define the number of accounts to register
-num_accounts = 33
+num_accounts = 100
 
 # Loop to register multiple accounts
 for i in range(1, num_accounts+1):

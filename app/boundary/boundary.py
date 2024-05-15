@@ -559,9 +559,25 @@ class viewAgent(MethodView):
     @login_required
     def get(self, first_name, last_name, agent_id):
 
-        agent, feedbacks = viewAgentController().get(agent_id)
+        agent, ratings, reviews = viewAgentController().get(agent_id)
 
-        return render_template("user/agentPage.html", user=current_user, agent=agent, feedbacks=feedbacks)
+        feedback_list = []
+
+        user_ids = {rating.user_id for rating in ratings} | {review.user_id for review in reviews}
+
+        for user_id in user_ids:
+            user_ratings = [rating for rating in ratings if rating.user_id == user_id]
+            user_reviews = [review for review in reviews if review.user_id == user_id]
+            feedback_list.append({
+                'user_id': user_id,
+                'user': user_ratings[0].user if user_ratings else user_reviews[0].user,
+                'ratings': user_ratings,
+                'reviews': user_reviews
+            })
+
+        print(feedback_list)        
+
+        return render_template("user/agentPage.html", user=current_user, agent=agent, feedbacks=feedback_list)
     
 boundary.add_url_rule("/find-agent/<string:first_name>-<string:last_name>-<int:agent_id>", view_func=viewAgent.as_view("viewAgent"))
 
