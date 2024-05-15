@@ -415,6 +415,14 @@ class Shortlist(db.Model):
             return new_shortlist
 
     @classmethod
+    def create_shortlist(cls, date_created, user_id, listing_id):
+        
+        new_shortlist = cls(date_created=date_created, user_id=user_id, listing_id=listing_id)
+        db.session.add(new_shortlist)
+        db.session.commit()
+        return new_shortlist
+
+    @classmethod
     def get_shortlist(cls, user_id, listing_id):
 
         return cls.query.filter_by(user_id=user_id, listing_id=listing_id).first()
@@ -438,6 +446,14 @@ class View(db.Model):
     def create_view(cls, user_id, listing_id):
 
         new_view = cls(user_id=user_id, listing_id=listing_id)
+        db.session.add(new_view)
+        db.session.commit()
+        return new_view
+    
+    @classmethod
+    def create_view2(cls, date_created, user_id, listing_id):
+
+        new_view = cls(date_created=date_created, user_id=user_id, listing_id=listing_id)
         db.session.add(new_view)
         db.session.commit()
         return new_view

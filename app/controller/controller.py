@@ -288,3 +288,11 @@ class deleteProfileController:
 class searchProfileController:
     def get(self, search_query):
         return Profile.search_profile(search_query)
+    
+# class createViewCountController:
+#     def get(self, date_created, user_id, listing_id):
+#         return View.create_view2(date_created, user_id, listing_id)
+    
+# class createShortlistController:
+#     def get(self, date_created, user_id, listing_id):
+#         return Shortlist.create_shortlist(date_created, user_id, listing_id)
