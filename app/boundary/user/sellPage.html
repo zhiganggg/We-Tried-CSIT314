@@ -98,11 +98,13 @@ content %}
                 <div class="listing-meta">
                   <span
                     class="badge bg-secondary-subtle border border-light-subtle text-light-emphasis"
-                    >{{listing.views|length}} views</span
+                    >{{ listing.views | selectattr('date_created', 'le',
+                    current_time) | list | length }} views</span
                   >
                   <span
                     class="badge bg-info-subtle border border-light-subtle text-light-emphasis"
-                    >{{listing.shortlists|length if listing.shortlists else 0}}
+                    >{{ listing.shortlists | selectattr('date_created', 'le',
+                    current_time) | list | length if listing.shortlists else 0}}
                     shortlists</span
                   >
                 </div>

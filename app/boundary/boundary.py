@@ -384,7 +384,9 @@ class displaySellPage(MethodView):
     def get(self):
         listings = displaySellController().get()
 
-        return render_template("user/sellPage.html", user=current_user, listings=listings)
+        current_time = datetime.now()
+
+        return render_template("user/sellPage.html", user=current_user, listings=listings, current_time=current_time)
 
 boundary.add_url_rule("/sell", view_func=displaySellPage.as_view("displaySell"))
 
