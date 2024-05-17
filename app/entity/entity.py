@@ -73,16 +73,6 @@ class Profile(db.Model):
     def get_all_profiles(cls):
 
         return cls.query.all()
-    
-    @classmethod
-    def get_profile_id(cls, id):
-
-        return cls.query.get(id)
-
-    @classmethod
-    def get_profile_name(cls, name):
-        
-        return cls.query.filter_by(name=name).first()
 
 class User(db.Model, UserMixin):
     class UserStatus(Enum):
@@ -223,14 +213,14 @@ class Agent(db.Model):
         return cls.query.get(id)
 
     @classmethod
-    def get_agent_user_id(cls, user_id):
-        
-        return cls.query.filter_by(user_id=user_id).first()
-
-    @classmethod
     def get_cea_no(cls, cea_registration_no):
 
         return cls.query.filter_by(cea_registration_no=cea_registration_no).first()
+    
+    @classmethod
+    def get_all_listings_with_agents(cls):
+        query_result = db.session.query(Listing, cls).join(cls, Listing.agent_id == cls.id).all()
+        return query_result
 
 class Listing(db.Model):
     class Availability(Enum):
@@ -324,12 +314,6 @@ class Listing(db.Model):
         return True
 
     @classmethod
-    def get_all_listings_with_agents(cls):
-
-        query_result = db.session.query(Listing, Agent).join(Listing, Listing.agent_id == Agent.id).all()
-        return query_result
-
-    @classmethod
     def get_all_listings(cls):
 
         return cls.query.all()
@@ -414,13 +398,13 @@ class Shortlist(db.Model):
             db.session.commit()
             return new_shortlist
 
-    @classmethod
-    def create_shortlist(cls, date_created, user_id, listing_id):
+    # @classmethod
+    # def create_shortlist(cls, date_created, user_id, listing_id):
         
-        new_shortlist = cls(date_created=date_created, user_id=user_id, listing_id=listing_id)
-        db.session.add(new_shortlist)
-        db.session.commit()
-        return new_shortlist
+    #     new_shortlist = cls(date_created=date_created, user_id=user_id, listing_id=listing_id)
+    #     db.session.add(new_shortlist)
+    #     db.session.commit()
+    #     return new_shortlist
 
     @classmethod
     def get_shortlist(cls, user_id, listing_id):
@@ -450,13 +434,13 @@ class View(db.Model):
         db.session.commit()
         return new_view
     
-    @classmethod
-    def create_view2(cls, date_created, user_id, listing_id):
+    # @classmethod
+    # def create_view2(cls, date_created, user_id, listing_id):
 
-        new_view = cls(date_created=date_created, user_id=user_id, listing_id=listing_id)
-        db.session.add(new_view)
-        db.session.commit()
-        return new_view
+    #     new_view = cls(date_created=date_created, user_id=user_id, listing_id=listing_id)
+    #     db.session.add(new_view)
+    #     db.session.commit()
+    #     return new_view
 
     @classmethod
     def get_views_in_period(cls, listing_ids, start_date, end_date):
@@ -465,50 +449,6 @@ class View(db.Model):
                                 cls.date_created <= end_date,
                                 cls.listing_id.in_(listing_ids)).all()
 
-# class Feedback(db.Model):
-#     id = db.Column(db.Integer, primary_key=True)
-#     date_created = db.Column(db.DateTime(timezone=True), default=func.now())
-#     ratings = db.relationship("Rating", back_populates="feedback")
-#     reviews = db.relationship("Review", back_populates="feedback")
-#     user_id = db.Column(db.Integer, db.ForeignKey("user.id", ondelete="CASCADE"), nullable=False)
-#     user = db.relationship("User", back_populates="feedbacks", uselist=False)
-#     agent_id = db.Column(db.Integer, db.ForeignKey("agent.id", ondelete="CASCADE"), nullable=False)
-#     agent = db.relationship("Agent", back_populates="feedbacks", uselist=False)
-
-#     @classmethod
-#     def get_or_create_feedback(cls, agent_id, user_id):
-#         feedback = cls.query.filter_by(agent_id=agent_id, user_id=user_id).first()
-
-#         if feedback:
-#             return feedback
-
-#         new_feedback = cls(agent_id=agent_id, user_id=user_id)
-#         db.session.add(new_feedback)
-#         db.session.commit()
-#         return new_feedback
-    
-#     @classmethod
-#     def get_feedback_by_agent(cls, agent_id):
-
-#         return cls.query.filter_by(agent_id=agent_id).all()
-    
-#     @classmethod
-#     def get_feedback_by_agent_user(cls, agent_id, user_id):
-
-#         return cls.query.filter_by(agent_id=agent_id, user_id=user_id).first()
-    
-#     @classmethod
-#     def delete_feedback(cls, id):
-#         feedback = cls.query.filter_by(id=id).first()
-
-#         if feedback:
-#             db.session.delete(feedback)
-#             db.session.commit()
-#             return True
-        
-#         else:
-#             return False
-        
 class Rating(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     rating = db.Column(db.Float, nullable=False)

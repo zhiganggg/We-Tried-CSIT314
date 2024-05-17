@@ -187,6 +187,7 @@ class updateListingController:
 #UpdateListingStatus => [UpdateListingStatusController]
 class updateListingStatusController:
     def get(self, listing_id):
+        
         return Listing.update_status(listing_id)
     
 #23
@@ -199,7 +200,7 @@ class deleteListingController:
 #DisplayFindAgent => [DisplayFindAgentController]
 class displayFindAgentController:
     def get(self):
-        return Listing.get_all_listings_with_agents()
+        return Agent.get_all_listings_with_agents()
     
 #25
 #ViewAgent => [ViewAgentController]    
