@@ -56,9 +56,9 @@ class Profile(db.Model):
         return filtered_profiles
             
     @classmethod
-    def delete_profile(cls, id):
+    def delete_profile(cls, profile_id):
         try:
-            profile = cls.query.get(id)
+            profile = cls.query.get(profile_id)
             
             if not profile:
                 return False
@@ -140,8 +140,8 @@ class User(db.Model, UserMixin):
 
         
     @classmethod
-    def update_status(cls, id):
-        user = cls.query.get(id)
+    def update_status(cls, user_id):
+        user = cls.query.get(user_id)
 
         if not user:
             return None
@@ -263,10 +263,10 @@ class Listing(db.Model):
             return False
     
     @classmethod
-    def update_listing(cls, id, title, description, type, price, 
+    def update_listing(cls, listing_id, title, description, type, price, 
                        bedrooms, bathrooms, size_sqft, location, file_path):
         
-        listing = cls.query.get(id)
+        listing = cls.query.get(listing_id)
 
         if not listing:
             return None
@@ -319,9 +319,9 @@ class Listing(db.Model):
         return cls.query.all()
     
     @classmethod
-    def get_listing_by_id(cls, id):
+    def get_listing_by_id(cls, listing_id):
 
-        return cls.query.get(id)
+        return cls.query.get(listing_id)
     
     @classmethod
     def get_listing_by_user(cls, user_id):
@@ -351,19 +351,19 @@ class Listing(db.Model):
         return cls.query.filter_by(type=type).all()
     
     @classmethod
-    def search_by_price_range(cls, min_price, max_price):
+    def search_listing_by_price(cls, min_price, max_price):
 
-        return cls.query.filter(cls.price.between(min_price, max_price)).all()
-    
-    @classmethod
-    def search_by_min_price(cls, min_price):
-
-        return cls.query.filter(cls.price >= min_price).all()
-    
-    @classmethod
-    def search_by_max_price(cls, max_price):
-
-        return cls.query.filter(cls.price <= max_price).all()
+        if min_price and max_price:
+            return cls.query.filter(cls.price.between(min_price, max_price)).all()
+        
+        elif min_price:
+            return cls.query.filter(cls.price >= min_price).all()
+        
+        elif max_price:
+            return cls.query.filter(cls.price <= max_price).all()
+        
+        else:
+            return cls.query.all()
     
     @classmethod
     def search_by_bedrooms(cls, bedrooms):
@@ -433,14 +433,6 @@ class View(db.Model):
         db.session.add(new_view)
         db.session.commit()
         return new_view
-    
-    # @classmethod
-    # def create_view2(cls, date_created, user_id, listing_id):
-
-    #     new_view = cls(date_created=date_created, user_id=user_id, listing_id=listing_id)
-    #     db.session.add(new_view)
-    #     db.session.commit()
-    #     return new_view
 
     @classmethod
     def get_views_in_period(cls, listing_ids, start_date, end_date):
@@ -459,14 +451,14 @@ class Rating(db.Model):
     agent = db.relationship("Agent", back_populates="ratings", uselist=False)
 
     @classmethod
-    def create_rating(cls, rating_value, user_id, agent_id):
+    def create_rating(cls, user_id, agent_id, rating_value):
         rating = cls.query.filter_by(user_id=user_id, agent_id=agent_id).first()
 
         if rating:
             rating.rating = rating_value
 
         else:
-            new_rating = cls(rating=rating_value, user_id=user_id, agent_id=agent_id)
+            new_rating = cls(user_id=user_id, agent_id=agent_id, rating=rating_value)
             db.session.add(new_rating)
         
         db.session.commit()
@@ -498,21 +490,21 @@ class Review(db.Model):
     agent = db.relationship("Agent", back_populates="reviews", uselist=False)
 
     @classmethod
-    def create_review(cls, review_value, user_id, agent_id):
+    def create_review(cls, user_id, agent_id, review_value):
         review = cls.query.filter_by(user_id=user_id, agent_id=agent_id).first()
 
         if review:
             review.review = review_value
 
         else:
-            new_review = cls(review=review_value, user_id=user_id, agent_id=agent_id)
+            new_review = cls(user_id=user_id, agent_id=agent_id, review=review_value)
             db.session.add(new_review)
         
         db.session.commit()
-        return review
+        return True
     
     @classmethod
-    def get_rating_by_agent(cls, agent_id):
+    def get_review_by_agent(cls, agent_id):
         return cls.query.filter_by(agent_id=agent_id).all()
     
     @classmethod

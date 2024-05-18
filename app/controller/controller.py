@@ -107,18 +107,7 @@ class searchListingTypeController:
 #SearchListingPrice => [SearchListingPriceController]
 class searchListingPriceController: 
     def get(self, min_price, max_price):
-        
-        if min_price and max_price:
-            return Listing.search_by_price_range(min_price, max_price)
-        
-        elif min_price:
-            return Listing.search_by_min_price(min_price)
-
-        elif max_price:
-            return Listing.search_by_max_price(max_price)
-
-        else:
-            return Listing.get_all_listings
+        return Listing.search_listing_by_price(min_price, max_price)
 
 #15
 #SearchListingBedroom => [SearchListingBedroomController]
@@ -206,21 +195,21 @@ class displayFindAgentController:
 #ViewAgent => [ViewAgentController]    
 class viewAgentController:
     def get(self, agent_id):
-        return Agent.get_agent_by_id(agent_id), Rating.get_rating_by_agent(agent_id), Review.get_rating_by_agent(agent_id)
+        return Agent.get_agent_by_id(agent_id), Rating.get_rating_by_agent(agent_id), Review.get_review_by_agent(agent_id)
     
 #26    
 #CreateRating => [CreateRatingController]
 class createRatingController:
     def get(self, agent_id, user_id, rating_value):
 
-        return Rating.create_rating(rating_value, user_id, agent_id), Agent.get_agent_by_id(agent_id)
+        return Rating.create_rating(agent_id, user_id, rating_value), Agent.get_agent_by_id(agent_id)
         
 #27        
 #CreateReview => [CreateReviewController]
 class createReviewController:
     def get(self, agent_id, user_id, review_value):
 
-        return Review.create_review(review_value, user_id, agent_id), Agent.get_agent_by_id(agent_id)
+        return Review.create_review(agent_id, user_id, review_value), Agent.get_agent_by_id(agent_id)
 
 #28
 #DeleteRating => [DeleteRatingController]
@@ -289,11 +278,3 @@ class deleteProfileController:
 class searchProfileController:
     def get(self, search_query):
         return Profile.search_profile(search_query)
-    
-# class createViewCountController:
-#     def get(self, date_created, user_id, listing_id):
-#         return View.create_view2(date_created, user_id, listing_id)
-    
-# class createShortlistController:
-#     def get(self, date_created, user_id, listing_id):
-#         return Shortlist.create_shortlist(date_created, user_id, listing_id)
