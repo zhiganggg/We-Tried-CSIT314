@@ -200,28 +200,28 @@ class viewAgentController:
 #26    
 #CreateRating => [CreateRatingController]
 class createRatingController:
-    def get(self, agent_id, user_id, rating_value):
+    def get(self, user_id, agent_id, rating_value):
 
-        return Rating.create_rating(agent_id, user_id, rating_value), Agent.get_agent_by_id(agent_id)
+        return Rating.create_rating(user_id, agent_id, rating_value), Agent.get_agent_by_id(agent_id)
         
 #27        
 #CreateReview => [CreateReviewController]
 class createReviewController:
-    def get(self, agent_id, user_id, review_value):
+    def get(self, user_id, agent_id, review_value):
 
-        return Review.create_review(agent_id, user_id, review_value), Agent.get_agent_by_id(agent_id)
+        return Review.create_review(user_id, agent_id, review_value), Agent.get_agent_by_id(agent_id)
 
 #28
 #DeleteRating => [DeleteRatingController]
 class deleteRatingController:
-    def get(self, agent_id, user_id):
+    def get(self, user_id, agent_id):
 
         return Rating.delete_rating(user_id, agent_id), Agent.get_agent_by_id(agent_id)
 
 #29
 #DeleteReview => [DeleteReviewController]
 class deleteReviewController:
-    def get(self, agent_id, user_id):
+    def get(self, user_id, agent_id):
 
         return Review.delete_review(user_id, agent_id), Agent.get_agent_by_id(agent_id)
     

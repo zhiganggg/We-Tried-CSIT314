@@ -571,14 +571,21 @@ class viewAgent(MethodView):
         for user_id in user_ids:
             user_ratings = [rating for rating in ratings if rating.user_id == user_id]
             user_reviews = [review for review in reviews if review.user_id == user_id]
+            
+            latest_date = max(
+                [rating.date_created for rating in user_ratings] +
+                [review.date_created for review in user_reviews]
+            )
+            
             feedback_list.append({
                 'user_id': user_id,
                 'user': user_ratings[0].user if user_ratings else user_reviews[0].user,
                 'ratings': user_ratings,
-                'reviews': user_reviews
+                'reviews': user_reviews,
+                'latest_date': latest_date
             })
 
-        print(feedback_list)        
+        feedback_list.sort(key=lambda x: x['latest_date'], reverse=True)        
 
         return render_template("user/agentPage.html", user=current_user, agent=agent, feedbacks=feedback_list)
     
@@ -591,7 +598,7 @@ class createRating(MethodView):
     def post(self, agent_id):
         rating_value = request.form["rating"]
 
-        rating, agent = createRatingController().get(agent_id, current_user.id, rating_value)
+        rating, agent = createRatingController().get(current_user.id, agent_id, rating_value)
 
         if rating is False:
             flash("An error occurred while rating the agent.", category="error")
@@ -607,7 +614,7 @@ class createReview(MethodView):
     def post(self, agent_id):
         review_value = request.form["review"]
 
-        review, agent = createReviewController().get(agent_id, current_user.id, review_value)
+        review, agent = createReviewController().get(current_user.id, agent_id, review_value)
 
         if review is False:
             flash("An error occurred while rating the agent.", category="error")
@@ -621,7 +628,7 @@ boundary.add_url_rule("/create-review/<int:agent_id>", view_func=createReview.as
 class deleteRating(MethodView):
     @login_required
     def post(self, agent_id):
-        rating, agent = deleteRatingController().get(agent_id, current_user.id)
+        rating, agent = deleteRatingController().get(current_user.id, agent_id)
 
         if rating:
             flash("Rating deleted successfully!", category="success")
@@ -638,7 +645,7 @@ boundary.add_url_rule("/delete-rating/<int:agent_id>", view_func=deleteRating.as
 class deleteReview(MethodView):
     @login_required
     def post(self, agent_id):
-        review, agent = deleteReviewController().get(agent_id, current_user.id)
+        review, agent = deleteReviewController().get(current_user.id, agent_id)
 
         if review:
             flash("Review deleted successfully!", category="success")
